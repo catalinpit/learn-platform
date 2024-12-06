@@ -6,6 +6,7 @@
     "prisma:generate": "bun run prisma generate",
     "db:migrate:deploy": "bun run prisma migrate deploy",
     "prisma:migrate": "bun run prisma migrate dev",
+    "prisma:studio": "bun run prisma studio",
     "prisma:seed": "bun run scripts/seed.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
