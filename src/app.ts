@@ -1,9 +1,16 @@
 import createApp from "@/lib/create-app";
+import courses from "@/routes/courses/courses.index";
+import index from "@/routes/index.route";
 
 const app = createApp();
 
-app.get("/", (c) => {
-  return c.json({ message: "Hello, World!" });
+const routes = [
+  index,
+  courses,
+];
+
+routes.forEach((route) => {
+  app.route("/", route);
 });
 
 export default app;

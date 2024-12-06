@@ -3,12 +3,17 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "prisma:generate": "bun run prisma generate",
+    "db:migrate:deploy": "bun run prisma migrate deploy",
+    "prisma:migrate": "bun run prisma migrate dev",
+    "prisma:seed": "bun run scripts/seed.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
     "@hono/zod-openapi": "^0.18.3",
+    "@prisma/client": "6.0.1",
     "dotenv": "^16.4.7",
     "dotenv-expand": "^12.0.1",
     "hono": "^4.6.12",
@@ -20,8 +25,10 @@
   "devDependencies": {
     "@antfu/eslint-config": "^3.11.2",
     "@types/node": "^20.11.17",
+    "@types/pg": "^8.11.10",
     "eslint": "^9.16.0",
     "eslint-plugin-format": "^0.1.2",
+    "prisma": "^6.0.1",
     "tsx": "^4.7.1",
     "typescript": "^5.7.2"
   }
