@@ -1,5 +1,6 @@
-import type { auth } from "@/lib/auth";
 import type { PinoLogger } from "hono-pino";
+
+import type { auth } from "@/lib/auth";
 
 export interface AppBindings {
   Variables: {

@@ -1,8 +1,8 @@
 import type { MiddlewareHandler } from "hono";
 
-import { auth } from "@/lib/auth";
-
 import type { AppBindings, AuthType } from "~/shared/types";
+
+import { auth } from "@/lib/auth";
 
 export const authMiddleware: MiddlewareHandler<{
   Bindings: AppBindings;
@@ -12,6 +12,7 @@ export const authMiddleware: MiddlewareHandler<{
 
   if (!session) {
     c.set("Variables", { user: null, session: null });
+
     return next();
   }
 
