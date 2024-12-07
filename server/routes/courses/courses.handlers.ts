@@ -1,6 +1,6 @@
 import type { Handler } from "hono";
 
-import type { AppBindings } from "@/lib/types";
+import type { AppBindings } from "~/shared/types";
 
 import db from "@/db";
 

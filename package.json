@@ -2,7 +2,7 @@
   "name": "learn-platform-api",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch server/index.ts",
     "prisma:generate": "bun run prisma generate",
     "db:migrate:deploy": "bun run prisma migrate deploy",
     "prisma:migrate": "bun run prisma migrate dev",
@@ -15,6 +15,7 @@
     "@hono/node-server": "^1.13.7",
     "@hono/zod-openapi": "^0.18.3",
     "@prisma/client": "6.0.1",
+    "better-auth": "^1.0.10",
     "dotenv": "^16.4.7",
     "dotenv-expand": "^12.0.1",
     "hono": "^4.6.12",

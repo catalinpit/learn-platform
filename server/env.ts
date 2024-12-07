@@ -9,8 +9,14 @@ expand(config());
 export const EnvSchema = z.object({
   NODE_ENV: z.string().default("development"),
   PORT: z.coerce.number().default(3000),
-  LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
+  LOG_LEVEL: z
+    .enum(["fatal", "error", "warn", "info", "debug", "trace"])
+    .default("info"),
   DATABASE_URL: z.string().url(),
+  BETTER_AUTH_SECRET: z.string().min(32).max(32),
+  BETTER_AUTH_URL: z.string().url(),
+  GITHUB_CLIENT_ID: z.string(),
+  GITHUB_CLIENT_SECRET: z.string(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
