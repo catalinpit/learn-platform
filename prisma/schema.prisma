@@ -37,6 +37,8 @@ model Course {
   content     String
   videoUrls   String[]
   coverImage  String?
+  price       Float
+  isPublished Boolean
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
