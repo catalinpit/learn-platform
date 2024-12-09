@@ -2,7 +2,7 @@
   "name": "learn-platform-api",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch server/index.ts",
+    "dev": "bun --watch watch server/index.ts",
     "prisma:generate": "bun run prisma generate",
     "db:migrate:deploy": "bun run prisma migrate deploy",
     "prisma:migrate": "bun run prisma migrate dev",
