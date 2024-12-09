@@ -1,7 +1,7 @@
 import createApp from "@/lib/create-app";
-import auth from "@/routes/auth.route";
-import courses from "@/routes/courses/courses.index";
-import index from "@/routes/index.route";
+import auth from "@/routes/auth";
+import courses from "@/routes/courses";
+import index from "@/routes/index";
 
 const app = createApp();
 
