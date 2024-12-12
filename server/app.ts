@@ -1,9 +1,9 @@
-import index from "@/routes/index";
 import { serveStatic } from "hono/bun";
 
 import createApp from "@/lib/create-app";
 import auth from "@/routes/auth";
 import courses from "@/routes/courses";
+import index from "@/routes/index";
 
 const app = createApp();
 
