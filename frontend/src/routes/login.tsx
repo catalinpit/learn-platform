@@ -1,9 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { signIn } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/login")({
   component: Login,
 });
 
 function Login() {
-  return <div>Hello "/login"!</div>;
+  const handleSignInWithGitHub = async () => {
+    await signIn.social({
+      provider: "github",
+      callbackURL: "/",
+    });
+  };
+
+  return (
+    <div>
+      <h1>Login</h1>
+      <Button onClick={handleSignInWithGitHub}>Sign in</Button>
+    </div>
+  );
 }
