@@ -1,4 +1,9 @@
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Link, useRouter } from "@tanstack/react-router";
+
+import {
+  AvatarWithText,
+} from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,27 +12,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { ChevronsUpDown } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { signOut } from "@/lib/auth-client";
-import { useRouter } from "@tanstack/react-router";
+import { signOut, useSession } from "@/lib/auth-client";
 
 export function MenuSwitcher() {
   const router = useRouter();
+  const { data: session } = useSession();
+
+  console.log({ session });
 
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            data-testid="menu-switcher"
-            className="relative flex h-12 flex-row items-center px-0 py-2 ring-0 focus:outline-none focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-transparent md:px-2"
-          >
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
+          <Button data-testid="menu-switcher" className="bg-transparent">
+            <AvatarWithText
+              avatarSrc={session?.user?.image}
+              className="text-foreground"
+              avatarFallback={session?.user?.name ?? ""}
+              primaryText={session?.user?.name}
+            />
           </Button>
         </DropdownMenuTrigger>
 

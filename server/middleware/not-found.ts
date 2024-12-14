@@ -8,7 +8,7 @@ const notFound: NotFoundHandler = (c) => {
     {
       message: `${NOT_FOUND_MESSAGE} - ${c.req.path}`,
     },
-    NOT_FOUND
+    NOT_FOUND,
   );
 };
 

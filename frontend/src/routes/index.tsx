@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+
 import { useSession } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/")({
