@@ -1,8 +1,6 @@
 import { Link, useRouter } from "@tanstack/react-router";
 
-import {
-  AvatarWithText,
-} from "@/components/ui/avatar";
+import { AvatarWithText } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -24,7 +22,10 @@ export function MenuSwitcher() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button data-testid="menu-switcher" className="bg-transparent">
+          <Button
+            data-testid="menu-switcher"
+            className="bg-transparent focus:bg-transparent hover:bg-transparent"
+          >
             <AvatarWithText
               avatarSrc={session?.user?.image}
               className="text-foreground"
