@@ -11,7 +11,7 @@ function Root() {
   return (
     <>
       <NavBar />
-      <div className="mx-auto">
+      <div className="mx-auto max-w-3xl mt-12">
         <Outlet />
       </div>
       <TanStackRouterDevtools />
