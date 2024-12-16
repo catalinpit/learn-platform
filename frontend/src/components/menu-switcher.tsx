@@ -16,8 +16,6 @@ export function MenuSwitcher() {
   const router = useRouter();
   const { data: session } = useSession();
 
-  console.log({ session });
-
   return (
     <>
       <DropdownMenu>

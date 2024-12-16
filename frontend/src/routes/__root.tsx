@@ -1,9 +1,14 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 import { NavBar } from "@/components/nav-bar";
+import type { Session } from "@/lib/auth-client";
 
-export const Route = createRootRoute({
+interface MyRouterContext {
+  auth: Session | null | undefined;
+}
+
+export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: Root,
 });
 

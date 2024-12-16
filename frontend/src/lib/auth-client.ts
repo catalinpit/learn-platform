@@ -1,5 +1,9 @@
 import { createAuthClient } from "better-auth/react";
 
-export const { signIn, signUp, useSession, signOut } = createAuthClient({
-  baseURL: "http://localhost:9999",
+export const authClient = createAuthClient({
+  baseURL: "http://localhost:5173",
 });
+
+export const { useSession, signIn, signOut } = authClient;
+
+export type Session = typeof authClient.$Infer.Session;
