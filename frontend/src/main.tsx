@@ -17,7 +17,7 @@ declare module "@tanstack/react-router" {
 
 const queryClient = new QueryClient();
 
-export function InnerApp() {
+export function RouterWithAuthContext() {
   const { data: auth, isPending, error } = useSession();
 
   if (!isPending && !error) {
@@ -28,7 +28,7 @@ export function InnerApp() {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <InnerApp />
+      <RouterWithAuthContext />
     </QueryClientProvider>
   </StrictMode>
 );

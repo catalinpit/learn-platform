@@ -2,10 +2,10 @@ import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 import { NavBar } from "@/components/nav-bar";
-import type { AuthContext } from "better-auth";
+import type { Session } from "@/lib/auth-client";
 
 interface MyRouterContext {
-  auth: AuthContext["session"] | undefined;
+  auth: Session | null | undefined;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
