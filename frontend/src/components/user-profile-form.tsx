@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, useRouteContext } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,23 +16,18 @@ import { Input } from "@/components/ui/input";
 import { useSession } from "@/lib/auth-client";
 
 const formSchema = z.object({
-  username: z.string().min(2, {
+  name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
 });
 
 export function UserProfileForm() {
-  const router = useRouter();
-  const { data: session } = useSession();
-
-  if (!session) {
-    router.navigate({ to: "/login" });
-  }
+  const user = useRouteContext({ from: "/_authenticated" });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      name: user.name ?? "",
     },
   });
 
@@ -45,15 +40,15 @@ export function UserProfileForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="my-8">
         <FormField
           control={form.control}
-          name="username"
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="Your name" {...field} />
               </FormControl>
               <FormDescription>
                 This is your public display name.

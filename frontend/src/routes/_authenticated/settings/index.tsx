@@ -1,16 +1,26 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { UserProfileForm } from '@/components/user-profile-form'
+import { createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
 
-export const Route = createFileRoute('/_authenticated/settings/')({
+const UserProfileForm = lazy(() =>
+  import("@/components/user-profile-form").then((module) => ({
+    default: module.UserProfileForm,
+  }))
+);
+
+export const Route = createFileRoute("/_authenticated/settings/")({
   component: Settings,
-})
+});
 
 function Settings() {
+  const user = useRouteContext({ from: "/_authenticated" });
+
   return (
     <>
-      <div>Hello settings!</div>
+      <div>Hello settings! {user.name}</div>
 
-      <UserProfileForm />
+      <Suspense fallback={<div>Loading...</div>}>
+        <UserProfileForm />
+      </Suspense>
     </>
-  )
+  );
 }
