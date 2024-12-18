@@ -1,10 +1,11 @@
 import type { MiddlewareHandler } from "hono";
 
 import { cors } from "hono/cors";
-
-import type { AppBindings, AuthType } from "~/shared/types";
+import { createMiddleware } from "hono/factory";
 
 import { auth } from "@/lib/auth";
+
+import type { AppBindings, AuthType } from "../../shared/types";
 
 export const corsMiddleware = cors({
   origin: "http://localhost:5173",
@@ -15,10 +16,10 @@ export const corsMiddleware = cors({
   credentials: true,
 });
 
-export const authMiddleware: MiddlewareHandler<{
+export const authMiddleware = createMiddleware<{
   Bindings: AppBindings;
   Variables: AuthType;
-}> = async (c, next) => {
+}>(async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
   if (!session) {
@@ -33,4 +34,4 @@ export const authMiddleware: MiddlewareHandler<{
   });
 
   return next();
-};
+});
