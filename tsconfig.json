@@ -1,17 +1,12 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "paths": {
-      "@/*": ["./server/*"],
-      "~/*": ["./*"]
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "references": [
+    {
+      "path": "./client"
     },
-    "types": ["node"],
-    "strict": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true
-  }
+    {
+      "path": "./server"
+    }
+  ]
 }

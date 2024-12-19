@@ -1,6 +1,7 @@
 import type { PinoLogger } from "hono-pino";
 
-import type { auth } from "@/lib/auth";
+import type { AppType } from "../app";
+import type { auth } from "../lib/auth";
 
 export interface AppBindings {
   Variables: {
@@ -14,3 +15,5 @@ export interface AuthType {
     session: typeof auth.$Infer.Session.session | null;
   };
 }
+
+export { type AppType };
