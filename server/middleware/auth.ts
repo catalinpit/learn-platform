@@ -1,11 +1,9 @@
-import type { MiddlewareHandler } from "hono";
-
 import { cors } from "hono/cors";
 import { createMiddleware } from "hono/factory";
 
 import { auth } from "@/lib/auth";
 
-import type { AppBindings, AuthType } from "../../shared/types";
+import type { AppBindings, AuthType } from "../shared/types";
 
 export const corsMiddleware = cors({
   origin: "http://localhost:5173",

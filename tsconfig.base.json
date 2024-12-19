@@ -1,18 +1,12 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ES2022",
+    "strict": true,
     "target": "ES2022",
     "lib": ["ES2022", "dom"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "rootDir": ".",
-    "baseUrl": "./packages",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "paths": {
-      "@client/*": ["./*/src"],
-      "@server/*": ["./*/"]
-    }
+    "baseUrl": "./",
+    "esModuleInterop": true
   }
 }

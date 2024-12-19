@@ -6,7 +6,7 @@ import { serveStatic } from "hono/bun";
 
 const app = createApp();
 
-const routes = [index, courses, auth];
+const routes = [index, courses, auth] as const;
 
 routes.forEach((route) => {
   app.basePath("/api").route("/", route);
@@ -15,6 +15,6 @@ routes.forEach((route) => {
 app.get("*", serveStatic({ root: "./client/dist" }));
 app.get("*", serveStatic({ path: "./client/dist/index.html" }));
 
-export type AppType = (typeof routes)[number];
+export type AppType = typeof routes[number];
 
 export default app;

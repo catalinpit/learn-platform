@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "composite": true,
     "target": "ES2022",
     "lib": ["ES2023"],
     "moduleDetection": "force",
@@ -15,10 +16,15 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noEmit": true,
+    "noEmit": false,
     "isolatedModules": true,
     "skipLibCheck": true,
     "noUncheckedSideEffectImports": true
   },
+  "references": [
+    {
+      "path": "../server/tsconfig.json"
+    }
+  ],
   "include": ["vite.config.ts"]
 }
