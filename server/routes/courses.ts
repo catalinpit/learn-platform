@@ -1,15 +1,35 @@
+import { zValidator } from "@hono/zod-validator";
+
 import db from "@/db";
 import { createRouter } from "@/lib/create-app";
+import { loggedIn } from "@/middleware/auth";
+import { GetCourseByIdSchema } from "@/shared/types";
 
-const router = createRouter().get("/courses", async (c) => {
-  const courses = await db.course.findMany();
-  const loggedInUser = c.get("Variables").user;
+const router = createRouter()
+  .get("/courses", loggedIn, async (c) => {
+    const courses = await db.course.findMany();
 
-  if (!loggedInUser) {
-    return c.json({ message: "You must be logged in to view courses" }, 401);
-  }
+    return c.json(courses);
+  })
+  .get(
+    "/courses/:id",
+    loggedIn,
+    zValidator("param", GetCourseByIdSchema),
+    async (c) => {
+      const { id } = c.req.valid("param");
 
-  return c.json(courses);
-});
+      const course = await db.course.findUnique({
+        where: {
+          id: String(id),
+        },
+      });
+
+      if (!course) {
+        return c.json({ message: "Course not found" });
+      }
+
+      return c.json(course);
+    }
+  );
 
 export default router;

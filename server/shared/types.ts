@@ -1,5 +1,7 @@
 import type { PinoLogger } from "hono-pino";
 
+import { z } from "zod";
+
 import type { AppType } from "../app";
 import type { auth } from "../lib/auth";
 
@@ -17,3 +19,12 @@ export interface AuthType {
 }
 
 export { type AppType };
+
+////////////////////////////
+// Courses Router Schemas //
+////////////////////////////
+export const GetCourseByIdSchema = z.object({
+  id: z.string(),
+});
+
+export type GetCourseByIdType = z.infer<typeof GetCourseByIdSchema>;

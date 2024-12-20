@@ -4,7 +4,7 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { NavBar } from "@/components/nav-bar";
 import type { Session } from "@/lib/auth-client";
 
-interface MyRouterContext {
+export interface MyRouterContext {
   auth: Session | null | undefined;
 }
 
