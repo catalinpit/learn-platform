@@ -11,7 +11,6 @@ function Login() {
   const handleSignInWithGitHub = async () => {
     await signIn.social({
       provider: "github",
-      callbackURL: "/",
     });
   };
 

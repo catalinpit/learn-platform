@@ -7,13 +7,14 @@
     "db:migrate:deploy": "bun run prisma migrate deploy",
     "prisma:migrate": "bun run prisma migrate dev",
     "prisma:studio": "bun run prisma studio",
-    "prisma:seed": "bun run scripts/seed.js",
+    "prisma:seed": "bun run scripts/seed.cjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
     "@hono/zod-openapi": "^0.18.3",
+    "@hono/zod-validator": "^0.4.2",
     "@prisma/client": "6.0.1",
     "better-auth": "^1.0.10",
     "dotenv": "^16.4.7",
