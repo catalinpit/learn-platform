@@ -17,7 +17,9 @@ import { Route as LoginImport } from './routes/login'
 import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
+import { Route as CoursesCourseIdImport } from './routes/courses/$courseId'
 import { Route as AuthenticatedSettingsIndexImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedCreatorNewCourseImport } from './routes/_authenticated/creator/new-course'
 
 // Create/Update Routes
 
@@ -56,6 +58,12 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const CoursesCourseIdRoute = CoursesCourseIdImport.update({
+  id: '/courses/$courseId',
+  path: '/courses/$courseId',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AuthenticatedSettingsIndexRoute = AuthenticatedSettingsIndexImport.update(
   {
     id: '/settings/',
@@ -63,6 +71,13 @@ const AuthenticatedSettingsIndexRoute = AuthenticatedSettingsIndexImport.update(
     getParentRoute: () => AuthenticatedRoute,
   } as any,
 )
+
+const AuthenticatedCreatorNewCourseRoute =
+  AuthenticatedCreatorNewCourseImport.update({
+    id: '/creator/new-course',
+    path: '/creator/new-course',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -110,6 +125,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignoutImport
       parentRoute: typeof rootRoute
     }
+    '/courses/$courseId': {
+      id: '/courses/$courseId'
+      path: '/courses/$courseId'
+      fullPath: '/courses/$courseId'
+      preLoaderRoute: typeof CoursesCourseIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authenticated/creator/new-course': {
+      id: '/_authenticated/creator/new-course'
+      path: '/creator/new-course'
+      fullPath: '/creator/new-course'
+      preLoaderRoute: typeof AuthenticatedCreatorNewCourseImport
+      parentRoute: typeof AuthenticatedImport
+    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/settings'
@@ -123,10 +152,12 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedCreatorNewCourseRoute: typeof AuthenticatedCreatorNewCourseRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCreatorNewCourseRoute: AuthenticatedCreatorNewCourseRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
 }
 
@@ -141,6 +172,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/signout': typeof SignoutRoute
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
 }
 
@@ -151,6 +184,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/signout': typeof SignoutRoute
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
 }
 
@@ -162,6 +197,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/signout': typeof SignoutRoute
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/_authenticated/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
 }
 
@@ -174,9 +211,20 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/signout'
+    | '/courses/$courseId'
+    | '/creator/new-course'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/about' | '/login' | '/register' | '/signout' | '/settings'
+  to:
+    | '/'
+    | ''
+    | '/about'
+    | '/login'
+    | '/register'
+    | '/signout'
+    | '/courses/$courseId'
+    | '/creator/new-course'
+    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -185,6 +233,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/signout'
+    | '/courses/$courseId'
+    | '/_authenticated/creator/new-course'
     | '/_authenticated/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -196,6 +246,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   SignoutRoute: typeof SignoutRoute
+  CoursesCourseIdRoute: typeof CoursesCourseIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -205,6 +256,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   SignoutRoute: SignoutRoute,
+  CoursesCourseIdRoute: CoursesCourseIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -222,7 +274,8 @@ export const routeTree = rootRoute
         "/about",
         "/login",
         "/register",
-        "/signout"
+        "/signout",
+        "/courses/$courseId"
       ]
     },
     "/": {
@@ -231,6 +284,7 @@ export const routeTree = rootRoute
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
+        "/_authenticated/creator/new-course",
         "/_authenticated/settings/"
       ]
     },
@@ -245,6 +299,13 @@ export const routeTree = rootRoute
     },
     "/signout": {
       "filePath": "signout.tsx"
+    },
+    "/courses/$courseId": {
+      "filePath": "courses/$courseId.tsx"
+    },
+    "/_authenticated/creator/new-course": {
+      "filePath": "_authenticated/creator/new-course.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/settings/": {
       "filePath": "_authenticated/settings/index.tsx",

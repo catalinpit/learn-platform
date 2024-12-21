@@ -1,6 +1,7 @@
 import { hc } from "hono/client";
 import type { AppType } from "@server/shared/types";
 import { queryOptions } from "@tanstack/react-query";
+import { TCreateCourseType } from "@server/shared/types";
 
 const client = hc<AppType>("/api");
 
@@ -12,6 +13,7 @@ export const getAllCourses = async () => {
   }
 
   const data = await res.json();
+  console.log({ data });
   return data;
 };
 
@@ -42,3 +44,16 @@ export const getCourseByIdQueryOptions = (id: string) =>
     queryFn: () => getCourseById(id),
     staleTime: 1000 * 60 * 5,
   });
+
+export const createCourse = async (data: TCreateCourseType) => {
+  const res = await client.creator.courses.$post({
+    json: data,
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to create course");
+  }
+
+  const course = await res.json();
+  return course;
+};
