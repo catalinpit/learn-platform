@@ -24,7 +24,7 @@ export function NavBar() {
               <>
                 <Link
                   to="/"
-                  className="text-xl font-bold text-white md:block hidden"
+                  className="text-xl text-background dark:text-foreground font-bold md:block hidden"
                 >
                   Learn Course
                 </Link>
@@ -33,7 +33,7 @@ export function NavBar() {
                 </div>
               </>
             ) : (
-              <Link to="/" className="text-xl font-bold text-white">
+              <Link to="/" className="text-xl font-bold">
                 Learn Course
               </Link>
             )}

@@ -4,9 +4,11 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { NavBar } from "@/components/nav-bar";
 import type { Session } from "@/lib/auth-client";
 import { ThemeProvider } from "@/components/theme-provider";
+import { QueryClient } from "@tanstack/react-query";
 
 export interface MyRouterContext {
   auth: Session | null | undefined;
+  queryClient: QueryClient;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({

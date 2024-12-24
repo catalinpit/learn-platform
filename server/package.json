@@ -23,7 +23,7 @@
     "hono-pino": "^0.7.0",
     "pino": "^9.5.0",
     "pino-pretty": "^13.0.0",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.11.2",

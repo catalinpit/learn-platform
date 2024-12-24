@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -33,7 +34,7 @@ function Index() {
           Browse all the available courses
         </p>
       </div>
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         {data?.map((course) => (
           <Card key={course.id} className="flex flex-col max-h-[600px]">
             {course.coverImage && (
@@ -44,7 +45,14 @@ function Index() {
               />
             )}
             <CardHeader>
-              <CardTitle>{course.title}</CardTitle>
+              <CardTitle>
+                <Link
+                  to={`/courses/${course.id}`}
+                  params={{ courseId: course.id }}
+                >
+                  {course.title}
+                </Link>
+              </CardTitle>
               <CardDescription>{course.description}</CardDescription>
             </CardHeader>
             <CardContent>

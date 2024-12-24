@@ -7,15 +7,18 @@ import { useSession } from "@/lib/auth-client";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 
-const router = createRouter({ routeTree, context: { auth: undefined } });
+const queryClient = new QueryClient();
+
+const router = createRouter({
+  routeTree,
+  context: { auth: undefined, queryClient },
+});
 
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
 }
-
-const queryClient = new QueryClient();
 
 export function RouterWithAuthContext() {
   const { data: auth, isPending, error } = useSession();
