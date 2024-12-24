@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.11.2",
+    "@types/bun": "^1.1.14",
     "@types/node": "^20.11.17",
     "@types/pg": "^8.11.10",
     "eslint": "^9.16.0",
