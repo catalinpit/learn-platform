@@ -68,6 +68,12 @@ export function NavBar() {
               </>
             ) : (
               <>
+                <Link
+                  to="/creator/new-course"
+                  className="text-zinc-300 hover:text-white transition-colors"
+                >
+                  Create Course
+                </Link>
                 <MenuSwitcher />
                 <ModeToggle />
               </>
@@ -75,7 +81,6 @@ export function NavBar() {
           </div>
 
           <div className="md:hidden flex items-center">
-            <ModeToggle />
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="text-zinc-300 hover:text-white"
@@ -134,7 +139,20 @@ export function NavBar() {
                 </span>
               </Link>
             </>
-          ) : null}
+          ) : (
+            <Link
+              to="/create-course"
+              className="block px-3 py-2 text-zinc-300 hover:text-white rounded-md text-center"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <span className="hover:bg-slate-800 hover:p-2 rounded-lg">
+                Create Course
+              </span>
+            </Link>
+          )}
+          <div className="flex justify-center">
+            <ModeToggle />
+          </div>
         </div>
       </div>
     </nav>

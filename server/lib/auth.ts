@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 
@@ -17,6 +18,16 @@ export const auth = betterAuth({
     github: {
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
+    },
+  },
+  user: {
+    additionalFields: {
+      roles: {
+        type: [Role.STUDENT, Role.CREATOR, Role.ADMIN],
+        required: true,
+        defaultValue: [Role.STUDENT],
+        role: Role,
+      },
     },
   },
 });
