@@ -1,6 +1,5 @@
 import { createAuthClient } from "better-auth/react";
 import { inferAdditionalFields } from "better-auth/client/plugins";
-import { Role } from "@server/shared/types";
 
 export const authClient = createAuthClient({
   baseURL: "http://localhost:5173",

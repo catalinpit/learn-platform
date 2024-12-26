@@ -5,10 +5,13 @@ import { MenuSwitcher } from "@/components/menu-switcher";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "./mode-toggle";
+import { canCreateCourse } from "@/lib/utils";
 
 export function NavBar() {
   const { data: session } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const showCreateCourseButton = canCreateCourse(session?.user?.roles ?? []);
 
   const links = [
     { name: "Home", href: "/" },
