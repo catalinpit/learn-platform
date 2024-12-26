@@ -20,9 +20,7 @@ export interface AuthType {
   };
 }
 
-export { type AppType };
-
-export { Role, type User };
+export { type AppType, Role, type User };
 
 ////////////////////////////
 // Courses Router Schemas //
