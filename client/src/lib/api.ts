@@ -1,26 +1,42 @@
 import { hc } from "hono/client";
 import type { AppType } from "@server/shared/types";
-import { queryOptions } from "@tanstack/react-query";
-import { TCreateCourseType } from "@server/shared/types";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
+import { TCreateCourseType, TGetAllCoursesType } from "@server/shared/types";
 
 const client = hc<AppType>("/api");
 
-export const getAllCourses = async () => {
-  const res = await client.courses.$get();
+export const getAllCourses = async ({
+  query,
+  page,
+  perPage,
+}: TGetAllCoursesType) => {
+  const res = await client.courses.$get({
+    query: {
+      query,
+      page: String(page),
+      perPage: String(perPage),
+    },
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch courses");
   }
 
-  const data = await res.json();
-  return data;
+  const courses = await res.json();
+  return courses;
 };
 
-export const getAllCoursesQueryOptions = queryOptions({
-  queryKey: ["get-all-courses"],
-  queryFn: getAllCourses,
-  staleTime: 1000 * 60 * 5,
-});
+export const getAllCoursesQueryOptions = ({
+  query,
+  page,
+  perPage,
+}: TGetAllCoursesType) =>
+  queryOptions({
+    queryKey: ["get-all-courses", query, page, perPage],
+    queryFn: () => getAllCourses({ query, page, perPage }),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+  });
 
 export const getCourseById = async (id: string) => {
   const res = await client.courses[":id"].$get({

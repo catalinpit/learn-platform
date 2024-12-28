@@ -10,13 +10,38 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  const { isPending, error, data } = useQuery(getAllCoursesQueryOptions);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 500);
+
+  const { isPending, error, data } = useQuery(
+    getAllCoursesQueryOptions({
+      query: debouncedSearch,
+      page,
+      perPage: 4,
+    })
+  );
+
+  const courses = data?.courses;
+  const count = data?.totalPages;
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -28,14 +53,21 @@ function Index() {
 
   return (
     <div className="p-6">
-      <div className="pb-6">
+      <div className="pb-6 flex-1">
         <h2 className="text-4xl leading-10">All courses</h2>
         <p className="text-neutral-400 text-lg">
           Browse all the available courses
         </p>
+        <Input
+          type="search"
+          placeholder="Search courses..."
+          className="mt-4 w-1/3"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-        {data?.map((course) => (
+        {courses?.map((course) => (
           <Card key={course.id} className="flex flex-col max-h-[600px]">
             {course.coverImage && (
               <img
@@ -75,6 +107,32 @@ function Index() {
           </Card>
         ))}
       </div>
+      <Pagination className="py-10">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              disabled={page === 1}
+            />
+          </PaginationItem>
+          {Array.from({ length: count ?? 1 }, (_, index) => (
+            <PaginationItem key={index + 1}>
+              <PaginationLink
+                isActive={page === index + 1}
+                onClick={() => setPage(index + 1)}
+              >
+                {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              onClick={() => setPage((prev) => prev + 1)}
+              disabled={page === (count ?? 1)}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }

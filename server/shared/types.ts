@@ -25,6 +25,14 @@ export { type AppType, Role, type User };
 ////////////////////////////
 // Courses Router Schemas //
 ////////////////////////////
+export const ZGetAllCoursesSchema = z.object({
+  query: z.string().optional(),
+  page: z.coerce.number().min(1).optional().default(1),
+  perPage: z.coerce.number().min(1).optional().default(4),
+});
+
+export type TGetAllCoursesType = z.infer<typeof ZGetAllCoursesSchema>;
+
 export const ZGetCourseByIdSchema = z.object({
   id: z.string(),
 });
