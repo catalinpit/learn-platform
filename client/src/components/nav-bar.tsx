@@ -4,10 +4,14 @@ import { useState } from "react";
 import { MenuSwitcher } from "@/components/menu-switcher";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { ModeToggle } from "./mode-toggle";
+import { canCreateCourse } from "@/lib/utils";
 
 export function NavBar() {
   const { data: session } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const showCreateCourseButton = canCreateCourse(session?.user?.roles ?? []);
 
   const links = [
     { name: "Home", href: "/" },
@@ -15,29 +19,27 @@ export function NavBar() {
   ];
 
   return (
-    <nav className="sticky top-0 shadow-xl ring-1 ring-indigo-100/10 bg-gray-950/95 bg-[url('/src/assets/nnnoise.svg')] z-50">
+    <nav className="sticky top-0 shadow-xl ring-1 ring-indigo-100/10 bg-gray-950 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
-            {session
-              ? (
-                  <>
-                    <Link
-                      to="/"
-                      className="text-xl font-bold text-white md:block hidden"
-                    >
-                      Learn Course
-                    </Link>
-                    <div className="md:hidden">
-                      <MenuSwitcher />
-                    </div>
-                  </>
-                )
-              : (
-                  <Link to="/" className="text-xl font-bold text-white">
-                    Learn Course
-                  </Link>
-                )}
+            {session ? (
+              <>
+                <Link
+                  to="/"
+                  className="text-xl text-background dark:text-foreground font-bold md:block hidden"
+                >
+                  Learn Course
+                </Link>
+                <div className="md:hidden">
+                  <MenuSwitcher />
+                </div>
+              </>
+            ) : (
+              <Link to="/" className="text-xl font-bold">
+                Learn Course
+              </Link>
+            )}
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
@@ -51,26 +53,34 @@ export function NavBar() {
               </Link>
             ))}
 
-            {!session
-              ? (
-                  <>
-                    <Link
-                      to="/login"
-                      className="text-zinc-300 hover:text-white transition-colors"
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      to="/register"
-                      className="text-zinc-300 hover:text-white transition-colors"
-                    >
-                      Register
-                    </Link>
-                  </>
-                )
-              : (
-                  <MenuSwitcher />
-                )}
+            {!session ? (
+              <>
+                <Link
+                  to="/login"
+                  className="text-zinc-300 hover:text-white transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="text-zinc-300 hover:text-white transition-colors"
+                >
+                  Register
+                </Link>
+                <ModeToggle />
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/creator/new-course"
+                  className="text-zinc-300 hover:text-white transition-colors"
+                >
+                  Create Course
+                </Link>
+                <MenuSwitcher />
+                <ModeToggle />
+              </>
+            )}
           </div>
 
           <div className="md:hidden flex items-center">
@@ -111,30 +121,41 @@ export function NavBar() {
               </span>
             </Link>
           ))}
-          {!session
-            ? (
-                <>
-                  <Link
-                    to="/login"
-                    className="block px-3 py-2 text-zinc-300 hover:text-white rounded-md text-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <span className="hover:bg-slate-800 hover:p-2 rounded-lg">
-                      Login
-                    </span>
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block px-3 py-2 text-zinc-300 hover:text-white rounded-md text-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <span className="hover:bg-slate-800 hover:p-2 rounded-lg">
-                      Register
-                    </span>
-                  </Link>
-                </>
-              )
-            : null}
+          {!session ? (
+            <>
+              <Link
+                to="/login"
+                className="block px-3 py-2 text-zinc-300 hover:text-white rounded-md text-center"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <span className="hover:bg-slate-800 hover:p-2 rounded-lg">
+                  Login
+                </span>
+              </Link>
+              <Link
+                to="/register"
+                className="block px-3 py-2 text-zinc-300 hover:text-white rounded-md text-center"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <span className="hover:bg-slate-800 hover:p-2 rounded-lg">
+                  Register
+                </span>
+              </Link>
+            </>
+          ) : (
+            <Link
+              to="/create-course"
+              className="block px-3 py-2 text-zinc-300 hover:text-white rounded-md text-center"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <span className="hover:bg-slate-800 hover:p-2 rounded-lg">
+                Create Course
+              </span>
+            </Link>
+          )}
+          <div className="flex justify-center">
+            <ModeToggle />
+          </div>
         </div>
       </div>
     </nav>

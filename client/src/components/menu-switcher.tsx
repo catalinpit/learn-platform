@@ -26,7 +26,6 @@ export function MenuSwitcher() {
           >
             <AvatarWithText
               avatarSrc={session?.user?.image}
-              className="text-foreground"
               avatarFallback={session?.user?.name ?? ""}
               primaryText={session?.user?.name}
             />

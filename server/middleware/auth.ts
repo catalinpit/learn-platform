@@ -1,5 +1,6 @@
 import { cors } from "hono/cors";
 import { createMiddleware } from "hono/factory";
+import { HTTPException } from "hono/http-exception";
 
 import { auth } from "@/lib/auth";
 
@@ -32,4 +33,17 @@ export const authMiddleware = createMiddleware<{
   });
 
   return next();
+});
+
+export const loggedIn = createMiddleware<{
+  Bindings: AppBindings;
+  Variables: AuthType;
+}>(async (c, next) => {
+  const user = c.get("Variables").user;
+
+  if (!user) {
+    throw new HTTPException(401, { message: "Unauthorized" });
+  }
+
+  await next();
 });

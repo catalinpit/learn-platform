@@ -11,7 +11,7 @@ const Avatar = React.forwardRef<
     ref={ref}
     className={cn(
       "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      className,
+      className
     )}
     {...props}
   />
@@ -38,7 +38,7 @@ const AvatarFallback = React.forwardRef<
     ref={ref}
     className={cn(
       "flex h-full w-full items-center justify-center rounded-full bg-muted",
-      className,
+      className
     )}
     {...props}
   />
@@ -70,7 +70,7 @@ function AvatarWithText({
       <Avatar
         className={cn(
           "dark:border-border h-10 w-10 border-2 border-solid border-white",
-          avatarClass,
+          avatarClass
         )}
       >
         {avatarSrc && <AvatarImage src={avatarSrc} />}
@@ -82,11 +82,13 @@ function AvatarWithText({
       <div
         className={cn(
           "flex flex-col truncate text-left text-sm font-normal",
-          textSectionClassName,
+          textSectionClassName
         )}
       >
-        <span className="text-background truncate">{primaryText}</span>
-        <span className="text-muted-background truncate text-xs">
+        <span className="text-background dark:text-foreground truncate">
+          {primaryText}
+        </span>
+        <span className="text-muted-background dark:text-muted-foreground truncate text-xs">
           {secondaryText}
         </span>
       </div>
