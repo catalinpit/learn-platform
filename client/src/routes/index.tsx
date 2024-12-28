@@ -22,6 +22,13 @@ import {
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -29,6 +36,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 500);
 
@@ -36,7 +44,7 @@ function Index() {
     getAllCoursesQueryOptions({
       query: debouncedSearch,
       page,
-      perPage: 4,
+      perPage,
     })
   );
 
@@ -107,32 +115,55 @@ function Index() {
           </Card>
         ))}
       </div>
-      <Pagination className="py-10">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              disabled={page === 1}
-            />
-          </PaginationItem>
-          {Array.from({ length: count ?? 1 }, (_, index) => (
-            <PaginationItem key={index + 1}>
-              <PaginationLink
-                isActive={page === index + 1}
-                onClick={() => setPage(index + 1)}
-              >
-                {index + 1}
-              </PaginationLink>
+      <div className="flex flex-col sm:flex-row items-center justify-between">
+        <Pagination className="pt-10 pb-4 sm:py-10">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                disabled={page === 1}
+              />
             </PaginationItem>
-          ))}
-          <PaginationItem>
-            <PaginationNext
-              onClick={() => setPage((prev) => prev + 1)}
-              disabled={page === (count ?? 1)}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+            {Array.from({ length: count ?? 1 }, (_, index) => (
+              <PaginationItem key={index + 1}>
+                <PaginationLink
+                  isActive={page === index + 1}
+                  onClick={() => setPage(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setPage((prev) => prev + 1)}
+                disabled={page === (count ?? 1)}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+        <div className="flex flex-row items-center gap-4">
+          <span className="whitespace-nowrap text-sm">Courses per page</span>
+
+          <Select
+            value={String(perPage)}
+            onValueChange={(value) => setPerPage(Number(value))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select page size">
+                {String(perPage)}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {[1, 2, 3, 4, 5, 10, 15, 20, 25].map((option) => (
+                <SelectItem key={option} value={String(option)}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
     </div>
   );
 }
