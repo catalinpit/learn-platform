@@ -6,6 +6,7 @@ import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "./mode-toggle";
 import { canCreateCourse } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export function NavBar() {
   const { data: session } = useSession();
@@ -71,12 +72,16 @@ export function NavBar() {
               </>
             ) : (
               <>
-                <Link
-                  to="/creator/new-course"
-                  className="text-zinc-300 hover:text-white transition-colors"
-                >
-                  Create Course
-                </Link>
+                {showCreateCourseButton && (
+                  <Button variant="outline">
+                    <Link
+                      to="/creator/new-course"
+                      className="text-zinc-300 hover:text-white transition-colors"
+                    >
+                      Create Course
+                    </Link>
+                  </Button>
+                )}
                 <MenuSwitcher />
                 <ModeToggle />
               </>
@@ -143,17 +148,23 @@ export function NavBar() {
               </Link>
             </>
           ) : (
-            <Link
-              to="/create-course"
-              className="block px-3 py-2 text-zinc-300 hover:text-white rounded-md text-center"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <span className="hover:bg-slate-800 hover:p-2 rounded-lg">
-                Create Course
-              </span>
-            </Link>
+            showCreateCourseButton && (
+              <div className="text-center">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Link
+                    to="/creator/new-course"
+                    className="text-zinc-300 hover:text-white transition-colors"
+                  >
+                    Create Course
+                  </Link>
+                </Button>
+              </div>
+            )
           )}
-          <div className="flex justify-center">
+          <div className="flex justify-center pt-2">
             <ModeToggle />
           </div>
         </div>
