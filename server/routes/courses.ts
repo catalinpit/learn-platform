@@ -38,17 +38,6 @@ const router = createRouter()
         }),
       ]);
 
-      console.log("\n");
-      console.log("\n");
-      console.log("\n");
-      console.log("\n");
-      console.log({ query, page, perPage });
-      console.log({ courses, count });
-      console.log("\n");
-      console.log("\n");
-      console.log("\n");
-      console.log("\n");
-
       return c.json({
         courses,
         totalPages: Math.ceil(count / perPage),
