@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { getAllCoursesQueryOptions } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -10,19 +10,34 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
 
+export type IndexRouteParams = {
+  search: string;
+  page: number;
+  perPage: number;
+};
+
 export const Route = createFileRoute("/")({
   component: Index,
+  validateSearch: (search: {
+    search?: string;
+    page?: number;
+    perPage?: number;
+  }): IndexRouteParams => {
+    return {
+      search: String(search.search || ""),
+      page: Number(search.page) || 1,
+      perPage: Number(search.perPage) || 10,
+    };
+  },
 });
 
 function Index() {
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-  const [search, setSearch] = useState("");
+  const { page, perPage, search } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
   const debouncedSearch = useDebouncedValue(search, 500);
 
   const { isPending, error, data } = useQuery(
@@ -56,7 +71,11 @@ function Index() {
           placeholder="Search courses..."
           className="mt-4 w-1/3"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            navigate({
+              search: (prev) => ({ ...prev, page: 1, search: e.target.value }),
+            });
+          }}
         />
       </div>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
@@ -101,11 +120,10 @@ function Index() {
         ))}
       </div>
       <PaginationWithPerPage
+        search={search}
         page={page}
         count={count}
         perPage={perPage}
-        setPage={setPage}
-        setPerPage={setPerPage}
       />
     </div>
   );

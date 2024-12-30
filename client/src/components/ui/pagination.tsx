@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, LinkProps, LinkComponentProps } from "@tanstack/react-router";
 
 import { cn } from "@/lib/utils";
 import { ButtonProps, buttonVariants } from "@/components/ui/button";
@@ -38,7 +38,8 @@ PaginationItem.displayName = "PaginationItem";
 type PaginationLinkProps = {
   isActive?: boolean;
 } & Pick<ButtonProps, "size"> &
-  React.ComponentProps<typeof Link>;
+  LinkProps &
+  LinkComponentProps<"a">;
 
 const PaginationLink = ({
   className,

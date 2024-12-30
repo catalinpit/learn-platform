@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import {
   Pagination,
   PaginationContent,
@@ -9,7 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
+import { useNavigate } from "@tanstack/react-router";
 import {
   Select,
   SelectContent,
@@ -17,29 +15,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Route } from "@/routes";
 
 export type PaginationWithPerPageProps = {
+  search: string;
   page: number;
-  setPage: (page: number | ((prev: number) => number)) => void;
   count?: number;
   perPage: number;
-  setPerPage: (perPage: number) => void;
 };
 
 export function PaginationWithPerPage({
+  search,
   page,
-  setPage,
   count,
   perPage,
-  setPerPage,
 }: PaginationWithPerPageProps) {
+  const navigate = useNavigate({ from: Route.fullPath });
+
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between">
       <Pagination className="pt-10 pb-4 sm:py-10">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              search={{
+                search,
+                page: page - 1,
+                perPage,
+              }}
               disabled={page === 1}
             />
           </PaginationItem>
@@ -47,7 +50,11 @@ export function PaginationWithPerPage({
             <PaginationItem key={index + 1}>
               <PaginationLink
                 isActive={page === index + 1}
-                onClick={() => setPage(index + 1)}
+                search={{
+                  search,
+                  page: index + 1,
+                  perPage,
+                }}
               >
                 {index + 1}
               </PaginationLink>
@@ -55,7 +62,11 @@ export function PaginationWithPerPage({
           ))}
           <PaginationItem>
             <PaginationNext
-              onClick={() => setPage((prev) => prev + 1)}
+              search={{
+                search,
+                page: page + 1,
+                perPage,
+              }}
               disabled={page === (count ?? 1)}
             />
           </PaginationItem>
@@ -66,7 +77,15 @@ export function PaginationWithPerPage({
 
         <Select
           value={String(perPage)}
-          onValueChange={(value) => setPerPage(Number(value))}
+          onValueChange={(value) => {
+            navigate({
+              search: {
+                search,
+                page: 1,
+                perPage: Number(value),
+              },
+            });
+          }}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select page size">
