@@ -18,14 +18,12 @@ import {
 import { Route } from "@/routes";
 
 export type PaginationWithPerPageProps = {
-  search: string;
   page: number;
   count?: number;
   perPage: number;
 };
 
 export function PaginationWithPerPage({
-  search,
   page,
   count,
   perPage,
@@ -38,11 +36,10 @@ export function PaginationWithPerPage({
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              search={{
-                search,
+              search={(prev) => ({
+                ...prev,
                 page: page - 1,
-                perPage,
-              }}
+              })}
               disabled={page === 1}
             />
           </PaginationItem>
@@ -50,11 +47,10 @@ export function PaginationWithPerPage({
             <PaginationItem key={index + 1}>
               <PaginationLink
                 isActive={page === index + 1}
-                search={{
-                  search,
+                search={(prev) => ({
+                  ...prev,
                   page: index + 1,
-                  perPage,
-                }}
+                })}
               >
                 {index + 1}
               </PaginationLink>
@@ -62,11 +58,10 @@ export function PaginationWithPerPage({
           ))}
           <PaginationItem>
             <PaginationNext
-              search={{
-                search,
+              search={(prev) => ({
+                ...prev,
                 page: page + 1,
-                perPage,
-              }}
+              })}
               disabled={page === (count ?? 1)}
             />
           </PaginationItem>
@@ -79,11 +74,11 @@ export function PaginationWithPerPage({
           value={String(perPage)}
           onValueChange={(value) => {
             navigate({
-              search: {
-                search,
+              search: (prev) => ({
+                ...prev,
                 page: 1,
                 perPage: Number(value),
-              },
+              }),
             });
           }}
         >

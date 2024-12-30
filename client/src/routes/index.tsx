@@ -1,4 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  stripSearchParams,
+} from "@tanstack/react-router";
 import { getAllCoursesQueryOptions } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -20,6 +24,12 @@ export type IndexRouteParams = {
   perPage: number;
 };
 
+const IndexRouteParamsDefaultValues = {
+  search: "",
+  page: 1,
+  perPage: 10,
+};
+
 export const Route = createFileRoute("/")({
   component: Index,
   validateSearch: (search: {
@@ -32,6 +42,9 @@ export const Route = createFileRoute("/")({
       page: Number(search.page) || 1,
       perPage: Number(search.perPage) || 10,
     };
+  },
+  search: {
+    middlewares: [stripSearchParams(IndexRouteParamsDefaultValues)],
   },
 });
 
@@ -119,12 +132,7 @@ function Index() {
           </Card>
         ))}
       </div>
-      <PaginationWithPerPage
-        search={search}
-        page={page}
-        count={count}
-        perPage={perPage}
-      />
+      <PaginationWithPerPage page={page} count={count} perPage={perPage} />
     </div>
   );
 }
