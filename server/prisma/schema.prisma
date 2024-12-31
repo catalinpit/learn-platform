@@ -45,15 +45,48 @@ model Course {
   videoUrls   String[]
   coverImage  String?
   price       Float
-  isPublished Boolean
+  isPublished Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  owner    User   @relation("CourseOwner", fields: [ownerId], references: [id])
+  owner    User       @relation("CourseOwner", fields: [ownerId], references: [id])
   ownerId  String
-  students User[] @relation("CourseEnrollments")
+  students User[]     @relation("CourseEnrollments")
+  chapters Chapter[]
+  progress Progress[]
 
   @@index([ownerId])
+}
+
+model Chapter {
+  id           String     @id @default(uuid())
+  title        String
+  descriptiont String
+  courseId     String
+  course       Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  isPublished  Boolean    @default(false)
+  isFree       Boolean    @default(false)
+  progress     Progress[]
+
+  @@index([courseId])
+}
+
+model Progress {
+  id        String   @id @default(uuid())
+  userId    String
+  chapterId String
+  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, chapterId])
+  @@unique([userId, courseId])
+  @@index([userId])
 }
 
 model Session {

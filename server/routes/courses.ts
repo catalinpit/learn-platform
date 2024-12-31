@@ -25,6 +25,9 @@ const router = createRouter()
               mode: "insensitive",
             },
           },
+          include: {
+            chapters: true,
+          },
           skip: (Number(page) - 1) * Number(perPage),
           take: Number(perPage),
         }),
@@ -58,6 +61,9 @@ const router = createRouter()
       const course = await db.course.findUnique({
         where: {
           id: String(id),
+        },
+        include: {
+          chapters: true,
         },
       });
 
