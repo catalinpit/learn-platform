@@ -62,7 +62,10 @@ export const getCourseByIdQueryOptions = (id: string) =>
 
 export const createCourse = async (data: TCreateCourseType) => {
   const res = await client.creator.courses.$post({
-    json: data,
+    json: {
+      ...data,
+      tags: data.tags.map((tag) => tag.trim()).join(","),
+    },
   });
 
   if (!res.ok) {

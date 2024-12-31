@@ -40,12 +40,11 @@ model Course {
   id          String   @id @default(uuid())
   title       String
   description String
-  tags        String[]
   content     String
-  videoUrls   String[]
+  tags        String[]
   coverImage  String?
-  price       Float
-  isPublished Boolean @default(false)
+  price       Float    @default(10)
+  isPublished Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

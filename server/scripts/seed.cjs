@@ -15,10 +15,6 @@ const users = [
           tags: ["web", "frontend", "beginner"],
           content:
             "# Welcome to Web Development\n\nIn this course, you'll learn the fundamentals of web development...",
-          videoUrls: [
-            "https://example.com/intro-web-dev-1",
-            "https://example.com/intro-web-dev-2",
-          ],
           coverImage: "https://example.com/covers/web-dev-101.jpg",
           price: 59.99,
           isPublished: true,
@@ -29,10 +25,6 @@ const users = [
           tags: ["database", "sql", "backend"],
           content:
             "# Database Design\n\nUnderstanding database architecture is crucial...",
-          videoUrls: [
-            "https://example.com/db-design-1",
-            "https://example.com/db-design-2",
-          ],
           coverImage: "https://example.com/covers/database-101.jpg",
           price: 59.99,
           isPublished: true,
@@ -52,10 +44,6 @@ const users = [
           tags: ["react", "frontend", "advanced"],
           content:
             "# Advanced React\n\nLearn about advanced patterns like render props...",
-          videoUrls: [
-            "https://example.com/advanced-react-1",
-            "https://example.com/advanced-react-2",
-          ],
           coverImage: "https://example.com/covers/react-advanced.jpg",
           price: 79.99,
           isPublished: true,
@@ -66,10 +54,6 @@ const users = [
           tags: ["typescript", "javascript", "advanced"],
           content:
             "# TypeScript Deep Dive\n\nUnderstanding TypeScript's type system...",
-          videoUrls: [
-            "https://example.com/typescript-1",
-            "https://example.com/typescript-2",
-          ],
           coverImage: "https://example.com/covers/typescript.jpg",
           price: 79.99,
           isPublished: true,
@@ -89,10 +73,6 @@ const users = [
           tags: ["devops", "ci-cd", "automation"],
           content:
             "# DevOps Essentials\n\nUnderstanding the DevOps lifecycle...",
-          videoUrls: [
-            "https://example.com/devops-1",
-            "https://example.com/devops-2",
-          ],
           coverImage: "https://example.com/covers/devops.jpg",
           price: 69.99,
           isPublished: true,
@@ -111,10 +91,6 @@ const users = [
           description: "Create better user experiences with design thinking",
           tags: ["design", "ui-ux", "user-experience"],
           content: "# UI/UX Design\n\nUnderstanding user-centered design...",
-          videoUrls: [
-            "https://example.com/ui-ux-1",
-            "https://example.com/ui-ux-2",
-          ],
           coverImage: "https://example.com/covers/ui-ux.jpg",
           price: 69.99,
           isPublished: true,
@@ -133,7 +109,6 @@ const users = [
           description: "Introduction to ML concepts and applications",
           tags: ["ml", "ai", "python"],
           content: "# Machine Learning\n\nUnderstanding the basics of ML...",
-          videoUrls: ["https://example.com/ml-1", "https://example.com/ml-2"],
           coverImage: "https://example.com/covers/ml.jpg",
           price: 79.99,
           isPublished: true,
