@@ -40,7 +40,6 @@ model Course {
   id          String   @id @default(uuid())
   title       String
   description String
-  content     String
   tags        String[]
   coverImage  String?
   price       Float    @default(10)

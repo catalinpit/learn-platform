@@ -52,7 +52,6 @@ export const ZCreateCourseSchema = z.object({
       .map((tag) => tag.trim())
       .filter(Boolean)
   ),
-  content: z.string().min(1, "Content is required"),
   coverImage: z.string().url("Invalid image URL").optional(),
   price: z.number().min(0, "Price must be non-negative"),
   isPublished: z.boolean().default(false),

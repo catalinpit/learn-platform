@@ -29,7 +29,6 @@ function RouteComponent() {
     defaultValues: {
       title: "",
       description: "",
-      content: "",
       tags: [],
       price: 0,
       coverImage: "",
@@ -101,23 +100,6 @@ function RouteComponent() {
                     </FormDescription>
                     <FormControl>
                       <Input placeholder="Course description..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Content</FormLabel>
-                    <FormDescription>
-                      Detailed course content or syllabus
-                    </FormDescription>
-                    <FormControl>
-                      <Input placeholder="Course content..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

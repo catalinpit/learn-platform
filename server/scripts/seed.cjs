@@ -13,8 +13,6 @@ const users = [
           title: "Introduction to Web Development",
           description: "Learn the basics of HTML, CSS, and JavaScript",
           tags: ["web", "frontend", "beginner"],
-          content:
-            "# Welcome to Web Development\n\nIn this course, you'll learn the fundamentals of web development...",
           coverImage: "https://example.com/covers/web-dev-101.jpg",
           price: 59.99,
           isPublished: true,
@@ -23,8 +21,6 @@ const users = [
           title: "Database Design Fundamentals",
           description: "Master the basics of database design and SQL",
           tags: ["database", "sql", "backend"],
-          content:
-            "# Database Design\n\nUnderstanding database architecture is crucial...",
           coverImage: "https://example.com/covers/database-101.jpg",
           price: 59.99,
           isPublished: true,
@@ -42,8 +38,6 @@ const users = [
           title: "Advanced React Patterns",
           description: "Master advanced React concepts and patterns",
           tags: ["react", "frontend", "advanced"],
-          content:
-            "# Advanced React\n\nLearn about advanced patterns like render props...",
           coverImage: "https://example.com/covers/react-advanced.jpg",
           price: 79.99,
           isPublished: true,
@@ -52,8 +46,6 @@ const users = [
           title: "TypeScript Deep Dive",
           description: "Everything you need to know about TypeScript",
           tags: ["typescript", "javascript", "advanced"],
-          content:
-            "# TypeScript Deep Dive\n\nUnderstanding TypeScript's type system...",
           coverImage: "https://example.com/covers/typescript.jpg",
           price: 79.99,
           isPublished: true,
@@ -71,8 +63,6 @@ const users = [
           title: "DevOps Essentials",
           description: "Learn the fundamentals of DevOps practices",
           tags: ["devops", "ci-cd", "automation"],
-          content:
-            "# DevOps Essentials\n\nUnderstanding the DevOps lifecycle...",
           coverImage: "https://example.com/covers/devops.jpg",
           price: 69.99,
           isPublished: true,
@@ -90,7 +80,6 @@ const users = [
           title: "UI/UX Design Principles",
           description: "Create better user experiences with design thinking",
           tags: ["design", "ui-ux", "user-experience"],
-          content: "# UI/UX Design\n\nUnderstanding user-centered design...",
           coverImage: "https://example.com/covers/ui-ux.jpg",
           price: 69.99,
           isPublished: true,
@@ -108,7 +97,6 @@ const users = [
           title: "Machine Learning Basics",
           description: "Introduction to ML concepts and applications",
           tags: ["ml", "ai", "python"],
-          content: "# Machine Learning\n\nUnderstanding the basics of ML...",
           coverImage: "https://example.com/covers/ml.jpg",
           price: 79.99,
           isPublished: true,
