@@ -23,6 +23,7 @@ const router = createRouter().post(
       const course = await db.course.create({
         data: {
           ...courseData,
+          isPublished: false,
           ownerId: courseCreator.id,
         },
       });

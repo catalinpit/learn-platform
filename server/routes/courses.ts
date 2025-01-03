@@ -24,6 +24,7 @@ const router = createRouter()
               contains: query,
               mode: "insensitive",
             },
+            isPublished: true,
           },
           include: {
             chapters: true,
