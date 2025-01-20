@@ -42,6 +42,7 @@ function CoursePage() {
         <CardTitle>{course.title}</CardTitle>
         <CardDescription>
           <div className="prose">
+            // TODO: fix this asap
             <div dangerouslySetInnerHTML={{ __html: course.description }} />
           </div>
         </CardDescription>
