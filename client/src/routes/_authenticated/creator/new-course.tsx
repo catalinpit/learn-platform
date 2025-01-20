@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import type { TCreateCourseType } from "@server/shared/types";
 import { ZCreateCourseSchema } from "@server/shared/types";
 import { createCourse } from "@/lib/api";
+import Tiptap from "@/components/tip-tap";
 
 export const Route = createFileRoute("/_authenticated/creator/new-course")({
   component: RouteComponent,
@@ -63,6 +64,10 @@ function RouteComponent() {
     }
   };
 
+  const tt = form.watch("description");
+
+  console.log({ tt });
+
   return (
     <div>
       <h2 className="text-2xl font-medium text-center">New Course Creation</h2>
@@ -99,7 +104,10 @@ function RouteComponent() {
                       Describe what students will learn
                     </FormDescription>
                     <FormControl>
-                      <Input placeholder="Course description..." {...field} />
+                      <Tiptap
+                        onChange={field.onChange}
+                        initialValue={field.value}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
