@@ -31,41 +31,48 @@ function CoursePage() {
   }
 
   return (
-    <Card className="max-w-3xl mx-auto my-8">
-      <img
-        src={course.coverImage || undefined}
-        alt={course.title}
-        className="w-full object-cover h-64 rounded-t-xl"
-      />
-
-      <CardHeader>
-        <CardTitle>{course.title}</CardTitle>
-        <CardDescription>
-          <div className="prose">
-            // TODO: fix this asap
-            <div dangerouslySetInnerHTML={{ __html: course.description }} />
-          </div>
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent>
-        <div className="flex flex-wrap gap-2">
-          {course.tags.map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-1 bg-neutral-100 rounded-full text-sm dark:bg-neutral-800"
-            >
-              {tag}
-            </span>
-          ))}
+    <>
+      {!course.isPublished ? (
+        <div className="bg-yellow-100 text-yellow-800 p-4 mb-4 mx-auto w-1/2 rounded-lg">
+          This course is not published yet. Only you can see it.
         </div>
-      </CardContent>
+      ) : null}
+      <Card className="max-w-3xl mx-auto my-8">
+        <img
+          src={course.coverImage || undefined}
+          alt={course.title}
+          className="w-full object-cover h-64 rounded-t-xl"
+        />
 
-      <CardFooter>
-        <p className="font-semibold">
-          {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
-        </p>
-      </CardFooter>
-    </Card>
+        <CardHeader>
+          <CardTitle>{course.title}</CardTitle>
+          <CardDescription>
+            <div className="prose">
+              {/* TODO: fix this asap */}
+              <div dangerouslySetInnerHTML={{ __html: course.description }} />
+            </div>
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {course.tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-1 bg-neutral-100 rounded-full text-sm dark:bg-neutral-800"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </CardContent>
+
+        <CardFooter>
+          <p className="font-semibold">
+            {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
+          </p>
+        </CardFooter>
+      </Card>
+    </>
   );
 }
