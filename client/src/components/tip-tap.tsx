@@ -1,12 +1,20 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { all, createLowlight } from "lowlight";
+
 import ToolBar from "./tool-bar";
+
+const lowlight = createLowlight(all);
 
 const extensions = [
   StarterKit.configure({
     heading: {
       levels: [1, 2, 3, 4],
     },
+  }),
+  CodeBlockLowlight.configure({
+    lowlight,
   }),
 ];
 

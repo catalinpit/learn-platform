@@ -74,10 +74,7 @@ export function NavBar() {
               <>
                 {showCreateCourseButton && (
                   <Button variant="outline">
-                    <Link
-                      to="/creator/new-course"
-                      className="text-zinc-300 hover:text-white transition-colors"
-                    >
+                    <Link to="/creator/new-course" className="text-foreground">
                       Create Course
                     </Link>
                   </Button>
@@ -154,10 +151,7 @@ export function NavBar() {
                   variant="outline"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <Link
-                    to="/creator/new-course"
-                    className="text-zinc-300 hover:text-white transition-colors"
-                  >
+                  <Link to="/creator/new-course" className="text-foreground">
                     Create Course
                   </Link>
                 </Button>

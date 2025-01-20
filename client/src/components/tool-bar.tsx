@@ -10,6 +10,7 @@ import {
   List,
   ListOrdered,
   StrikethroughIcon,
+  Code,
 } from "lucide-react";
 
 type ToolBarProps = {
@@ -93,6 +94,13 @@ function ToolBar({ editor }: ToolBarProps) {
         onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
       >
         <ListOrdered className="h-4 w-4" />
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("codeBlock")}
+        onPressedChange={() => editor.chain().focus().toggleCodeBlock().run()}
+      >
+        <Code className="h-4 w-4" />
       </Toggle>
     </div>
   );
