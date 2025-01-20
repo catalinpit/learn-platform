@@ -39,7 +39,7 @@ const Tiptap = ({ initialValue, onChange }: TiptapProps) => {
   });
 
   return (
-    <div className="flex flex-col justify-stretch min-h-[250px]">
+    <div className="flex flex-col justify-stretch">
       <ToolBar editor={editor} />
       <EditorContent editor={editor} />
     </div>
