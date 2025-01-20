@@ -40,7 +40,11 @@ function CoursePage() {
 
       <CardHeader>
         <CardTitle>{course.title}</CardTitle>
-        <CardDescription>{course.description}</CardDescription>
+        <CardDescription>
+          <div className="prose">
+            <div dangerouslySetInnerHTML={{ __html: course.description }} />
+          </div>
+        </CardDescription>
       </CardHeader>
 
       <CardContent>
