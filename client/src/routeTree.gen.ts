@@ -19,7 +19,11 @@ import { Route as AuthenticatedImport } from "./routes/_authenticated";
 import { Route as IndexImport } from "./routes/index";
 import { Route as CoursesCourseIdImport } from "./routes/courses/$courseId";
 import { Route as AuthenticatedSettingsIndexImport } from "./routes/_authenticated/settings/index";
+import { Route as AuthenticatedStudentCoursesImport } from "./routes/_authenticated/student/courses";
 import { Route as AuthenticatedCreatorNewCourseImport } from "./routes/_authenticated/creator/new-course";
+import { Route as AuthenticatedCreatorDashboardImport } from "./routes/_authenticated/creator/dashboard";
+import { Route as AuthenticatedCreatorCoursesImport } from "./routes/_authenticated/creator/courses";
+import { Route as AuthenticatedCreatorCourseIdEditImport } from "./routes/_authenticated/creator/$courseId.edit";
 
 // Create/Update Routes
 
@@ -72,10 +76,38 @@ const AuthenticatedSettingsIndexRoute = AuthenticatedSettingsIndexImport.update(
   } as any
 );
 
+const AuthenticatedStudentCoursesRoute =
+  AuthenticatedStudentCoursesImport.update({
+    id: "/student/courses",
+    path: "/student/courses",
+    getParentRoute: () => AuthenticatedRoute,
+  } as any);
+
 const AuthenticatedCreatorNewCourseRoute =
   AuthenticatedCreatorNewCourseImport.update({
     id: "/creator/new-course",
     path: "/creator/new-course",
+    getParentRoute: () => AuthenticatedRoute,
+  } as any);
+
+const AuthenticatedCreatorDashboardRoute =
+  AuthenticatedCreatorDashboardImport.update({
+    id: "/creator/dashboard",
+    path: "/creator/dashboard",
+    getParentRoute: () => AuthenticatedRoute,
+  } as any);
+
+const AuthenticatedCreatorCoursesRoute =
+  AuthenticatedCreatorCoursesImport.update({
+    id: "/creator/courses",
+    path: "/creator/courses",
+    getParentRoute: () => AuthenticatedRoute,
+  } as any);
+
+const AuthenticatedCreatorCourseIdEditRoute =
+  AuthenticatedCreatorCourseIdEditImport.update({
+    id: "/creator/$courseId/edit",
+    path: "/creator/$courseId/edit",
     getParentRoute: () => AuthenticatedRoute,
   } as any);
 
@@ -132,11 +164,32 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof CoursesCourseIdImport;
       parentRoute: typeof rootRoute;
     };
+    "/_authenticated/creator/courses": {
+      id: "/_authenticated/creator/courses";
+      path: "/creator/courses";
+      fullPath: "/creator/courses";
+      preLoaderRoute: typeof AuthenticatedCreatorCoursesImport;
+      parentRoute: typeof AuthenticatedImport;
+    };
+    "/_authenticated/creator/dashboard": {
+      id: "/_authenticated/creator/dashboard";
+      path: "/creator/dashboard";
+      fullPath: "/creator/dashboard";
+      preLoaderRoute: typeof AuthenticatedCreatorDashboardImport;
+      parentRoute: typeof AuthenticatedImport;
+    };
     "/_authenticated/creator/new-course": {
       id: "/_authenticated/creator/new-course";
       path: "/creator/new-course";
       fullPath: "/creator/new-course";
       preLoaderRoute: typeof AuthenticatedCreatorNewCourseImport;
+      parentRoute: typeof AuthenticatedImport;
+    };
+    "/_authenticated/student/courses": {
+      id: "/_authenticated/student/courses";
+      path: "/student/courses";
+      fullPath: "/student/courses";
+      preLoaderRoute: typeof AuthenticatedStudentCoursesImport;
       parentRoute: typeof AuthenticatedImport;
     };
     "/_authenticated/settings/": {
@@ -146,19 +199,34 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AuthenticatedSettingsIndexImport;
       parentRoute: typeof AuthenticatedImport;
     };
+    "/_authenticated/creator/$courseId/edit": {
+      id: "/_authenticated/creator/$courseId/edit";
+      path: "/creator/$courseId/edit";
+      fullPath: "/creator/$courseId/edit";
+      preLoaderRoute: typeof AuthenticatedCreatorCourseIdEditImport;
+      parentRoute: typeof AuthenticatedImport;
+    };
   }
 }
 
 // Create and export the route tree
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedCreatorCoursesRoute: typeof AuthenticatedCreatorCoursesRoute;
+  AuthenticatedCreatorDashboardRoute: typeof AuthenticatedCreatorDashboardRoute;
   AuthenticatedCreatorNewCourseRoute: typeof AuthenticatedCreatorNewCourseRoute;
+  AuthenticatedStudentCoursesRoute: typeof AuthenticatedStudentCoursesRoute;
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute;
+  AuthenticatedCreatorCourseIdEditRoute: typeof AuthenticatedCreatorCourseIdEditRoute;
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCreatorCoursesRoute: AuthenticatedCreatorCoursesRoute,
+  AuthenticatedCreatorDashboardRoute: AuthenticatedCreatorDashboardRoute,
   AuthenticatedCreatorNewCourseRoute: AuthenticatedCreatorNewCourseRoute,
+  AuthenticatedStudentCoursesRoute: AuthenticatedStudentCoursesRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
+  AuthenticatedCreatorCourseIdEditRoute: AuthenticatedCreatorCourseIdEditRoute,
 };
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -173,8 +241,12 @@ export interface FileRoutesByFullPath {
   "/register": typeof RegisterRoute;
   "/signout": typeof SignoutRoute;
   "/courses/$courseId": typeof CoursesCourseIdRoute;
+  "/creator/courses": typeof AuthenticatedCreatorCoursesRoute;
+  "/creator/dashboard": typeof AuthenticatedCreatorDashboardRoute;
   "/creator/new-course": typeof AuthenticatedCreatorNewCourseRoute;
+  "/student/courses": typeof AuthenticatedStudentCoursesRoute;
   "/settings": typeof AuthenticatedSettingsIndexRoute;
+  "/creator/$courseId/edit": typeof AuthenticatedCreatorCourseIdEditRoute;
 }
 
 export interface FileRoutesByTo {
@@ -185,8 +257,12 @@ export interface FileRoutesByTo {
   "/register": typeof RegisterRoute;
   "/signout": typeof SignoutRoute;
   "/courses/$courseId": typeof CoursesCourseIdRoute;
+  "/creator/courses": typeof AuthenticatedCreatorCoursesRoute;
+  "/creator/dashboard": typeof AuthenticatedCreatorDashboardRoute;
   "/creator/new-course": typeof AuthenticatedCreatorNewCourseRoute;
+  "/student/courses": typeof AuthenticatedStudentCoursesRoute;
   "/settings": typeof AuthenticatedSettingsIndexRoute;
+  "/creator/$courseId/edit": typeof AuthenticatedCreatorCourseIdEditRoute;
 }
 
 export interface FileRoutesById {
@@ -198,8 +274,12 @@ export interface FileRoutesById {
   "/register": typeof RegisterRoute;
   "/signout": typeof SignoutRoute;
   "/courses/$courseId": typeof CoursesCourseIdRoute;
+  "/_authenticated/creator/courses": typeof AuthenticatedCreatorCoursesRoute;
+  "/_authenticated/creator/dashboard": typeof AuthenticatedCreatorDashboardRoute;
   "/_authenticated/creator/new-course": typeof AuthenticatedCreatorNewCourseRoute;
+  "/_authenticated/student/courses": typeof AuthenticatedStudentCoursesRoute;
   "/_authenticated/settings/": typeof AuthenticatedSettingsIndexRoute;
+  "/_authenticated/creator/$courseId/edit": typeof AuthenticatedCreatorCourseIdEditRoute;
 }
 
 export interface FileRouteTypes {
@@ -212,8 +292,12 @@ export interface FileRouteTypes {
     | "/register"
     | "/signout"
     | "/courses/$courseId"
+    | "/creator/courses"
+    | "/creator/dashboard"
     | "/creator/new-course"
-    | "/settings";
+    | "/student/courses"
+    | "/settings"
+    | "/creator/$courseId/edit";
   fileRoutesByTo: FileRoutesByTo;
   to:
     | "/"
@@ -223,8 +307,12 @@ export interface FileRouteTypes {
     | "/register"
     | "/signout"
     | "/courses/$courseId"
+    | "/creator/courses"
+    | "/creator/dashboard"
     | "/creator/new-course"
-    | "/settings";
+    | "/student/courses"
+    | "/settings"
+    | "/creator/$courseId/edit";
   id:
     | "__root__"
     | "/"
@@ -234,8 +322,12 @@ export interface FileRouteTypes {
     | "/register"
     | "/signout"
     | "/courses/$courseId"
+    | "/_authenticated/creator/courses"
+    | "/_authenticated/creator/dashboard"
     | "/_authenticated/creator/new-course"
-    | "/_authenticated/settings/";
+    | "/_authenticated/student/courses"
+    | "/_authenticated/settings/"
+    | "/_authenticated/creator/$courseId/edit";
   fileRoutesById: FileRoutesById;
 }
 
@@ -284,8 +376,12 @@ export const routeTree = rootRoute
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
+        "/_authenticated/creator/courses",
+        "/_authenticated/creator/dashboard",
         "/_authenticated/creator/new-course",
-        "/_authenticated/settings/"
+        "/_authenticated/student/courses",
+        "/_authenticated/settings/",
+        "/_authenticated/creator/$courseId/edit"
       ]
     },
     "/about": {
@@ -303,12 +399,28 @@ export const routeTree = rootRoute
     "/courses/$courseId": {
       "filePath": "courses/$courseId.tsx"
     },
+    "/_authenticated/creator/courses": {
+      "filePath": "_authenticated/creator/courses.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/creator/dashboard": {
+      "filePath": "_authenticated/creator/dashboard.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/creator/new-course": {
       "filePath": "_authenticated/creator/new-course.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/student/courses": {
+      "filePath": "_authenticated/student/courses.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/settings/": {
       "filePath": "_authenticated/settings/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/creator/$courseId/edit": {
+      "filePath": "_authenticated/creator/$courseId.edit.tsx",
       "parent": "/_authenticated"
     }
   }

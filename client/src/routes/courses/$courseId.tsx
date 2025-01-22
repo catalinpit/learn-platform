@@ -9,18 +9,12 @@ import {
 } from "@/components/ui/card";
 import { getCourseByIdQueryOptions } from "@/lib/api";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/courses/$courseId")({
-  component: CoursePage,
-  loader: async ({ params, context }) => {
-    return await context.queryClient.ensureQueryData(
-      getCourseByIdQueryOptions(params.courseId)
-    );
-  },
-});
-
-function CoursePage() {
+export function CoursePage() {
   const { courseId } = Route.useParams();
+  const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
   const { data: course } = useSuspenseQuery(
     getCourseByIdQueryOptions(courseId)
@@ -30,14 +24,17 @@ function CoursePage() {
     return <div>Error: {course.message}</div>;
   }
 
+  const handleLessonClick = (lessonId: string, isFree: boolean) => {
+    if (!isFree) {
+      return;
+    }
+
+    setExpandedLessonId(expandedLessonId === lessonId ? null : lessonId);
+  };
+
   return (
     <>
-      {!course.isPublished ? (
-        <div className="bg-yellow-100 text-yellow-800 p-4 mb-4 mx-auto w-1/2 rounded-lg">
-          This course is not published yet. Only you can see it.
-        </div>
-      ) : null}
-      <Card className="max-w-3xl mx-auto my-8">
+      <Card className="mx-8 my-8">
         <img
           src={course.coverImage || undefined}
           alt={course.title}
@@ -45,10 +42,11 @@ function CoursePage() {
         />
 
         <CardHeader>
-          <CardTitle>{course.title}</CardTitle>
+          <CardTitle className="text-5xl py-4 font-base">
+            {course.title}
+          </CardTitle>
           <CardDescription>
-            <div className="prose">
-              {/* TODO: fix this asap */}
+            <div className="prose dark:prose-headings:text-white dark:text-white">
               <div dangerouslySetInnerHTML={{ __html: course.description }} />
             </div>
           </CardDescription>
@@ -73,6 +71,66 @@ function CoursePage() {
           </p>
         </CardFooter>
       </Card>
+
+      <div className="my-8 mx-8 space-y-6">
+        {course.chapters.map((chapter) => (
+          <Card key={chapter.id}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                {chapter.title}
+                {chapter.isFree && (
+                  <span className="text-sm bg-green-500 text-white px-2 py-1 rounded">
+                    Free
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {chapter.lessons.map((lesson) => (
+                  <div
+                    key={lesson.id}
+                    onClick={() => handleLessonClick(lesson.id, lesson.isFree)}
+                    className={cn(
+                      "flex flex-col p-4 rounded-lg border bg-card transition-colors",
+                      lesson.isFree
+                        ? "cursor-pointer hover:bg-accent"
+                        : "cursor-not-allowed opacity-75"
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium">{lesson.title}</span>
+                        {lesson.isFree && (
+                          <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">
+                            Free
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {lesson.isFree && expandedLessonId === lesson.id && (
+                      <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                        <div
+                          dangerouslySetInnerHTML={{ __html: lesson.content }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </>
   );
 }
+
+export const Route = createFileRoute("/courses/$courseId")({
+  component: CoursePage,
+  loader: async ({ params, context }) => {
+    return await context.queryClient.ensureQueryData(
+      getCourseByIdQueryOptions(params.courseId)
+    );
+  },
+});

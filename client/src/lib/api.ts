@@ -1,7 +1,11 @@
 import { hc } from "hono/client";
 import type { AppType } from "@server/shared/types";
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
-import { TCreateCourseType, TGetAllCoursesType } from "@server/shared/types";
+import {
+  TCreateChapterType,
+  TCreateCourseType,
+  TGetAllCoursesType,
+} from "@server/shared/types";
 
 const client = hc<AppType>("/api");
 
@@ -74,4 +78,22 @@ export const createCourse = async (data: TCreateCourseType) => {
 
   const course = await res.json();
   return course;
+};
+
+export const createCourseChapter = async (courseId: string, data: TCreateChapterType) => {
+  const res = await client.creator.courses[":courseId"].chapters.$post({
+    param: {
+      id: courseId,
+    },
+    json: {
+      ...data,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to create chapter");
+  }
+
+  const chapter = await res.json();
+  return chapter;
 };

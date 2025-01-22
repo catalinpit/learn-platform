@@ -26,9 +26,6 @@ const router = createRouter()
             },
             isPublished: true,
           },
-          include: {
-            chapters: true,
-          },
           skip: (Number(page) - 1) * Number(perPage),
           take: Number(perPage),
         }),
@@ -64,7 +61,11 @@ const router = createRouter()
           id: String(id),
         },
         include: {
-          chapters: true,
+          chapters: {
+            include: {
+              lessons: true,
+            },
+          },
         },
       });
 

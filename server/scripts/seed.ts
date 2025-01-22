@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -120,6 +120,32 @@ async function seed() {
       },
     });
     createdUsers.push(created);
+  }
+
+  for (const user of createdUsers) {
+    for (const course of user.ownedCourses) {
+      const numChapters = Math.floor(Math.random() * 3) + 3;
+      for (let i = 0; i < numChapters; i++) {
+        await prisma.chapter.create({
+          data: {
+            title: `Chapter ${i + 1}`,
+            description: `Description for Chapter ${i + 1}`,
+            courseId: course.id,
+            isPublished: true,
+            isFree: i === 0,
+            lessons: {
+              create: Array.from({ length: 3 }, (_, j) => ({
+                title: `Lesson ${j + 1}`,
+                content: `Content for Lesson ${j + 1} of Chapter ${i + 1}`,
+                position: j + 1,
+                isPublished: true,
+                isFree: i === 0,
+              })),
+            },
+          },
+        });
+      }
+    }
   }
 
   // Create some course enrollments

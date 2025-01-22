@@ -57,4 +57,12 @@ export const ZCreateCourseSchema = z.object({
   isPublished: z.boolean().default(false),
 });
 
+export const ZCreateChapterSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  isPublished: z.boolean().default(false),
+  isFree: z.boolean().default(false)
+});
+
 export type TCreateCourseType = z.infer<typeof ZCreateCourseSchema>;
+export type TCreateChapterType = z.infer<typeof ZCreateChapterSchema>;

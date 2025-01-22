@@ -57,16 +57,12 @@ function RouteComponent() {
     try {
       const course = await createCourse(values);
 
-      navigate({ to: "/courses/$courseId", params: { courseId: course.id } });
+      navigate({ to: "/creator/$courseId", params: { courseId: course.id } });
     } catch (error) {
       console.error(error);
       throw new Error("Failed to create course");
     }
   };
-
-  const tt = form.watch("description");
-
-  console.log({ tt });
 
   return (
     <div>
