@@ -26,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
 
 function RouteComponent() {
   const { courseId } = Route.useParams();
+  const { queryClient } = Route.useRouteContext();
   const [showChapterForm, setShowChapterForm] = useState(false);
   const [showLessonForm, setShowLessonForm] = useState(false);
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
@@ -37,6 +38,11 @@ function RouteComponent() {
   const mutation = useMutation({
     mutationFn: (values: TCreateChapterType) => {
       return createCourseChapter(courseId, values);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getCourseByIdQueryOptions(courseId).queryKey,
+      });
     },
   });
 
@@ -106,8 +112,8 @@ function RouteComponent() {
         </CardContent>
       </Card>
 
-      <div className="mx-8 space-y-4">
-        <div className="flex gap-4">
+      <div className="mx-8">
+        <div className="flex gap-4 mb-8">
           <Button
             onClick={() => {
               setShowChapterForm(true);
@@ -129,7 +135,7 @@ function RouteComponent() {
         {showChapterForm && <ChapterForm onSubmit={handleChapterSubmit} />}
         {showLessonForm && <LessonForm onSubmit={handleLessonSubmit} />}
 
-        <div className="space-y-6">
+        <div className="my-8 space-y-6">
           {course.chapters.map((chapter) => (
             <Card key={chapter.id}>
               <CardHeader>
