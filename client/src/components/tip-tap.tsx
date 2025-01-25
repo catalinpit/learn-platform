@@ -12,6 +12,7 @@ const extensions = [
     heading: {
       levels: [1, 2, 3, 4],
     },
+    codeBlock: false,
   }),
   CodeBlockLowlight.configure({
     lowlight,

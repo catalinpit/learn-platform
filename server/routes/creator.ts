@@ -43,7 +43,7 @@ const router = createRouter()
     }
   )
   .post(
-    "/creator/courses/:courseId/chapters",
+    "/creator/courses/:id/chapters",
     loggedIn,
     zValidator("param", ZGetCourseByIdSchema, (result, c) => {
       if (!result.success) {

@@ -1,5 +1,5 @@
-import { getCourseByIdQueryOptions } from "@/lib/api";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { getCourseByIdQueryOptions, createCourseChapter } from "@/lib/api";
+import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Card,
@@ -8,6 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ChapterForm } from "@/components/chapter-form";
+import { LessonForm } from "@/components/lesson-form";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { TCreateChapterType, TCreateLessonType } from "@server/shared/types";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
   component: RouteComponent,
@@ -20,14 +26,45 @@ export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
 
 function RouteComponent() {
   const { courseId } = Route.useParams();
+  const [showChapterForm, setShowChapterForm] = useState(false);
+  const [showLessonForm, setShowLessonForm] = useState(false);
+  const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
   const { data: course } = useSuspenseQuery(
     getCourseByIdQueryOptions(courseId)
   );
 
+  const mutation = useMutation({
+    mutationFn: (values: TCreateChapterType) => {
+      return createCourseChapter(courseId, values);
+    },
+  });
+
   if ("message" in course) {
     return <div>Error: {course.message}</div>;
   }
+
+  const handleChapterSubmit = (values: TCreateChapterType) => {
+    try {
+      mutation.mutate(values);
+      setShowChapterForm(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleLessonSubmit = (values: TCreateLessonType) => {
+    setShowLessonForm(false);
+    console.log({ values });
+  };
+
+  const handleLessonClick = (lessonId: string, isFree: boolean) => {
+    if (!isFree) {
+      return;
+    }
+
+    setExpandedLessonId(expandedLessonId === lessonId ? null : lessonId);
+  };
 
   return (
     <>
@@ -68,6 +105,111 @@ function RouteComponent() {
           </div>
         </CardContent>
       </Card>
+
+      <div className="mx-8 space-y-4">
+        <div className="flex gap-4">
+          <Button
+            onClick={() => {
+              setShowChapterForm(true);
+              setShowLessonForm(false);
+            }}
+          >
+            Add Chapter
+          </Button>
+          <Button
+            onClick={() => {
+              setShowLessonForm(true);
+              setShowChapterForm(false);
+            }}
+          >
+            Add Lesson
+          </Button>
+        </div>
+
+        {showChapterForm && <ChapterForm onSubmit={handleChapterSubmit} />}
+        {showLessonForm && <LessonForm onSubmit={handleLessonSubmit} />}
+
+        <div className="space-y-6">
+          {course.chapters.map((chapter) => (
+            <Card key={chapter.id}>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {chapter.title}
+                    {chapter.isFree && (
+                      <span className="text-sm bg-green-500 text-white px-2 py-1 rounded">
+                        Free
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                      Edit
+                    </Button>
+                    <Button variant="destructive" size="sm">
+                      Delete
+                    </Button>
+                  </div>
+                </CardTitle>
+                <CardDescription>
+                  <div className="prose dark:prose-headings:text-white dark:text-white">
+                    <div
+                      dangerouslySetInnerHTML={{ __html: chapter.description }}
+                    />
+                  </div>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {chapter.lessons.map((lesson) => (
+                    <div
+                      key={lesson.id}
+                      onClick={() =>
+                        handleLessonClick(lesson.id, lesson.isFree)
+                      }
+                      className={cn(
+                        "flex flex-col p-4 rounded-lg border bg-card transition-colors",
+                        lesson.isFree
+                          ? "cursor-pointer hover:bg-accent"
+                          : "cursor-not-allowed opacity-75"
+                      )}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="font-medium">{lesson.title}</span>
+                          {lesson.isFree && (
+                            <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">
+                              Free
+                            </span>
+                          )}
+                        </div>
+                        <div
+                          className="flex gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Button variant="outline" size="sm">
+                            Edit
+                          </Button>
+                          <Button variant="destructive" size="sm">
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                      {lesson.isFree && expandedLessonId === lesson.id && (
+                        <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                          <div
+                            dangerouslySetInnerHTML={{ __html: lesson.content }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     </>
   );
 }

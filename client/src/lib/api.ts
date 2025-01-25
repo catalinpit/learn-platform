@@ -80,10 +80,13 @@ export const createCourse = async (data: TCreateCourseType) => {
   return course;
 };
 
-export const createCourseChapter = async (courseId: string, data: TCreateChapterType) => {
-  const res = await client.creator.courses[":courseId"].chapters.$post({
+export const createCourseChapter = async (
+  id: string,
+  data: TCreateChapterType
+) => {
+  const res = await client.creator.courses[":id"].chapters.$post({
     param: {
-      id: courseId,
+      id,
     },
     json: {
       ...data,
