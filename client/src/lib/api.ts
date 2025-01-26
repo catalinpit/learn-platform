@@ -125,3 +125,21 @@ export const createChapterLesson = async (
   const lesson = await res.json();
   return lesson;
 };
+
+export const deleteCourseChapter = async (id: string, chapterId: string) => {
+  const res = await client.creator.courses[":id"].chapters[
+    ":chapterId"
+  ].$delete({
+    param: {
+      id,
+      chapterId,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete chapter");
+  }
+
+  const chapter = await res.json();
+  return chapter;
+};

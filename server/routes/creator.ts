@@ -92,6 +92,40 @@ const router = createRouter()
       }
     }
   )
+  .delete(
+    "/creator/courses/:id/chapters/:chapterId",
+    loggedIn,
+    zValidator("param", ZGetChapterByIdSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid ID", 400);
+      }
+    }),
+    async (c) => {
+      const { id, chapterId } = c.req.valid("param");
+      const user = c.get("Variables").user;
+
+      if (!user) {
+        return c.json("Something went wrong", 404);
+      }
+
+      try {
+        const deletedChapter = await db.chapter.delete({
+          where: {
+            id: chapterId,
+            courseId: id,
+            course: {
+              ownerId: user.id,
+            },
+          },
+        });
+
+        return c.json(deletedChapter);
+      } catch (error) {
+        console.error("Failed to delete chapter:", error);
+        return c.json("Failed to delete chapter", 500);
+      }
+    }
+  )
   .post(
     "/creator/courses/:id/chapters/:chapterId/lessons",
     loggedIn,

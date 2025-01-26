@@ -2,6 +2,7 @@ import {
   getCourseByIdQueryOptions,
   createCourseChapter,
   createChapterLesson,
+  deleteCourseChapter,
 } from "@/lib/api";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -32,7 +33,7 @@ function RouteComponent() {
   const { courseId } = Route.useParams();
   const { queryClient } = Route.useRouteContext();
   const [showChapterForm, setShowChapterForm] = useState(false);
-  const [isLessonFormVisible, setIsLessonFormVisible] = useState(false);
+  const [showLessonForm, setShowLessonForm] = useState(false);
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(
     null
   );
@@ -63,8 +64,19 @@ function RouteComponent() {
       return createChapterLesson(courseId, selectedChapterId, values);
     },
     onSuccess: () => {
-      setIsLessonFormVisible(false);
+      setShowLessonForm(false);
       setSelectedChapterId(null);
+      queryClient.invalidateQueries({
+        queryKey: getCourseByIdQueryOptions(courseId).queryKey,
+      });
+    },
+  });
+
+  const deleteChapterMutation = useMutation({
+    mutationFn: (chapterId: string) => {
+      return deleteCourseChapter(courseId, chapterId);
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: getCourseByIdQueryOptions(courseId).queryKey,
       });
@@ -90,6 +102,14 @@ function RouteComponent() {
 
     try {
       addLessonMutation.mutate(values);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteChapter = (chapterId: string) => {
+    try {
+      deleteChapterMutation.mutate(chapterId);
     } catch (error) {
       console.error(error);
     }
@@ -148,7 +168,7 @@ function RouteComponent() {
           <Button
             onClick={() => {
               setShowChapterForm(true);
-              setIsLessonFormVisible(false);
+              setShowLessonForm(false);
             }}
           >
             Add Chapter
@@ -156,7 +176,7 @@ function RouteComponent() {
         </div>
 
         {showChapterForm && <ChapterForm onSubmit={handleChapterSubmit} />}
-        {isLessonFormVisible && <LessonForm onSubmit={handleLessonSubmit} />}
+        {showLessonForm && <LessonForm onSubmit={handleLessonSubmit} />}
 
         <div className="my-8 space-y-6">
           {course.chapters.map((chapter) => (
@@ -175,7 +195,7 @@ function RouteComponent() {
                     <Button
                       onClick={() => {
                         setSelectedChapterId(chapter.id);
-                        setIsLessonFormVisible(true);
+                        setShowLessonForm(true);
                         setShowChapterForm(false);
                       }}
                       variant="outline"
@@ -186,7 +206,11 @@ function RouteComponent() {
                     <Button variant="outline" size="sm">
                       Edit
                     </Button>
-                    <Button variant="destructive" size="sm">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteChapter(chapter.id)}
+                    >
                       Delete
                     </Button>
                   </div>
