@@ -1,4 +1,8 @@
-import { getCourseByIdQueryOptions, createCourseChapter } from "@/lib/api";
+import {
+  getCourseByIdQueryOptions,
+  createCourseChapter,
+  createChapterLesson,
+} from "@/lib/api";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -28,18 +32,39 @@ function RouteComponent() {
   const { courseId } = Route.useParams();
   const { queryClient } = Route.useRouteContext();
   const [showChapterForm, setShowChapterForm] = useState(false);
-  const [showLessonForm, setShowLessonForm] = useState(false);
+  const [isLessonFormVisible, setIsLessonFormVisible] = useState(false);
+  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(
+    null
+  );
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
   const { data: course } = useSuspenseQuery(
     getCourseByIdQueryOptions(courseId)
   );
 
-  const mutation = useMutation({
+  const addChapterMutation = useMutation({
     mutationFn: (values: TCreateChapterType) => {
       return createCourseChapter(courseId, values);
     },
     onSuccess: () => {
+      setShowChapterForm(false);
+      queryClient.invalidateQueries({
+        queryKey: getCourseByIdQueryOptions(courseId).queryKey,
+      });
+    },
+  });
+
+  const addLessonMutation = useMutation({
+    mutationFn: (values: TCreateLessonType) => {
+      if (!selectedChapterId) {
+        throw new Error("Chapter ID is required");
+      }
+
+      return createChapterLesson(courseId, selectedChapterId, values);
+    },
+    onSuccess: () => {
+      setIsLessonFormVisible(false);
+      setSelectedChapterId(null);
       queryClient.invalidateQueries({
         queryKey: getCourseByIdQueryOptions(courseId).queryKey,
       });
@@ -52,16 +77,22 @@ function RouteComponent() {
 
   const handleChapterSubmit = (values: TCreateChapterType) => {
     try {
-      mutation.mutate(values);
-      setShowChapterForm(false);
+      addChapterMutation.mutate(values);
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleLessonSubmit = (values: TCreateLessonType) => {
-    setShowLessonForm(false);
-    console.log({ values });
+    if (!selectedChapterId) {
+      return;
+    }
+
+    try {
+      addLessonMutation.mutate(values);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleLessonClick = (lessonId: string, isFree: boolean) => {
@@ -117,23 +148,15 @@ function RouteComponent() {
           <Button
             onClick={() => {
               setShowChapterForm(true);
-              setShowLessonForm(false);
+              setIsLessonFormVisible(false);
             }}
           >
             Add Chapter
           </Button>
-          <Button
-            onClick={() => {
-              setShowLessonForm(true);
-              setShowChapterForm(false);
-            }}
-          >
-            Add Lesson
-          </Button>
         </div>
 
         {showChapterForm && <ChapterForm onSubmit={handleChapterSubmit} />}
-        {showLessonForm && <LessonForm onSubmit={handleLessonSubmit} />}
+        {isLessonFormVisible && <LessonForm onSubmit={handleLessonSubmit} />}
 
         <div className="my-8 space-y-6">
           {course.chapters.map((chapter) => (
@@ -149,6 +172,17 @@ function RouteComponent() {
                     )}
                   </div>
                   <div className="flex gap-2">
+                    <Button
+                      onClick={() => {
+                        setSelectedChapterId(chapter.id);
+                        setIsLessonFormVisible(true);
+                        setShowChapterForm(false);
+                      }}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Add Lesson
+                    </Button>
                     <Button variant="outline" size="sm">
                       Edit
                     </Button>

@@ -37,7 +37,12 @@ export const ZGetCourseByIdSchema = z.object({
   id: z.string(),
 });
 
+export const ZGetChapterByIdSchema = ZGetCourseByIdSchema.extend({
+  chapterId: z.string(),
+});
+
 export type TGetCourseByIdType = z.infer<typeof ZGetCourseByIdSchema>;
+export type TGetChapterByIdType = z.infer<typeof ZGetChapterByIdSchema>;
 
 ////////////////////////////
 // Creator Router Schemas //

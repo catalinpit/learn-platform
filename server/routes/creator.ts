@@ -6,6 +6,8 @@ import { loggedIn } from "@/middleware/auth";
 import {
   ZCreateChapterSchema,
   ZCreateCourseSchema,
+  ZCreateLessonSchema,
+  ZGetChapterByIdSchema,
   ZGetCourseByIdSchema,
 } from "@/shared/types";
 
@@ -87,6 +89,73 @@ const router = createRouter()
       } catch (error) {
         console.error("Failed to create chapter:", error);
         return c.json("Failed to create chapter", 500);
+      }
+    }
+  )
+  .post(
+    "/creator/courses/:id/chapters/:chapterId/lessons",
+    loggedIn,
+    zValidator("param", ZGetChapterByIdSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid ID", 400);
+      }
+    }),
+    zValidator("json", ZCreateLessonSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid body", 400);
+      }
+    }),
+    async (c) => {
+      const { id, chapterId } = c.req.valid("param");
+      const lessonData = c.req.valid("json");
+      const user = c.get("Variables").user;
+
+      if (!user) {
+        return c.json("Something went wrong", 404);
+      }
+
+      try {
+        const course = await db.course.findFirst({
+          where: {
+            id,
+            ownerId: user.id,
+          },
+        });
+
+        if (!course) {
+          return c.json("Course not found", 404);
+        }
+
+        const chapter = await db.chapter.findFirst({
+          where: {
+            id: chapterId,
+            courseId: course.id,
+          },
+        });
+
+        if (!chapter) {
+          return c.json("Chapter not found", 404);
+        }
+
+        const lastLesson = await db.lesson.findFirst({
+          where: { chapterId: chapter.id },
+          orderBy: { position: "desc" },
+        });
+
+        const position = lastLesson ? lastLesson.position + 1 : 1;
+
+        const lesson = await db.lesson.create({
+          data: {
+            ...lessonData,
+            chapterId: chapter.id,
+            position,
+          },
+        });
+
+        return c.json(lesson);
+      } catch (error) {
+        console.error("Failed to create lesson:", error);
+        return c.json("Failed to create lesson", 500);
       }
     }
   );

@@ -1,5 +1,5 @@
 import { hc } from "hono/client";
-import type { AppType } from "@server/shared/types";
+import type { AppType, TCreateLessonType } from "@server/shared/types";
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import {
   TCreateChapterType,
@@ -99,4 +99,29 @@ export const createCourseChapter = async (
 
   const chapter = await res.json();
   return chapter;
+};
+
+export const createChapterLesson = async (
+  id: string,
+  chapterId: string,
+  data: TCreateLessonType
+) => {
+  const res = await client.creator.courses[":id"].chapters[
+    ":chapterId"
+  ].lessons.$post({
+    param: {
+      id,
+      chapterId,
+    },
+    json: {
+      ...data,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to create lesson");
+  }
+
+  const lesson = await res.json();
+  return lesson;
 };
