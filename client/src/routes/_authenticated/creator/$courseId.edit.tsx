@@ -3,6 +3,7 @@ import {
   createCourseChapter,
   createChapterLesson,
   deleteCourseChapter,
+  updateCourseChapter,
 } from "@/lib/api";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -17,7 +18,11 @@ import { ChapterForm } from "@/components/chapter-form";
 import { LessonForm } from "@/components/lesson-form";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { TCreateChapterType, TCreateLessonType } from "@server/shared/types";
+import {
+  TCreateChapterType,
+  TCreateLessonType,
+  TUpdateChapterType,
+} from "@server/shared/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -39,6 +44,7 @@ function RouteComponent() {
     null
   );
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
+  const [chapterToEdit, setChapterToEdit] = useState<string | null>(null);
 
   const { data: course } = useSuspenseQuery(
     getCreatorCourseByIdOptions(courseId)
@@ -57,6 +63,16 @@ function RouteComponent() {
       }
 
       return createChapterLesson(courseId, selectedChapterId, values);
+    },
+  });
+
+  const updateChapterMutation = useMutation({
+    mutationFn: (values: TUpdateChapterType) => {
+      if (!chapterToEdit) {
+        throw new Error("Chapter ID is required");
+      }
+
+      return updateCourseChapter(courseId, chapterToEdit, values);
     },
   });
 
@@ -122,6 +138,24 @@ function RouteComponent() {
     });
   };
 
+  const handleEditChapter = (values: TUpdateChapterType) => {
+    console.log({ values });
+    updateChapterMutation.mutate(values, {
+      onSuccess: () => {
+        setChapterToEdit(null);
+        setShowChapterForm(false);
+        queryClient.invalidateQueries({
+          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
+        });
+
+        toast.success("Chapter has been updated successfully.");
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+  };
+
   const handleLessonClick = (lessonId: string, isFree: boolean) => {
     if (!isFree) {
       return;
@@ -177,6 +211,7 @@ function RouteComponent() {
             onClick={() => {
               setShowChapterForm(true);
               setShowLessonForm(false);
+              setChapterToEdit(null);
             }}
           >
             Add Chapter
@@ -187,6 +222,15 @@ function RouteComponent() {
           <ChapterForm
             onSubmit={handleChapterSubmit}
             setShowChapterForm={setShowChapterForm}
+          />
+        )}
+        {chapterToEdit && (
+          <ChapterForm
+            onSubmit={handleEditChapter}
+            setShowChapterForm={() => setChapterToEdit(null)}
+            defaultValues={course.chapters.find(
+              (chapter) => chapter.id === chapterToEdit
+            )}
           />
         )}
         {showLessonForm && <LessonForm onSubmit={handleLessonSubmit} />}
@@ -210,13 +254,22 @@ function RouteComponent() {
                         setSelectedChapterId(chapter.id);
                         setShowLessonForm(true);
                         setShowChapterForm(false);
+                        setChapterToEdit(null);
                       }}
                       variant="outline"
                       size="sm"
                     >
                       Add Lesson
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setChapterToEdit(chapter.id);
+                        setShowChapterForm(false);
+                        setShowLessonForm(false);
+                      }}
+                    >
                       Edit
                     </Button>
                     <Button

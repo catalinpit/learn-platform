@@ -9,6 +9,7 @@ import {
   ZCreateLessonSchema,
   ZGetChapterByIdSchema,
   ZGetCourseByIdSchema,
+  ZUpdateChapterSchema,
 } from "@/shared/types";
 
 const router = createRouter()
@@ -126,6 +127,47 @@ const router = createRouter()
       } catch (error) {
         console.error("Failed to create chapter:", error);
         return c.json("Failed to create chapter", 500);
+      }
+    }
+  )
+  .patch(
+    "/creator/courses/:id/chapters/:chapterId",
+    loggedIn,
+    zValidator("param", ZGetChapterByIdSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid ID", 400);
+      }
+    }),
+    zValidator("json", ZUpdateChapterSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid body", 400);
+      }
+    }),
+    async (c) => {
+      const { id, chapterId } = c.req.valid("param");
+      const updatedChapterData = c.req.valid("json");
+      const user = c.get("Variables").user;
+
+      if (!user) {
+        return c.json("Something went wrong", 404);
+      }
+
+      try {
+        const updatedChapter = await db.chapter.update({
+          where: {
+            id: chapterId,
+            courseId: id,
+            course: {
+              ownerId: user.id,
+            },
+          },
+          data: updatedChapterData,
+        });
+
+        return c.json(updatedChapter);
+      } catch (error) {
+        console.error("Failed to update chapter:", error);
+        return c.json("Failed to update chapter", 500);
       }
     }
   )

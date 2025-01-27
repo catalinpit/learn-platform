@@ -69,6 +69,8 @@ export const ZCreateChapterSchema = z.object({
   isFree: z.boolean().default(false),
 });
 
+export const ZUpdateChapterSchema = ZCreateChapterSchema;
+
 export const ZCreateLessonSchema = z.object({
   title: z.string().min(1, "Title is required"),
   content: z.string().min(1, "Content is required"),
@@ -78,4 +80,5 @@ export const ZCreateLessonSchema = z.object({
 
 export type TCreateCourseType = z.infer<typeof ZCreateCourseSchema>;
 export type TCreateChapterType = z.infer<typeof ZCreateChapterSchema>;
+export type TUpdateChapterType = z.infer<typeof ZUpdateChapterSchema>;
 export type TCreateLessonType = z.infer<typeof ZCreateLessonSchema>;

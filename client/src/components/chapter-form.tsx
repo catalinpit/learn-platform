@@ -124,7 +124,9 @@ export function ChapterForm({
             </div>
 
             <div className="flex flex-col sm:items-center space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2">
-              <Button type="submit">Create Chapter</Button>
+              <Button type="submit">
+                {defaultValues ? "Update Chapter" : "Create Chapter"}
+              </Button>
               <Button
                 type="button"
                 onClick={() => {

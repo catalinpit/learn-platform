@@ -5,6 +5,7 @@ import {
   TCreateChapterType,
   TCreateCourseType,
   TGetAllCoursesType,
+  TUpdateChapterType,
 } from "@server/shared/types";
 
 const client = hc<AppType>("/api");
@@ -146,6 +147,31 @@ export const createChapterLesson = async (
 
   const lesson = await res.json();
   return lesson;
+};
+
+export const updateCourseChapter = async (
+  id: string,
+  chapterId: string,
+  data: TUpdateChapterType
+) => {
+  const res = await client.creator.courses[":id"].chapters[":chapterId"].$patch(
+    {
+      param: {
+        id,
+        chapterId,
+      },
+      json: {
+        ...data,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to update chapter");
+  }
+
+  const chapter = await res.json();
+  return chapter;
 };
 
 export const deleteCourseChapter = async (id: string, chapterId: string) => {
