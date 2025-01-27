@@ -19,9 +19,14 @@ import { TCreateChapterType, ZCreateChapterSchema } from "@server/shared/types";
 type ChapterFormProps = {
   onSubmit: (values: TCreateChapterType) => void;
   defaultValues?: Partial<TCreateChapterType>;
+  setShowChapterForm: (show: boolean) => void;
 };
 
-export function ChapterForm({ onSubmit, defaultValues }: ChapterFormProps) {
+export function ChapterForm({
+  onSubmit,
+  defaultValues,
+  setShowChapterForm,
+}: ChapterFormProps) {
   const form = useForm<TCreateChapterType>({
     resolver: zodResolver(ZCreateChapterSchema),
     defaultValues: {
@@ -34,7 +39,7 @@ export function ChapterForm({ onSubmit, defaultValues }: ChapterFormProps) {
   });
 
   return (
-    <div className="max-w-3xl mx-auto p-6 sm:p-4">
+    <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-6 border-border p-4 border rounded-md">
@@ -48,10 +53,7 @@ export function ChapterForm({ onSubmit, defaultValues }: ChapterFormProps) {
                     Give your chapter a clear and descriptive title
                   </FormDescription>
                   <FormControl>
-                    <Input
-                      placeholder="Enter chapter title..."
-                      {...field}
-                    />
+                    <Input placeholder="Enter chapter title..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -68,14 +70,17 @@ export function ChapterForm({ onSubmit, defaultValues }: ChapterFormProps) {
                     Provide an overview of what this chapter covers
                   </FormDescription>
                   <FormControl>
-                    <Tiptap onChange={field.onChange} initialValue={field.value} />
+                    <Tiptap
+                      onChange={field.onChange}
+                      initialValue={field.value}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="flex items-center gap-8">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8">
               <FormField
                 control={form.control}
                 name="isPublished"
@@ -119,9 +124,17 @@ export function ChapterForm({ onSubmit, defaultValues }: ChapterFormProps) {
               />
             </div>
 
-            <Button type="submit" className="w-full sm:w-auto">
-              Create Chapter
-            </Button>
+            <div className="flex flex-col sm:items-center space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2">
+              <Button type="submit">Create Chapter</Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  setShowChapterForm(false);
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
         </form>
       </Form>

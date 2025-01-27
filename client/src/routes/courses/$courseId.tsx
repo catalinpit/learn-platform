@@ -110,6 +110,7 @@ export function CoursePage() {
                     </div>
                     {lesson.isFree && expandedLessonId === lesson.id && (
                       <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                        {/* TODO: FIX THIS ASAP */}
                         <div
                           dangerouslySetInnerHTML={{ __html: lesson.content }}
                         />

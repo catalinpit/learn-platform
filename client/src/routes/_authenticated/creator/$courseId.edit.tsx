@@ -47,12 +47,6 @@ function RouteComponent() {
     mutationFn: (values: TCreateChapterType) => {
       return createCourseChapter(courseId, values);
     },
-    onSuccess: () => {
-      setShowChapterForm(false);
-      queryClient.invalidateQueries({
-        queryKey: getCourseByIdQueryOptions(courseId).queryKey,
-      });
-    },
   });
 
   const addLessonMutation = useMutation({
@@ -63,23 +57,11 @@ function RouteComponent() {
 
       return createChapterLesson(courseId, selectedChapterId, values);
     },
-    onSuccess: () => {
-      setShowLessonForm(false);
-      setSelectedChapterId(null);
-      queryClient.invalidateQueries({
-        queryKey: getCourseByIdQueryOptions(courseId).queryKey,
-      });
-    },
   });
 
   const deleteChapterMutation = useMutation({
     mutationFn: (chapterId: string) => {
       return deleteCourseChapter(courseId, chapterId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getCourseByIdQueryOptions(courseId).queryKey,
-      });
     },
   });
 
@@ -88,11 +70,17 @@ function RouteComponent() {
   }
 
   const handleChapterSubmit = (values: TCreateChapterType) => {
-    try {
-      addChapterMutation.mutate(values);
-    } catch (error) {
-      console.error(error);
-    }
+    addChapterMutation.mutate(values, {
+      onSuccess: () => {
+        setShowChapterForm(false);
+        queryClient.invalidateQueries({
+          queryKey: getCourseByIdQueryOptions(courseId).queryKey,
+        });
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
   };
 
   const handleLessonSubmit = (values: TCreateLessonType) => {
@@ -100,19 +88,31 @@ function RouteComponent() {
       return;
     }
 
-    try {
-      addLessonMutation.mutate(values);
-    } catch (error) {
-      console.error(error);
-    }
+    addLessonMutation.mutate(values, {
+      onSuccess: () => {
+        setShowLessonForm(false);
+        setSelectedChapterId(null);
+        queryClient.invalidateQueries({
+          queryKey: getCourseByIdQueryOptions(courseId).queryKey,
+        });
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
   };
 
   const handleDeleteChapter = (chapterId: string) => {
-    try {
-      deleteChapterMutation.mutate(chapterId);
-    } catch (error) {
-      console.error(error);
-    }
+    deleteChapterMutation.mutate(chapterId, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getCourseByIdQueryOptions(courseId).queryKey,
+        });
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
   };
 
   const handleLessonClick = (lessonId: string, isFree: boolean) => {
@@ -126,7 +126,7 @@ function RouteComponent() {
   return (
     <>
       {!course.isPublished ? (
-        <div className="bg-yellow-100 text-yellow-800 p-4 mb-4 mx-auto w-1/2 rounded-lg">
+        <div className="bg-yellow-100 text-yellow-800 p-4 mb-4 mx-auto w-2/3 rounded-lg">
           This course is not published yet. Only you can see it.
         </div>
       ) : null}
@@ -144,6 +144,7 @@ function RouteComponent() {
           </CardTitle>
           <CardDescription>
             <div className="prose dark:prose-headings:text-white dark:text-white">
+              {/* TODO: FIX THIS ASAP */}
               <div dangerouslySetInnerHTML={{ __html: course.description }} />
             </div>
           </CardDescription>
@@ -175,7 +176,12 @@ function RouteComponent() {
           </Button>
         </div>
 
-        {showChapterForm && <ChapterForm onSubmit={handleChapterSubmit} />}
+        {showChapterForm && (
+          <ChapterForm
+            onSubmit={handleChapterSubmit}
+            setShowChapterForm={setShowChapterForm}
+          />
+        )}
         {showLessonForm && <LessonForm onSubmit={handleLessonSubmit} />}
 
         <div className="my-8 space-y-6">
@@ -217,6 +223,7 @@ function RouteComponent() {
                 </CardTitle>
                 <CardDescription>
                   <div className="prose dark:prose-headings:text-white dark:text-white">
+                    {/* TODO: FIX THIS ASAP */}
                     <div
                       dangerouslySetInnerHTML={{ __html: chapter.description }}
                     />
@@ -261,6 +268,7 @@ function RouteComponent() {
                       </div>
                       {lesson.isFree && expandedLessonId === lesson.id && (
                         <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                          {/* TODO: FIX THIS ASAP */}
                           <div
                             dangerouslySetInnerHTML={{ __html: lesson.content }}
                           />
