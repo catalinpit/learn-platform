@@ -1,5 +1,5 @@
 import {
-  getCourseByIdQueryOptions,
+  getCreatorCourseByIdOptions,
   createCourseChapter,
   createChapterLesson,
   deleteCourseChapter,
@@ -19,12 +19,13 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { TCreateChapterType, TCreateLessonType } from "@server/shared/types";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
   component: RouteComponent,
   loader: async ({ params, context }) => {
     return await context.queryClient.ensureQueryData(
-      getCourseByIdQueryOptions(params.courseId)
+      getCreatorCourseByIdOptions(params.courseId)
     );
   },
 });
@@ -40,7 +41,7 @@ function RouteComponent() {
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
   const { data: course } = useSuspenseQuery(
-    getCourseByIdQueryOptions(courseId)
+    getCreatorCourseByIdOptions(courseId)
   );
 
   const addChapterMutation = useMutation({
@@ -76,6 +77,8 @@ function RouteComponent() {
         queryClient.invalidateQueries({
           queryKey: getCourseByIdQueryOptions(courseId).queryKey,
         });
+
+        toast.success("Chapter has been created.");
       },
       onError: (error) => {
         console.error(error);

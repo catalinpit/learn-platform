@@ -12,6 +12,43 @@ import {
 } from "@/shared/types";
 
 const router = createRouter()
+  .get(
+    "/creator/courses/:id",
+    loggedIn,
+    zValidator("param", ZGetCourseByIdSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid ID", 400);
+      }
+    }),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      const courseCreator = c.get("Variables").user;
+
+      if (!courseCreator) {
+        return c.json("Something went wrong", 500);
+      }
+
+      const course = await db.course.findUnique({
+        where: {
+          id: String(id),
+          ownerId: courseCreator.id,
+        },
+        include: {
+          chapters: {
+            include: {
+              lessons: true,
+            },
+          },
+        },
+      });
+
+      if (!course) {
+        return c.json({ message: "Course not found" });
+      }
+
+      return c.json(course);
+    }
+  )
   .post(
     "/creator/courses",
     loggedIn,

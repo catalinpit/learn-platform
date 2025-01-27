@@ -64,6 +64,28 @@ export const getCourseByIdQueryOptions = (id: string) =>
     staleTime: 1000 * 60 * 5,
   });
 
+export const getCreatorCourseById = async (id: string) => {
+  const res = await client.creator.courses[":id"].$get({
+    param: {
+      id: id.toString(),
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch course");
+  }
+
+  const course = await res.json();
+  return course;
+};
+
+export const getCreatorCourseByIdOptions = (id: string) =>
+  queryOptions({
+    queryKey: ["get-creator-course-by-id", id],
+    queryFn: () => getCreatorCourseById(id),
+    staleTime: 1000 * 60 * 5,
+  });
+
 export const createCourse = async (data: TCreateCourseType) => {
   const res = await client.creator.courses.$post({
     json: {
