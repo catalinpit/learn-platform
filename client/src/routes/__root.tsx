@@ -5,6 +5,7 @@ import { NavBar } from "@/components/nav-bar";
 import type { Session } from "@/lib/auth-client";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryClient } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/sonner";
 
 export interface MyRouterContext {
   auth: Session | null | undefined;
@@ -22,6 +23,7 @@ function Root() {
       <div className="mx-auto max-w-6xl pt-12">
         <Outlet />
       </div>
+      <Toaster />
       <TanStackRouterDevtools />
     </ThemeProvider>
   );
