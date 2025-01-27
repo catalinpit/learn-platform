@@ -75,10 +75,10 @@ function RouteComponent() {
       onSuccess: () => {
         setShowChapterForm(false);
         queryClient.invalidateQueries({
-          queryKey: getCourseByIdQueryOptions(courseId).queryKey,
+          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
         });
 
-        toast.success("Chapter has been created.");
+        toast.success("Chapter has been created successfully.");
       },
       onError: (error) => {
         console.error(error);
@@ -96,8 +96,10 @@ function RouteComponent() {
         setShowLessonForm(false);
         setSelectedChapterId(null);
         queryClient.invalidateQueries({
-          queryKey: getCourseByIdQueryOptions(courseId).queryKey,
+          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
         });
+
+        toast.success("Lesson has been created successfully.");
       },
       onError: (error) => {
         console.error(error);
@@ -109,8 +111,10 @@ function RouteComponent() {
     deleteChapterMutation.mutate(chapterId, {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: getCourseByIdQueryOptions(courseId).queryKey,
+          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
         });
+
+        toast.success("Chapter has been deleted successfully.");
       },
       onError: (error) => {
         console.error(error);
