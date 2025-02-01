@@ -4,6 +4,8 @@ import {
   createChapterLesson,
   deleteCourseChapter,
   updateCourseChapter,
+  updateCourseLesson,
+  deleteCourseLesson,
 } from "@/lib/api";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -14,17 +16,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChapterForm } from "@/components/chapter-form";
-import { LessonForm } from "@/components/lesson-form";
+import { ChapterForm } from "@/components/course-forms/chapter-form";
+import { UpdateChapterForm } from "@/components/course-forms/update-chapter-form";
+import { LessonForm } from "@/components/course-forms/lesson-form";
+import { UpdateLessonForm } from "@/components/course-forms/update-lesson-form";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import {
   TCreateChapterType,
   TCreateLessonType,
   TUpdateChapterType,
+  TUpdateLessonType,
 } from "@server/shared/types";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { CourseChapterList } from "@/components/course-chapters/course-chapter-list";
 
 export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
   component: RouteComponent,
@@ -45,6 +50,8 @@ function RouteComponent() {
   );
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
   const [chapterToEdit, setChapterToEdit] = useState<string | null>(null);
+  const [lessonToEdit, setLessonToEdit] = useState<string | null>(null);
+  const [lessonChapterId, setLessonChapterId] = useState<string | null>(null);
 
   const { data: course } = useSuspenseQuery(
     getCreatorCourseByIdOptions(courseId)
@@ -79,6 +86,31 @@ function RouteComponent() {
   const deleteChapterMutation = useMutation({
     mutationFn: (chapterId: string) => {
       return deleteCourseChapter(courseId, chapterId);
+    },
+  });
+
+  const updateCourseLessonMutation = useMutation({
+    mutationFn: (values: TUpdateLessonType) => {
+      if (!lessonToEdit || !lessonChapterId) {
+        throw new Error("Lesson ID is required");
+      }
+
+      return updateCourseLesson(
+        courseId,
+        lessonChapterId,
+        lessonToEdit,
+        values
+      );
+    },
+  });
+
+  const deleteLessonMutation = useMutation({
+    mutationFn: (lessonId: string) => {
+      if (!lessonChapterId) {
+        throw new Error("Lesson's chapter ID is required");
+      }
+
+      return deleteCourseLesson(courseId, lessonChapterId, lessonId);
     },
   });
 
@@ -130,6 +162,7 @@ function RouteComponent() {
           queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
         });
 
+        setLessonChapterId(null);
         toast.success("Chapter has been deleted successfully.");
       },
       onError: (error) => {
@@ -139,7 +172,6 @@ function RouteComponent() {
   };
 
   const handleEditChapter = (values: TUpdateChapterType) => {
-    console.log({ values });
     updateChapterMutation.mutate(values, {
       onSuccess: () => {
         setChapterToEdit(null);
@@ -149,6 +181,42 @@ function RouteComponent() {
         });
 
         toast.success("Chapter has been updated successfully.");
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+  };
+
+  const handleEditLesson = (values: TCreateLessonType) => {
+    if (!lessonToEdit) {
+      return;
+    }
+
+    updateCourseLessonMutation.mutate(values, {
+      onSuccess: () => {
+        setLessonToEdit(null);
+        setShowLessonForm(false);
+        queryClient.invalidateQueries({
+          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
+        });
+
+        toast.success("Lesson has been updated successfully.");
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+  };
+
+  const handleDeleteLesson = (lessonId: string) => {
+    deleteLessonMutation.mutate(lessonId, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
+        });
+
+        toast.success("Lesson has been deleted successfully.");
       },
       onError: (error) => {
         console.error(error);
@@ -212,6 +280,7 @@ function RouteComponent() {
               setShowChapterForm(true);
               setShowLessonForm(false);
               setChapterToEdit(null);
+              setLessonToEdit(null);
             }}
           >
             Add Chapter
@@ -224,123 +293,68 @@ function RouteComponent() {
             setShowChapterForm={setShowChapterForm}
           />
         )}
+
         {chapterToEdit && (
-          <ChapterForm
+          <UpdateChapterForm
             onSubmit={handleEditChapter}
-            setShowChapterForm={() => setChapterToEdit(null)}
+            setShowUpdateChapterForm={() => setChapterToEdit(null)}
             defaultValues={course.chapters.find(
               (chapter) => chapter.id === chapterToEdit
             )}
           />
         )}
-        {showLessonForm && <LessonForm onSubmit={handleLessonSubmit} />}
 
-        <div className="my-8 space-y-6">
-          {course.chapters.map((chapter) => (
-            <Card key={chapter.id}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {chapter.title}
-                    {chapter.isFree && (
-                      <span className="text-sm bg-green-500 text-white px-2 py-1 rounded">
-                        Free
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={() => {
-                        setSelectedChapterId(chapter.id);
-                        setShowLessonForm(true);
-                        setShowChapterForm(false);
-                        setChapterToEdit(null);
-                      }}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Add Lesson
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setChapterToEdit(chapter.id);
-                        setShowChapterForm(false);
-                        setShowLessonForm(false);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDeleteChapter(chapter.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </CardTitle>
-                <CardDescription>
-                  <div className="prose dark:prose-headings:text-white dark:text-white">
-                    {/* TODO: FIX THIS ASAP */}
-                    <div
-                      dangerouslySetInnerHTML={{ __html: chapter.description }}
-                    />
-                  </div>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {chapter.lessons.map((lesson) => (
-                    <div
-                      key={lesson.id}
-                      onClick={() =>
-                        handleLessonClick(lesson.id, lesson.isFree)
-                      }
-                      className={cn(
-                        "flex flex-col p-4 rounded-lg border bg-card transition-colors",
-                        lesson.isFree
-                          ? "cursor-pointer hover:bg-accent"
-                          : "cursor-not-allowed opacity-75"
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <span className="font-medium">{lesson.title}</span>
-                          {lesson.isFree && (
-                            <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">
-                              Free
-                            </span>
-                          )}
-                        </div>
-                        <div
-                          className="flex gap-2"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Button variant="outline" size="sm">
-                            Edit
-                          </Button>
-                          <Button variant="destructive" size="sm">
-                            Delete
-                          </Button>
-                        </div>
-                      </div>
-                      {lesson.isFree && expandedLessonId === lesson.id && (
-                        <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-                          {/* TODO: FIX THIS ASAP */}
-                          <div
-                            dangerouslySetInnerHTML={{ __html: lesson.content }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {showLessonForm && (
+          <LessonForm
+            onSubmit={handleLessonSubmit}
+            setShowLessonForm={setShowLessonForm}
+          />
+        )}
+
+        {lessonToEdit && (
+          <UpdateLessonForm
+            onSubmit={handleEditLesson}
+            setShowUpdateLessonForm={() => {
+              setLessonToEdit(null);
+              setLessonChapterId(null);
+            }}
+            defaultValues={course.chapters
+              .find((chapter) => chapter.id === lessonChapterId)
+              ?.lessons.find((lesson) => lesson.id === lessonToEdit)}
+          />
+        )}
+
+        <CourseChapterList
+          chapters={course.chapters}
+          isEditing={true}
+          expandedLessonId={expandedLessonId}
+          onLessonClick={handleLessonClick}
+          onAddLesson={(chapterId: string) => {
+            setSelectedChapterId(chapterId);
+            setShowLessonForm(true);
+            setShowChapterForm(false);
+            setChapterToEdit(null);
+            setLessonToEdit(null);
+          }}
+          onEditChapter={(chapterId: string) => {
+            setChapterToEdit(chapterId);
+            setShowChapterForm(false);
+            setShowLessonForm(false);
+            setLessonToEdit(null);
+          }}
+          onDeleteChapter={handleDeleteChapter}
+          onEditLesson={(lessonId: string, chapterId: string) => {
+            setChapterToEdit(null);
+            setLessonChapterId(chapterId);
+            setShowChapterForm(false);
+            setShowLessonForm(false);
+            setLessonToEdit(lessonId);
+          }}
+          onDeleteLesson={(lessonId: string, chapterId: string) => {
+            setLessonChapterId(chapterId);
+            handleDeleteLesson(lessonId);
+          }}
+        />
       </div>
     </>
   );
