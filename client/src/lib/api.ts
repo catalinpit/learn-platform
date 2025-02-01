@@ -1,5 +1,9 @@
 import { hc } from "hono/client";
-import type { AppType, TCreateLessonType } from "@server/shared/types";
+import type {
+  AppType,
+  TCreateLessonType,
+  TUpdateLessonType,
+} from "@server/shared/types";
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import {
   TCreateChapterType,
@@ -190,4 +194,54 @@ export const deleteCourseChapter = async (id: string, chapterId: string) => {
 
   const chapter = await res.json();
   return chapter;
+};
+
+export const updateCourseLesson = async (
+  id: string,
+  chapterId: string,
+  lessonId: string,
+  data: TUpdateLessonType
+) => {
+  const res = await client.creator.courses[":id"].chapters[
+    ":chapterId"
+  ].lessons[":lessonId"].$patch({
+    param: {
+      id,
+      chapterId,
+      lessonId,
+    },
+    json: {
+      ...data,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update lesson");
+  }
+
+  const lesson = await res.json();
+  return lesson;
+};
+
+export const deleteCourseLesson = async (
+  id: string,
+  chapterId: string,
+  lessonId: string
+) => {
+  const res = await client.creator.courses[":id"].chapters[
+    ":chapterId"
+  ].lessons[":lessonId"].$delete({
+    param: {
+      id,
+      chapterId,
+      lessonId,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete lesson");
+  }
+
+  const lesson = await res.json();
+  return lesson;
 };

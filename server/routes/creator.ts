@@ -9,7 +9,9 @@ import {
   ZCreateLessonSchema,
   ZGetChapterByIdSchema,
   ZGetCourseByIdSchema,
+  ZGetLessonByIdSchema,
   ZUpdateChapterSchema,
+  ZUpdateLessonSchema,
 } from "@/shared/types";
 
 const router = createRouter()
@@ -269,6 +271,104 @@ const router = createRouter()
       } catch (error) {
         console.error("Failed to create lesson:", error);
         return c.json("Failed to create lesson", 500);
+      }
+    }
+  )
+  .patch(
+    "/creator/courses/:id/chapters/:chapterId/lessons/:lessonId",
+    loggedIn,
+    zValidator("param", ZGetLessonByIdSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid ID", 400);
+      }
+    }),
+    zValidator("json", ZUpdateLessonSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid body", 400);
+      }
+    }),
+    async (c) => {
+      const { id, chapterId, lessonId } = c.req.valid("param");
+      const updatedLessonData = c.req.valid("json");
+      const user = c.get("Variables").user;
+
+      if (!user) {
+        return c.json("Unauthorized", 401);
+      }
+
+      const lesson = await db.lesson.findUnique({
+        where: {
+          id: lessonId,
+          chapterId,
+          chapter: {
+            courseId: id,
+            course: {
+              ownerId: user.id,
+            },
+          },
+        },
+      });
+
+      if (!lesson) {
+        return c.json("Lesson not found", 404);
+      }
+
+      try {
+        const updatedLesson = await db.lesson.update({
+          where: {
+            id: lessonId,
+            chapterId,
+            chapter: {
+              courseId: id,
+              course: {
+                ownerId: user.id,
+              },
+            },
+          },
+          data: updatedLessonData,
+        });
+
+        return c.json(updatedLesson);
+      } catch (error) {
+        console.error("Failed to update lesson:", error);
+        return c.json("Failed to update lesson", 500);
+      }
+    }
+  )
+  .delete(
+    "/creator/courses/:id/chapters/:chapterId/lessons/:lessonId",
+    loggedIn,
+    zValidator("param", ZGetLessonByIdSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid ID", 400);
+      }
+    }),
+    async (c) => {
+      const { id, chapterId, lessonId } = c.req.valid("param");
+      const user = c.get("Variables").user;
+
+      if (!user) {
+        return c.json("Something went wrong", 404);
+      }
+
+      try {
+        const lesson = await db.lesson.delete({
+          where: {
+            id: lessonId,
+            chapterId,
+            chapter: {
+              courseId: id,
+              course: {
+                ownerId: user.id,
+              },
+            },
+          },
+        });
+
+        return c.json(lesson);
+      } catch (error) {
+        console.error("Failed to delete lesson:", error);
+        return c.json("Failed to delete lesson", 500);
       }
     }
   );

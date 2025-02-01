@@ -41,8 +41,13 @@ export const ZGetChapterByIdSchema = ZGetCourseByIdSchema.extend({
   chapterId: z.string(),
 });
 
+export const ZGetLessonByIdSchema = ZGetChapterByIdSchema.extend({
+  lessonId: z.string(),
+});
+
 export type TGetCourseByIdType = z.infer<typeof ZGetCourseByIdSchema>;
 export type TGetChapterByIdType = z.infer<typeof ZGetChapterByIdSchema>;
+export type TGetLessonByIdType = z.infer<typeof ZGetLessonByIdSchema>;
 
 ////////////////////////////
 // Creator Router Schemas //
@@ -78,7 +83,10 @@ export const ZCreateLessonSchema = z.object({
   isFree: z.boolean().default(false),
 });
 
+export const ZUpdateLessonSchema = ZCreateLessonSchema;
+
 export type TCreateCourseType = z.infer<typeof ZCreateCourseSchema>;
 export type TCreateChapterType = z.infer<typeof ZCreateChapterSchema>;
 export type TUpdateChapterType = z.infer<typeof ZUpdateChapterSchema>;
 export type TCreateLessonType = z.infer<typeof ZCreateLessonSchema>;
+export type TUpdateLessonType = z.infer<typeof ZUpdateLessonSchema>;

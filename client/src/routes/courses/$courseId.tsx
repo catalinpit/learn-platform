@@ -10,7 +10,16 @@ import {
 import { getCourseByIdQueryOptions } from "@/lib/api";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { CourseChapterList } from "@/components/course-chapters/course-chapter-list";
+
+export const Route = createFileRoute("/courses/$courseId")({
+  component: CoursePage,
+  loader: async ({ params, context }) => {
+    return await context.queryClient.ensureQueryData(
+      getCourseByIdQueryOptions(params.courseId)
+    );
+  },
+});
 
 export function CoursePage() {
   const { courseId } = Route.useParams();
@@ -73,55 +82,12 @@ export function CoursePage() {
       </Card>
 
       <div className="my-8 mx-8 space-y-6">
-        {course.chapters.map((chapter) => (
-          <Card key={chapter.id}>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                {chapter.title}
-                {chapter.isFree && (
-                  <span className="text-sm bg-green-500 text-white px-2 py-1 rounded">
-                    Free
-                  </span>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {chapter.lessons.map((lesson) => (
-                  <div
-                    key={lesson.id}
-                    onClick={() => handleLessonClick(lesson.id, lesson.isFree)}
-                    className={cn(
-                      "flex flex-col p-4 rounded-lg border bg-card transition-colors",
-                      lesson.isFree
-                        ? "cursor-pointer hover:bg-accent"
-                        : "cursor-not-allowed opacity-75"
-                    )}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="font-medium">{lesson.title}</span>
-                        {lesson.isFree && (
-                          <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">
-                            Free
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {lesson.isFree && expandedLessonId === lesson.id && (
-                      <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-                        {/* TODO: FIX THIS ASAP */}
-                        <div
-                          dangerouslySetInnerHTML={{ __html: lesson.content }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+        <CourseChapterList
+          chapters={course.chapters}
+          isEditing={false}
+          expandedLessonId={expandedLessonId}
+          onLessonClick={handleLessonClick}
+        />
       </div>
     </>
   );
