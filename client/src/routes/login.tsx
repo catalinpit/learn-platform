@@ -1,34 +1,26 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-import { Button } from "@/components/ui/button";
-import { signIn } from "@/lib/auth-client";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { LoginForm } from "@/components/auth/login-form";
 
 export const Route = createFileRoute("/login")({
   component: Login,
+  beforeLoad: async ({ context }) => {
+    if (context.auth?.user) {
+      throw redirect({
+        to: "/",
+        search: {
+          search: "",
+          page: 1,
+          perPage: 10,
+        },
+      });
+    }
+  },
 });
 
 function Login() {
-  const handleSignInWithGitHub = async () => {
-    await signIn.social({
-      provider: "github",
-    });
-  };
-
-  const handleSignInWithGoogle = async () => {
-    await signIn.social({
-      provider: "google",
-    });
-  };
-
   return (
     <div className="flex flex-col gap-4 items-center">
-      <h1>Login</h1>
-      <Button className="w-1/6" onClick={handleSignInWithGitHub}>
-        Sign in with GitHub
-      </Button>
-      <Button className="w-1/6" onClick={handleSignInWithGoogle}>
-        Sign in with Google
-      </Button>
+      <LoginForm />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { signOut } from "@/lib/auth-client";
@@ -8,13 +8,13 @@ export const Route = createFileRoute("/signout")({
 });
 
 function SignOut() {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.navigate({ to: "/" });
+          navigate({ to: "/", search: { search: "", page: 1, perPage: 10 } });
         },
       },
     });
