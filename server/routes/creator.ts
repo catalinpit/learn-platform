@@ -31,17 +31,48 @@ const router = createRouter()
         return c.json("Something went wrong", 500);
       }
 
-      const course = await db.course.findUnique({
-        where: {
-          id: String(id),
-          ownerId: courseCreator.id,
-        },
-        include: {
-          chapters: {
-            include: {
-              lessons: true,
+      try {
+        const course = await db.course.findUnique({
+          where: {
+            id: String(id),
+            ownerId: courseCreator.id,
+          },
+          include: {
+            chapters: {
+              include: {
+                lessons: true,
+              },
             },
           },
+        });
+
+        return c.json(course);
+      } catch (error) {
+        console.error("Failed to get course:", error);
+        return c.json("Failed to get course", 500);
+      }
+    }
+  )
+  .delete(
+    "/creator/courses/:id",
+    loggedIn,
+    zValidator("param", ZGetCourseByIdSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid ID", 400);
+      }
+    }),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      const courseCreator = c.get("Variables").user;
+
+      if (!courseCreator) {
+        return c.json("Something went wrong", 500);
+      }
+
+      const course = await db.course.findUnique({
+        where: {
+          id,
+          ownerId: courseCreator.id,
         },
       });
 
@@ -49,7 +80,19 @@ const router = createRouter()
         return c.json({ message: "Course not found" });
       }
 
-      return c.json(course);
+      try {
+        const deletedCourse = await db.course.delete({
+          where: {
+            id,
+            ownerId: courseCreator.id,
+          },
+        });
+
+        return c.json(deletedCourse);
+      } catch (error) {
+        console.error("Failed to delete course:", error);
+        return c.json("Failed to delete course", 500);
+      }
     }
   )
   .post(
@@ -369,6 +412,74 @@ const router = createRouter()
       } catch (error) {
         console.error("Failed to delete lesson:", error);
         return c.json("Failed to delete lesson", 500);
+      }
+    }
+  )
+  .post(
+    "/creator/courses/:id/publish",
+    loggedIn,
+    zValidator("param", ZGetCourseByIdSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid ID", 400);
+      }
+    }),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      const user = c.get("Variables").user;
+
+      if (!user) {
+        return c.json("Something went wrong", 404);
+      }
+
+      try {
+        const course = await db.course.update({
+          where: {
+            id,
+            ownerId: user.id,
+          },
+          data: {
+            isPublished: true,
+          },
+        });
+
+        return c.json(course);
+      } catch (error) {
+        console.error("Failed to publish course:", error);
+        return c.json("Failed to publish course", 500);
+      }
+    }
+  )
+  .post(
+    "/creator/courses/:id/unpublish",
+    loggedIn,
+    zValidator("param", ZGetCourseByIdSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid ID", 400);
+      }
+    }),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      const user = c.get("Variables").user;
+
+      if (!user) {
+        return c.json("Something went wrong", 404);
+      }
+
+      try {
+        const course = await db.course.update({
+          where: {
+            id,
+            ownerId: user.id,
+          },
+          data: {
+            isPublished: false,
+          },
+        });
+
+        return c.json(course);
+      } catch (error) {
+        console.error("Failed to unpublish course:", error);
+        return c.json("Failed to unpublish course", 500);
       }
     }
   );

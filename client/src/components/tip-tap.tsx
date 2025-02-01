@@ -31,7 +31,7 @@ const Tiptap = ({ initialValue, onChange }: TiptapProps) => {
     editorProps: {
       attributes: {
         class:
-          "rounded-md border min-h-[150px] border-input bg-background focus:ring-offset-2 disabled:cursor-not-allows disabled:opacity-50 p-2 prose prose-sm dark:prose-headings:text-white dark:text-white text-black sm:prose-base",
+          "rounded-md border min-h-[150px] border-input bg-background focus:ring-offset-2 disabled:cursor-not-allows disabled:opacity-50 p-2 prose prose-sm dark:prose-headings:text-white dark:prose-strong:text-white dark:text-white text-black sm:prose-base",
       },
     },
     onUpdate({ editor }) {

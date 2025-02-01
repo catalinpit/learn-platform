@@ -2,7 +2,6 @@ import { zValidator } from "@hono/zod-validator";
 
 import db from "@/db";
 import { createRouter } from "@/lib/create-app";
-import { loggedIn } from "@/middleware/auth";
 import { ZGetAllCoursesSchema, ZGetCourseByIdSchema } from "@/shared/types";
 
 const router = createRouter()
@@ -13,7 +12,6 @@ const router = createRouter()
         return c.json("Invalid parameters", 400);
       }
     }),
-    loggedIn,
     async (c) => {
       const { query, page, perPage } = c.req.valid("query");
 
@@ -47,7 +45,6 @@ const router = createRouter()
   )
   .get(
     "/courses/:id",
-    loggedIn,
     zValidator("param", ZGetCourseByIdSchema, (result, c) => {
       if (!result.success) {
         return c.json("Invalid ID", 400);

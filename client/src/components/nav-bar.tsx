@@ -28,7 +28,7 @@ export function NavBar() {
   ];
 
   return (
-    <nav className="sticky top-0 shadow-sm ring-1 ring-indigo-100/10 z-50">
+    <nav className="sticky top-0 shadow-sm ring-1 bg-background ring-indigo-100/10 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">

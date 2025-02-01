@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   getCreatorCourseByIdOptions,
   createCourseChapter,
@@ -6,9 +7,12 @@ import {
   updateCourseChapter,
   updateCourseLesson,
   deleteCourseLesson,
+  publishCourse,
+  unpublishCourse,
+  deleteCourse,
 } from "@/lib/api";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Card,
   CardContent,
@@ -20,7 +24,6 @@ import { ChapterForm } from "@/components/course-forms/chapter-form";
 import { UpdateChapterForm } from "@/components/course-forms/update-chapter-form";
 import { LessonForm } from "@/components/course-forms/lesson-form";
 import { UpdateLessonForm } from "@/components/course-forms/update-lesson-form";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import {
   TCreateChapterType,
@@ -43,6 +46,8 @@ export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
 function RouteComponent() {
   const { courseId } = Route.useParams();
   const { queryClient } = Route.useRouteContext();
+  const navigate = useNavigate();
+
   const [showChapterForm, setShowChapterForm] = useState(false);
   const [showLessonForm, setShowLessonForm] = useState(false);
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(
@@ -114,8 +119,26 @@ function RouteComponent() {
     },
   });
 
-  if ("message" in course) {
-    return <div>Error: {course.message}</div>;
+  const deleteCourseMutation = useMutation({
+    mutationFn: (id: string) => {
+      return deleteCourse(id);
+    },
+  });
+
+  const publishCourseMutation = useMutation({
+    mutationFn: (id: string) => {
+      return publishCourse(id);
+    },
+  });
+
+  const unpublishCourseMutation = useMutation({
+    mutationFn: (id: string) => {
+      return unpublishCourse(id);
+    },
+  });
+
+  if (!course) {
+    return <div>Course not found</div>;
   }
 
   const handleChapterSubmit = (values: TCreateChapterType) => {
@@ -224,6 +247,49 @@ function RouteComponent() {
     });
   };
 
+  const handleDeleteCourse = () => {
+    deleteCourseMutation.mutate(courseId, {
+      onSuccess: () => {
+        navigate({ to: "/creator/dashboard" });
+
+        toast.success("Course has been deleted successfully.");
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+  };
+
+  const handlePublishCourse = () => {
+    publishCourseMutation.mutate(courseId, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
+        });
+
+        toast.success("Course has been published successfully.");
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+  };
+
+  const handleUnpublishCourse = () => {
+    unpublishCourseMutation.mutate(courseId, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
+        });
+
+        toast.success("Course has been unpublished successfully.");
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+  };
+
   const handleLessonClick = (lessonId: string, isFree: boolean) => {
     if (!isFree) {
       return;
@@ -252,7 +318,7 @@ function RouteComponent() {
             {course.title}
           </CardTitle>
           <CardDescription>
-            <div className="prose dark:prose-headings:text-white dark:text-white">
+            <div className="prose dark:prose-headings:text-white dark:text-white dark:prose-strong:text-white">
               {/* TODO: FIX THIS ASAP */}
               <div dangerouslySetInnerHTML={{ __html: course.description }} />
             </div>
@@ -260,7 +326,7 @@ function RouteComponent() {
         </CardHeader>
 
         <CardContent>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 mb-4">
             {course.tags.map((tag) => (
               <span
                 key={tag}
@@ -270,23 +336,51 @@ function RouteComponent() {
               </span>
             ))}
           </div>
+
+          <div className="flex flex-col md:flex-row gap-2">
+            <Button
+              onClick={() => navigate({ to: `/creator/${courseId}/update` })}
+              variant="outline"
+            >
+              Edit Course
+            </Button>
+            <Button
+              onClick={
+                course.isPublished ? handleUnpublishCourse : handlePublishCourse
+              }
+              variant="default"
+              disabled={
+                publishCourseMutation.isPending ||
+                unpublishCourseMutation.isPending
+              }
+            >
+              {course.isPublished ? "Unpublish" : "Publish"} Course
+            </Button>
+            <Button
+              onClick={() => {
+                if (confirm("Are you sure you want to delete this course?")) {
+                  handleDeleteCourse();
+                }
+              }}
+              variant="destructive"
+            >
+              Delete Course
+            </Button>
+            <Button
+              onClick={() => {
+                setShowChapterForm(true);
+                setShowLessonForm(false);
+                setChapterToEdit(null);
+                setLessonToEdit(null);
+              }}
+            >
+              Add Chapter
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
       <div className="mx-8">
-        <div className="flex gap-4 mb-8">
-          <Button
-            onClick={() => {
-              setShowChapterForm(true);
-              setShowLessonForm(false);
-              setChapterToEdit(null);
-              setLessonToEdit(null);
-            }}
-          >
-            Add Chapter
-          </Button>
-        </div>
-
         {showChapterForm && (
           <ChapterForm
             onSubmit={handleChapterSubmit}

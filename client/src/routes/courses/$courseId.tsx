@@ -55,7 +55,8 @@ export function CoursePage() {
             {course.title}
           </CardTitle>
           <CardDescription>
-            <div className="prose dark:prose-headings:text-white dark:text-white">
+            <div className="prose dark:prose-headings:text-white dark:text-white dark:prose-strong:text-white">
+              {/* TODO: FIX THIS ASAP */}
               <div dangerouslySetInnerHTML={{ __html: course.description }} />
             </div>
           </CardDescription>

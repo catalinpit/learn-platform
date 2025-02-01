@@ -245,3 +245,48 @@ export const deleteCourseLesson = async (
   const lesson = await res.json();
   return lesson;
 };
+
+export const deleteCourse = async (id: string) => {
+  const res = await client.creator.courses[":id"].$delete({
+    param: {
+      id,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete course");
+  }
+
+  const course = await res.json();
+  return course;
+};
+
+export const publishCourse = async (id: string) => {
+  const res = await client.creator.courses[":id"].publish.$post({
+    param: {
+      id,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to publish course");
+  }
+
+  const course = await res.json();
+  return course;
+};
+
+export const unpublishCourse = async (id: string) => {
+  const res = await client.creator.courses[":id"].unpublish.$post({
+    param: {
+      id,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to unpublish course");
+  }
+
+  const course = await res.json();
+  return course;
+};
