@@ -92,12 +92,3 @@ export function CoursePage() {
     </>
   );
 }
-
-export const Route = createFileRoute("/courses/$courseId")({
-  component: CoursePage,
-  loader: async ({ params, context }) => {
-    return await context.queryClient.ensureQueryData(
-      getCourseByIdQueryOptions(params.courseId)
-    );
-  },
-});
