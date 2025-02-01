@@ -28,7 +28,7 @@ export function NavBar() {
   ];
 
   return (
-    <nav className="sticky top-0 shadow-xl ring-1 ring-indigo-100/10 bg-gray-950 z-50">
+    <nav className="sticky top-0 shadow-sm ring-1 ring-indigo-100/10 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
@@ -36,6 +36,7 @@ export function NavBar() {
               <>
                 <Link
                   to="/"
+                  search={{ search: "", page: 1, perPage: 10 }}
                   className="text-xl text-background dark:text-foreground font-bold md:block hidden"
                 >
                   Learn Course
@@ -45,7 +46,11 @@ export function NavBar() {
                 </div>
               </>
             ) : (
-              <Link to="/" className="text-xl font-bold">
+              <Link
+                to="/"
+                search={{ search: "", page: 1, perPage: 10 }}
+                className="text-xl font-bold"
+              >
                 Learn Course
               </Link>
             )}
