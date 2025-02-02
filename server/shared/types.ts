@@ -1,4 +1,4 @@
-import type { User } from "@prisma/client";
+import type { Chapter, Lesson, User } from "@prisma/client";
 import type { PinoLogger } from "hono-pino";
 
 import { Role } from "@prisma/client";
@@ -20,7 +20,7 @@ export interface AuthType {
   };
 }
 
-export { type AppType, Role, type User };
+export { type AppType, type Chapter, type Lesson, Role, type User };
 
 ////////////////////////////
 // Courses Router Schemas //

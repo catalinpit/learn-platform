@@ -7,44 +7,30 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-interface Lesson {
-  id: string;
-  title: string;
-  content: string;
-  isFree: boolean;
-}
-
-interface Chapter {
-  id: string;
-  title: string;
-  description: string;
-  isFree: boolean;
-  lessons: Lesson[];
-}
+import { ConfirmDeleteLessonDialog } from "@/components/confirmation-dialogs/confirm-delete-lesson-dialog";
+import { ConfirmDeleteChapterDialog } from "@/components/confirmation-dialogs/confirm-delete-chapter-dialog";
+import { Chapter, Lesson } from "@server/shared/types";
 
 interface CourseChapterListProps {
-  chapters: Chapter[];
+  chapters: (Chapter & { lessons: Lesson[] })[];
   isEditing?: boolean;
   expandedLessonId: string | null;
+  courseId: string;
   onLessonClick?: (lessonId: string, isFree: boolean) => void;
   onAddLesson?: (chapterId: string) => void;
   onEditChapter?: (chapterId: string) => void;
-  onDeleteChapter?: (chapterId: string) => void;
   onEditLesson?: (lessonId: string, chapterId: string) => void;
-  onDeleteLesson?: (lessonId: string, chapterId: string) => void;
 }
 
 export function CourseChapterList({
   chapters,
   isEditing = false,
   expandedLessonId,
+  courseId,
   onLessonClick,
   onAddLesson,
   onEditChapter,
-  onDeleteChapter,
   onEditLesson,
-  onDeleteLesson,
 }: CourseChapterListProps) {
   return (
     <div className="my-8 space-y-6">
@@ -76,13 +62,10 @@ export function CourseChapterList({
                   >
                     Edit
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => onDeleteChapter?.(chapter.id)}
-                  >
-                    Delete
-                  </Button>
+                  <ConfirmDeleteChapterDialog
+                    courseId={courseId}
+                    chapter={chapter}
+                  />
                 </div>
               )}
             </CardTitle>
@@ -128,15 +111,11 @@ export function CourseChapterList({
                         >
                           Edit
                         </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() =>
-                            onDeleteLesson?.(lesson.id, chapter.id)
-                          }
-                        >
-                          Delete
-                        </Button>
+                        <ConfirmDeleteLessonDialog
+                          courseId={courseId}
+                          chapterId={chapter.id}
+                          lesson={lesson}
+                        />
                       </div>
                     )}
                   </div>

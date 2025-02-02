@@ -3,13 +3,11 @@ import {
   getCreatorCourseByIdOptions,
   createCourseChapter,
   createChapterLesson,
-  deleteCourseChapter,
   updateCourseChapter,
   updateCourseLesson,
-  deleteCourseLesson,
+  deleteCourse,
   publishCourse,
   unpublishCourse,
-  deleteCourse,
 } from "@/lib/api";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -33,6 +31,7 @@ import {
 } from "@server/shared/types";
 import { toast } from "sonner";
 import { CourseChapterList } from "@/components/course-chapters/course-chapter-list";
+import { ConfirmDeleteCourseDialog } from "@/components/confirmation-dialogs/confirm-delete-course-dialog";
 
 export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
   component: RouteComponent,
@@ -57,6 +56,7 @@ function RouteComponent() {
   const [chapterToEdit, setChapterToEdit] = useState<string | null>(null);
   const [lessonToEdit, setLessonToEdit] = useState<string | null>(null);
   const [lessonChapterId, setLessonChapterId] = useState<string | null>(null);
+  const [showDeleteCourseDialog, setShowDeleteCourseDialog] = useState(false);
 
   const { data: course } = useSuspenseQuery(
     getCreatorCourseByIdOptions(courseId)
@@ -88,12 +88,6 @@ function RouteComponent() {
     },
   });
 
-  const deleteChapterMutation = useMutation({
-    mutationFn: (chapterId: string) => {
-      return deleteCourseChapter(courseId, chapterId);
-    },
-  });
-
   const updateCourseLessonMutation = useMutation({
     mutationFn: (values: TUpdateLessonType) => {
       if (!lessonToEdit || !lessonChapterId) {
@@ -106,22 +100,6 @@ function RouteComponent() {
         lessonToEdit,
         values
       );
-    },
-  });
-
-  const deleteLessonMutation = useMutation({
-    mutationFn: (lessonId: string) => {
-      if (!lessonChapterId) {
-        throw new Error("Lesson's chapter ID is required");
-      }
-
-      return deleteCourseLesson(courseId, lessonChapterId, lessonId);
-    },
-  });
-
-  const deleteCourseMutation = useMutation({
-    mutationFn: (id: string) => {
-      return deleteCourse(id);
     },
   });
 
@@ -178,22 +156,6 @@ function RouteComponent() {
     });
   };
 
-  const handleDeleteChapter = (chapterId: string) => {
-    deleteChapterMutation.mutate(chapterId, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
-        });
-
-        setLessonChapterId(null);
-        toast.success("Chapter has been deleted successfully.");
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-    });
-  };
-
   const handleEditChapter = (values: TUpdateChapterType) => {
     updateChapterMutation.mutate(values, {
       onSuccess: () => {
@@ -225,34 +187,6 @@ function RouteComponent() {
         });
 
         toast.success("Lesson has been updated successfully.");
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-    });
-  };
-
-  const handleDeleteLesson = (lessonId: string) => {
-    deleteLessonMutation.mutate(lessonId, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
-        });
-
-        toast.success("Lesson has been deleted successfully.");
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-    });
-  };
-
-  const handleDeleteCourse = () => {
-    deleteCourseMutation.mutate(courseId, {
-      onSuccess: () => {
-        navigate({ to: "/creator/dashboard" });
-
-        toast.success("Course has been deleted successfully.");
       },
       onError: (error) => {
         console.error(error);
@@ -297,6 +231,17 @@ function RouteComponent() {
 
     setExpandedLessonId(expandedLessonId === lessonId ? null : lessonId);
   };
+
+  const transformedChapters = course.chapters.map((chapter) => ({
+    ...chapter,
+    createdAt: new Date(chapter.createdAt),
+    updatedAt: new Date(chapter.updatedAt),
+    lessons: chapter.lessons.map((lesson) => ({
+      ...lesson,
+      createdAt: new Date(lesson.createdAt),
+      updatedAt: new Date(lesson.updatedAt),
+    })),
+  }));
 
   return (
     <>
@@ -349,6 +294,7 @@ function RouteComponent() {
                 course.isPublished ? handleUnpublishCourse : handlePublishCourse
               }
               variant="default"
+              size="sm"
               disabled={
                 publishCourseMutation.isPending ||
                 unpublishCourseMutation.isPending
@@ -357,12 +303,9 @@ function RouteComponent() {
               {course.isPublished ? "Unpublish" : "Publish"} Course
             </Button>
             <Button
-              onClick={() => {
-                if (confirm("Are you sure you want to delete this course?")) {
-                  handleDeleteCourse();
-                }
-              }}
+              onClick={() => setShowDeleteCourseDialog(true)}
               variant="destructive"
+              size="sm"
             >
               Delete Course
             </Button>
@@ -373,6 +316,7 @@ function RouteComponent() {
                 setChapterToEdit(null);
                 setLessonToEdit(null);
               }}
+              size="sm"
             >
               Add Chapter
             </Button>
@@ -419,8 +363,9 @@ function RouteComponent() {
         )}
 
         <CourseChapterList
-          chapters={course.chapters}
+          chapters={transformedChapters}
           isEditing={true}
+          courseId={courseId}
           expandedLessonId={expandedLessonId}
           onLessonClick={handleLessonClick}
           onAddLesson={(chapterId: string) => {
@@ -436,7 +381,6 @@ function RouteComponent() {
             setShowLessonForm(false);
             setLessonToEdit(null);
           }}
-          onDeleteChapter={handleDeleteChapter}
           onEditLesson={(lessonId: string, chapterId: string) => {
             setChapterToEdit(null);
             setLessonChapterId(chapterId);
@@ -444,12 +388,15 @@ function RouteComponent() {
             setShowLessonForm(false);
             setLessonToEdit(lessonId);
           }}
-          onDeleteLesson={(lessonId: string, chapterId: string) => {
-            setLessonChapterId(chapterId);
-            handleDeleteLesson(lessonId);
-          }}
         />
       </div>
+
+      <ConfirmDeleteCourseDialog
+        open={showDeleteCourseDialog}
+        onOpenChange={setShowDeleteCourseDialog}
+        courseId={courseId}
+        courseTitle={course.title}
+      />
     </>
   );
 }
