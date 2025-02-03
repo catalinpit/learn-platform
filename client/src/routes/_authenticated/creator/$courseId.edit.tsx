@@ -22,7 +22,7 @@ import { ChapterForm } from "@/components/course-forms/chapter-form";
 import { UpdateChapterForm } from "@/components/course-forms/update-chapter-form";
 import { LessonForm } from "@/components/course-forms/lesson-form";
 import { UpdateLessonForm } from "@/components/course-forms/update-lesson-form";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   TCreateChapterType,
   TCreateLessonType,
@@ -57,6 +57,14 @@ function RouteComponent() {
   const [lessonToEdit, setLessonToEdit] = useState<string | null>(null);
   const [lessonChapterId, setLessonChapterId] = useState<string | null>(null);
   const [showDeleteCourseDialog, setShowDeleteCourseDialog] = useState(false);
+
+  const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showChapterForm || chapterToEdit || showLessonForm || lessonToEdit) {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [showChapterForm, chapterToEdit, showLessonForm, lessonToEdit]);
 
   const { data: course } = useSuspenseQuery(
     getCreatorCourseByIdOptions(courseId)
@@ -324,7 +332,7 @@ function RouteComponent() {
         </CardContent>
       </Card>
 
-      <div className="mx-8">
+      <div className="mx-8" ref={formRef}>
         {showChapterForm && (
           <ChapterForm
             onSubmit={handleChapterSubmit}
