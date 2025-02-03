@@ -9,48 +9,44 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { deleteCourse, getCreatorCourseByIdOptions } from "@/lib/api";
+import { getCreatorCourseByIdOptions, publishCourse } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-interface ConfirmDeleteCourseDialogProps {
+interface ConfirmPublishCourseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   courseId: string;
   courseTitle: string;
 }
 
-export function ConfirmDeleteCourseDialog({
+export function ConfirmPublishCourseDialog({
   open,
   onOpenChange,
   courseId,
   courseTitle,
-}: ConfirmDeleteCourseDialogProps) {
+}: ConfirmPublishCourseDialogProps) {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
-
   const [confirmCourseTitle, setConfirmCourseTitle] = useState("");
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteCourse,
+  const publishMutation = useMutation({
+    mutationFn: publishCourse,
   });
 
-  const handleDeleteCourse = () => {
-    deleteMutation.mutate(courseId, {
+  const handlePublishCourse = () => {
+    publishMutation.mutate(courseId, {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
         });
-        onOpenChange(false);
 
-        toast.success("Course deleted successfully");
-        navigate({ to: "/creator/dashboard" });
+        onOpenChange(false);
+        toast.success("Course published successfully");
       },
       onError: (error) => {
-        toast.error("Failed to delete course");
+        toast.error("Failed to publish course");
         console.error(error);
       },
     });
@@ -60,11 +56,10 @@ export function ConfirmDeleteCourseDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete course "{courseTitle}"</AlertDialogTitle>
+          <AlertDialogTitle>Publish course "{courseTitle}"</AlertDialogTitle>
           <AlertDialogDescription>
-            This deletes the course and{" "}
-            <span className="underline">all of its chapters and lessons</span>.
-            Are you sure you want to do this? This action cannot be undone.
+            This will make your course publicly available to all users. Make
+            sure all your content is ready.
             <br />
             <br />
             <span>Type the course title to confirm - "{courseTitle}"</span>
@@ -79,14 +74,14 @@ export function ConfirmDeleteCourseDialog({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction asChild>
             <Button
-              variant="destructive"
+              variant="default"
               size="sm"
-              onClick={handleDeleteCourse}
+              onClick={handlePublishCourse}
               disabled={
-                deleteMutation.isPending || confirmCourseTitle !== courseTitle
+                publishMutation.isPending || confirmCourseTitle !== courseTitle
               }
             >
-              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              {publishMutation.isPending ? "Publishing..." : "Publish"}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -5,9 +5,6 @@ import {
   createChapterLesson,
   updateCourseChapter,
   updateCourseLesson,
-  deleteCourse,
-  publishCourse,
-  unpublishCourse,
 } from "@/lib/api";
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -32,6 +29,8 @@ import {
 import { toast } from "sonner";
 import { CourseChapterList } from "@/components/course-chapters/course-chapter-list";
 import { ConfirmDeleteCourseDialog } from "@/components/confirmation-dialogs/confirm-delete-course-dialog";
+import { ConfirmPublishCourseDialog } from "@/components/confirmation-dialogs/confirm-publish-course-dialog";
+import { ConfirmUnpublishCourseDialog } from "@/components/confirmation-dialogs/confirm-unpublish-course-dialog";
 
 export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
   component: RouteComponent,
@@ -57,6 +56,9 @@ function RouteComponent() {
   const [lessonToEdit, setLessonToEdit] = useState<string | null>(null);
   const [lessonChapterId, setLessonChapterId] = useState<string | null>(null);
   const [showDeleteCourseDialog, setShowDeleteCourseDialog] = useState(false);
+  const [showPublishCourseDialog, setShowPublishCourseDialog] = useState(false);
+  const [showUnpublishCourseDialog, setShowUnpublishCourseDialog] =
+    useState(false);
 
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -108,18 +110,6 @@ function RouteComponent() {
         lessonToEdit,
         values
       );
-    },
-  });
-
-  const publishCourseMutation = useMutation({
-    mutationFn: (id: string) => {
-      return publishCourse(id);
-    },
-  });
-
-  const unpublishCourseMutation = useMutation({
-    mutationFn: (id: string) => {
-      return unpublishCourse(id);
     },
   });
 
@@ -203,33 +193,11 @@ function RouteComponent() {
   };
 
   const handlePublishCourse = () => {
-    publishCourseMutation.mutate(courseId, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
-        });
-
-        toast.success("Course has been published successfully.");
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-    });
+    setShowPublishCourseDialog(true);
   };
 
   const handleUnpublishCourse = () => {
-    unpublishCourseMutation.mutate(courseId, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getCreatorCourseByIdOptions(courseId).queryKey,
-        });
-
-        toast.success("Course has been unpublished successfully.");
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-    });
+    setShowUnpublishCourseDialog(true);
   };
 
   const handleLessonClick = (lessonId: string, isFree: boolean) => {
@@ -301,14 +269,10 @@ function RouteComponent() {
               onClick={
                 course.isPublished ? handleUnpublishCourse : handlePublishCourse
               }
-              variant="default"
+              variant={course.isPublished ? "destructive" : "default"}
               size="sm"
-              disabled={
-                publishCourseMutation.isPending ||
-                unpublishCourseMutation.isPending
-              }
             >
-              {course.isPublished ? "Unpublish" : "Publish"} Course
+              {course.isPublished ? "Unpublish" : "Publish"}
             </Button>
             <Button
               onClick={() => setShowDeleteCourseDialog(true)}
@@ -402,6 +366,20 @@ function RouteComponent() {
       <ConfirmDeleteCourseDialog
         open={showDeleteCourseDialog}
         onOpenChange={setShowDeleteCourseDialog}
+        courseId={courseId}
+        courseTitle={course.title}
+      />
+
+      <ConfirmPublishCourseDialog
+        open={showPublishCourseDialog}
+        onOpenChange={setShowPublishCourseDialog}
+        courseId={courseId}
+        courseTitle={course.title}
+      />
+
+      <ConfirmUnpublishCourseDialog
+        open={showUnpublishCourseDialog}
+        onOpenChange={setShowUnpublishCourseDialog}
         courseId={courseId}
         courseTitle={course.title}
       />
