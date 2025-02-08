@@ -23,7 +23,7 @@ function Root() {
       <div className="mx-auto max-w-6xl pt-12">
         <Outlet />
       </div>
-      <Toaster />
+      <Toaster richColors={true} toastOptions={{}} />
       <TanStackRouterDevtools />
     </ThemeProvider>
   );

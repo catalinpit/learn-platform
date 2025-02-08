@@ -7,12 +7,16 @@ import NotFound from "./components/not-found";
 
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
+import { LoadingSpinner } from "./components/ui/loading-spinner";
 
 const queryClient = new QueryClient();
 
 const router = createRouter({
   routeTree,
   context: { auth: undefined, queryClient },
+  defaultPendingComponent: () => {
+    return <LoadingSpinner fullScreen />;
+  },
   defaultNotFoundComponent: () => {
     return <NotFound />;
   },

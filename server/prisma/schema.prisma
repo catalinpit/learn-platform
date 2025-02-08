@@ -19,6 +19,27 @@ enum Role {
   STUDENT
 }
 
+enum CourseTag {
+  JAVASCRIPT
+  TYPESCRIPT
+  REACT
+  NEXTJS
+  NODE
+  PYTHON
+  JAVA
+  GOLANG
+  CSS
+  HTML
+  DESIGN
+  DEVOPS
+  DATABASE
+  MOBILE
+  TESTING
+  SECURITY
+  TECHNICAL_WRITING
+  MARKETING
+}
+
 model User {
   id              String    @id @default(uuid())
   email           String    @unique
@@ -37,15 +58,15 @@ model User {
 }
 
 model Course {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   title       String
   description String
-  tags        String[]
+  tags        CourseTag[]
   coverImage  String?
-  price       Float    @default(10)
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  price       Float       @default(10)
+  isPublished Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   owner    User       @relation("CourseOwner", fields: [ownerId], references: [id])
   ownerId  String
@@ -57,18 +78,34 @@ model Course {
 }
 
 model Chapter {
-  id           String     @id @default(uuid())
-  title        String
-  descriptiont String
-  courseId     String
-  course       Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  isPublished  Boolean    @default(false)
-  isFree       Boolean    @default(false)
-  progress     Progress[]
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  courseId    String
+  course      Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  isPublished Boolean    @default(false)
+  isFree      Boolean    @default(false)
+  progress    Progress[]
+  lessons     Lesson[]
 
   @@index([courseId])
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  chapterId   String
+  chapter     Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  position    Int
+  isPublished Boolean  @default(false)
+  isFree      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([chapterId])
 }
 
 model Progress {

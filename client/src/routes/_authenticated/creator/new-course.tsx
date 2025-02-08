@@ -16,10 +16,12 @@ import type { TCreateCourseType } from "@server/shared/types";
 import { ZCreateCourseSchema } from "@server/shared/types";
 import { createCourse } from "@/lib/api";
 import Tiptap from "@/components/tip-tap";
+import { InfoCard } from "@/components/ui/info-card";
+import { TagsCombobox } from "@/components/ui/combobox";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/creator/new-course")({
   component: RouteComponent,
-  loader: async ({ params, context }) => {},
 });
 
 function RouteComponent() {
@@ -36,41 +38,65 @@ function RouteComponent() {
     },
   });
 
-  const requiredFields = form.getValues();
-  const totalFields = Object.keys(requiredFields).length;
-  const completedFields = Object.keys(requiredFields).filter(
-    (field) =>
-      requiredFields[field] !== "" &&
-      requiredFields[field] !== 0 &&
-      !(
-        Array.isArray(requiredFields[field]) &&
-        requiredFields[field].length === 0
-      )
+  const formValues = form.getValues();
+  const totalFields = Object.keys(formValues).length;
+
+  const isFieldEmpty = (value: unknown) => {
+    if (Array.isArray(value)) {
+      return value.length === 0;
+    }
+
+    if (typeof value === "number") {
+      return value === 0;
+    }
+
+    if (typeof value === "string") {
+      return value.trim() === "";
+    }
+
+    return true;
+  };
+
+  const completedFields = Object.entries(formValues).filter(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ([_, value]) => !isFieldEmpty(value)
   );
 
   const completionPercentage = Math.round(
     (completedFields.length / totalFields) * 100
   );
-  const completedFieldsProgress = `${completedFields.length}/${totalFields}`;
+  const completedFieldsProgress = `${completedFields.length} fields out of ${totalFields} completed`;
 
   const onSubmit = async (values: TCreateCourseType) => {
     try {
       const course = await createCourse(values);
 
-      navigate({ to: "/courses/$courseId", params: { courseId: course.id } });
+      navigate({
+        to: "/creator/$courseId/edit",
+        params: { courseId: course.id },
+      });
     } catch (error) {
       console.error(error);
       throw new Error("Failed to create course");
     }
   };
 
-  const tt = form.watch("description");
-
-  console.log({ tt });
-
   return (
     <div>
       <h2 className="text-2xl font-medium text-center">New Course Creation</h2>
+      <div className="px-6 pt-6">
+        <InfoCard
+          className={cn(
+            "max-w-3xl mx-auto",
+            completionPercentage === 100
+              ? "border-green-400 bg-green-50/10"
+              : "border-yellow-400 bg-yellow-50/10"
+          )}
+          title={`Course Creation Progress: ${completionPercentage}%`}
+          description={completedFieldsProgress}
+          variant={completionPercentage === 100 ? "success" : "warning"}
+        />
+      </div>
       <div className="max-w-3xl mx-auto p-6 sm:p-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="my-8">
@@ -121,12 +147,12 @@ function RouteComponent() {
                   <FormItem>
                     <FormLabel>Tags</FormLabel>
                     <FormDescription>
-                      Add relevant tags (comma-separated)
+                      Select relevant tags for your course
                     </FormDescription>
                     <FormControl>
-                      <Input
-                        placeholder="javascript, react, web development..."
-                        {...field}
+                      <TagsCombobox
+                        value={field.value}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
@@ -180,13 +206,11 @@ function RouteComponent() {
                   completedFields.length < totalFields
                 }
               >
-                Create Course
+                {completionPercentage < 100 ||
+                completedFields.length < totalFields
+                  ? "Fill all fields"
+                  : "Next Step"}
               </Button>
-
-              <p className="text-muted-foreground">
-                You completed {completionPercentage}% of the course creation
-                process. ({completedFieldsProgress} completed)
-              </p>
             </div>
           </form>
         </Form>

@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+import { CourseTag, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -12,16 +12,18 @@ const users = [
         {
           title: "Introduction to Web Development",
           description: "Learn the basics of HTML, CSS, and JavaScript",
-          tags: ["web", "frontend", "beginner"],
-          coverImage: "https://example.com/covers/web-dev-101.jpg",
+          tags: [CourseTag.HTML, CourseTag.CSS, CourseTag.JAVASCRIPT],
+          coverImage:
+            "https://images.unsplash.com/photo-1593720219276-0b1eacd0aef4?w=1200&auto=format&fit=crop&q=60",
           price: 59.99,
           isPublished: true,
         },
         {
           title: "Database Design Fundamentals",
           description: "Master the basics of database design and SQL",
-          tags: ["database", "sql", "backend"],
-          coverImage: "https://example.com/covers/database-101.jpg",
+          tags: [CourseTag.DATABASE],
+          coverImage:
+            "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=1200&auto=format&fit=crop&q=60",
           price: 59.99,
           isPublished: true,
         },
@@ -37,16 +39,18 @@ const users = [
         {
           title: "Advanced React Patterns",
           description: "Master advanced React concepts and patterns",
-          tags: ["react", "frontend", "advanced"],
-          coverImage: "https://example.com/covers/react-advanced.jpg",
+          tags: [CourseTag.REACT, CourseTag.JAVASCRIPT, CourseTag.TYPESCRIPT],
+          coverImage:
+            "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&auto=format&fit=crop&q=60",
           price: 79.99,
           isPublished: true,
         },
         {
           title: "TypeScript Deep Dive",
           description: "Everything you need to know about TypeScript",
-          tags: ["typescript", "javascript", "advanced"],
-          coverImage: "https://example.com/covers/typescript.jpg",
+          tags: [CourseTag.TYPESCRIPT, CourseTag.JAVASCRIPT],
+          coverImage:
+            "https://images.unsplash.com/photo-1629904853893-c2c8981a1dc5?w=1200&auto=format&fit=crop&q=60",
           price: 79.99,
           isPublished: true,
         },
@@ -62,8 +66,9 @@ const users = [
         {
           title: "DevOps Essentials",
           description: "Learn the fundamentals of DevOps practices",
-          tags: ["devops", "ci-cd", "automation"],
-          coverImage: "https://example.com/covers/devops.jpg",
+          tags: [CourseTag.DEVOPS],
+          coverImage:
+            "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=1200&auto=format&fit=crop&q=60",
           price: 69.99,
           isPublished: true,
         },
@@ -79,8 +84,9 @@ const users = [
         {
           title: "UI/UX Design Principles",
           description: "Create better user experiences with design thinking",
-          tags: ["design", "ui-ux", "user-experience"],
-          coverImage: "https://example.com/covers/ui-ux.jpg",
+          tags: [CourseTag.DESIGN],
+          coverImage:
+            "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&auto=format&fit=crop&q=60",
           price: 69.99,
           isPublished: true,
         },
@@ -96,8 +102,9 @@ const users = [
         {
           title: "Machine Learning Basics",
           description: "Introduction to ML concepts and applications",
-          tags: ["ml", "ai", "python"],
-          coverImage: "https://example.com/covers/ml.jpg",
+          tags: [CourseTag.PYTHON],
+          coverImage:
+            "https://images.unsplash.com/photo-1527474305487-b87b222841cc?w=1200&auto=format&fit=crop&q=60",
           price: 79.99,
           isPublished: true,
         },
@@ -120,6 +127,32 @@ async function seed() {
       },
     });
     createdUsers.push(created);
+  }
+
+  for (const user of createdUsers) {
+    for (const course of user.ownedCourses) {
+      const numChapters = Math.floor(Math.random() * 3) + 3;
+      for (let i = 0; i < numChapters; i++) {
+        await prisma.chapter.create({
+          data: {
+            title: `Chapter ${i + 1}`,
+            description: `Description for Chapter ${i + 1}`,
+            courseId: course.id,
+            isPublished: true,
+            isFree: i === 0,
+            lessons: {
+              create: Array.from({ length: 3 }, (_, j) => ({
+                title: `Lesson ${j + 1}`,
+                content: `Content for Lesson ${j + 1} of Chapter ${i + 1}`,
+                position: j + 1,
+                isPublished: true,
+                isFree: i === 0,
+              })),
+            },
+          },
+        });
+      }
+    }
   }
 
   // Create some course enrollments

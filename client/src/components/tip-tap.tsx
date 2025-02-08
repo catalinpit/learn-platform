@@ -12,6 +12,7 @@ const extensions = [
     heading: {
       levels: [1, 2, 3, 4],
     },
+    codeBlock: false,
   }),
   CodeBlockLowlight.configure({
     lowlight,
@@ -30,7 +31,7 @@ const Tiptap = ({ initialValue, onChange }: TiptapProps) => {
     editorProps: {
       attributes: {
         class:
-          "rounded-md border min-h-[150px] border-input bg-background focus:ring-offset-2 disabled:cursor-not-allows disabled:opacity-50 p-2 prose prose-sm dark:text-white text-black sm:prose-base",
+          "rounded-md border min-h-[150px] border-input bg-background focus:ring-offset-2 disabled:cursor-not-allows disabled:opacity-50 p-2 prose prose-sm max-w-none dark:prose-headings:text-white dark:prose-strong:text-white dark:text-white text-black sm:prose-base [&>*]:w-full",
       },
     },
     onUpdate({ editor }) {
@@ -39,10 +40,10 @@ const Tiptap = ({ initialValue, onChange }: TiptapProps) => {
   });
 
   return (
-    <div className="flex flex-col justify-stretch">
+    <>
       <ToolBar editor={editor} />
       <EditorContent editor={editor} />
-    </div>
+    </>
   );
 };
 

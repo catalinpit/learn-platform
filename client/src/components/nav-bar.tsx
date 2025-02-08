@@ -14,13 +14,21 @@ export function NavBar() {
 
   const showCreateCourseButton = canCreateCourse(session?.user?.roles ?? []);
 
+  const commonLinks = [{ name: "Home", href: "/" }];
+
+  const studentLinks = [
+    { name: "My Learning", href: "/student/courses" },
+    { name: "Browse Courses", href: "/courses" },
+    { name: "Wishlist", href: "/student/wishlist" },
+  ];
+
   const links = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
+    ...commonLinks,
+    ...(session && !showCreateCourseButton ? studentLinks : []),
   ];
 
   return (
-    <nav className="sticky top-0 shadow-sm ring-1 ring-indigo-100/10 z-50">
+    <nav className="sticky top-0 shadow-sm ring-1 bg-background ring-indigo-100/10 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
@@ -78,11 +86,21 @@ export function NavBar() {
             ) : (
               <>
                 {showCreateCourseButton && (
-                  <Button variant="outline">
-                    <Link to="/creator/new-course" className="text-foreground">
-                      Create Course
-                    </Link>
-                  </Button>
+                  <>
+                    <Button variant="outline">
+                      <Link
+                        to="/creator/new-course"
+                        className="text-foreground"
+                      >
+                        Create Course
+                      </Link>
+                    </Button>
+                    <Button variant="outline">
+                      <Link to="/creator/dashboard" className="text-foreground">
+                        Creator Dashboard
+                      </Link>
+                    </Button>
+                  </>
                 )}
                 <MenuSwitcher />
                 <ModeToggle />
@@ -150,18 +168,28 @@ export function NavBar() {
               </Link>
             </>
           ) : (
-            showCreateCourseButton && (
-              <div className="text-center">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Link to="/creator/new-course" className="text-foreground">
-                    Create Course
-                  </Link>
-                </Button>
-              </div>
-            )
+            <div className="text-center space-y-2">
+              {showCreateCourseButton && (
+                <div className="flex flex-col space-y-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Link to="/creator/new-course" className="text-foreground">
+                      Create Course
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Link to="/creator/dashboard" className="text-foreground">
+                      Creator Dashboard
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </div>
           )}
           <div className="flex justify-center pt-2">
             <ModeToggle />

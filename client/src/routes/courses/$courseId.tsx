@@ -9,6 +9,9 @@ import {
 } from "@/components/ui/card";
 import { getCourseByIdQueryOptions } from "@/lib/api";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { CourseChapterList } from "@/components/course-chapters/course-chapter-list";
+import { courseTagToString } from "@/lib/utils";
 
 export const Route = createFileRoute("/courses/$courseId")({
   component: CoursePage,
@@ -19,8 +22,9 @@ export const Route = createFileRoute("/courses/$courseId")({
   },
 });
 
-function CoursePage() {
+export function CoursePage() {
   const { courseId } = Route.useParams();
+  const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
   const { data: course } = useSuspenseQuery(
     getCourseByIdQueryOptions(courseId)
@@ -30,42 +34,65 @@ function CoursePage() {
     return <div>Error: {course.message}</div>;
   }
 
+  const handleLessonClick = (lessonId: string, isFree: boolean) => {
+    if (!isFree) {
+      return;
+    }
+
+    setExpandedLessonId(expandedLessonId === lessonId ? null : lessonId);
+  };
+
+  const tags = course.tags.map((tag) => courseTagToString(tag));
+
   return (
-    <Card className="max-w-3xl mx-auto my-8">
-      <img
-        src={course.coverImage || undefined}
-        alt={course.title}
-        className="w-full object-cover h-64 rounded-t-xl"
-      />
+    <>
+      <Card className="mx-8 my-8">
+        <img
+          src={course.coverImage || undefined}
+          alt={course.title}
+          className="w-full object-cover h-64 rounded-t-xl"
+        />
 
-      <CardHeader>
-        <CardTitle>{course.title}</CardTitle>
-        <CardDescription>
-          <div className="prose">
-            // TODO: fix this asap
-            <div dangerouslySetInnerHTML={{ __html: course.description }} />
+        <CardHeader>
+          <CardTitle className="text-5xl py-4 font-base">
+            {course.title}
+          </CardTitle>
+          <CardDescription>
+            <div className="prose dark:prose-headings:text-white dark:text-white dark:prose-strong:text-white">
+              {/* TODO: FIX THIS ASAP */}
+              <div dangerouslySetInnerHTML={{ __html: course.description }} />
+            </div>
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-1 bg-neutral-100 rounded-full text-sm dark:bg-neutral-800"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
-        </CardDescription>
-      </CardHeader>
+        </CardContent>
 
-      <CardContent>
-        <div className="flex flex-wrap gap-2">
-          {course.tags.map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-1 bg-neutral-100 rounded-full text-sm dark:bg-neutral-800"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </CardContent>
+        <CardFooter>
+          <p className="font-semibold">
+            {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
+          </p>
+        </CardFooter>
+      </Card>
 
-      <CardFooter>
-        <p className="font-semibold">
-          {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
-        </p>
-      </CardFooter>
-    </Card>
+      <div className="my-8 mx-8 space-y-6">
+        <CourseChapterList
+          chapters={course.chapters}
+          isEditing={false}
+          expandedLessonId={expandedLessonId}
+          onLessonClick={handleLessonClick}
+        />
+      </div>
+    </>
   );
 }
