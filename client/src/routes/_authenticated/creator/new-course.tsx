@@ -38,16 +38,28 @@ function RouteComponent() {
     },
   });
 
-  const requiredFields = form.getValues();
-  const totalFields = Object.keys(requiredFields).length;
-  const completedFields = Object.keys(requiredFields).filter(
-    (field) =>
-      requiredFields[field] !== "" &&
-      requiredFields[field] !== 0 &&
-      !(
-        Array.isArray(requiredFields[field]) &&
-        requiredFields[field].length === 0
-      )
+  const formValues = form.getValues();
+  const totalFields = Object.keys(formValues).length;
+
+  const isFieldEmpty = (value: unknown) => {
+    if (Array.isArray(value)) {
+      return value.length === 0;
+    }
+
+    if (typeof value === "number") {
+      return value === 0;
+    }
+
+    if (typeof value === "string") {
+      return value.trim() === "";
+    }
+
+    return true;
+  };
+
+  const completedFields = Object.entries(formValues).filter(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ([_, value]) => !isFieldEmpty(value)
   );
 
   const completionPercentage = Math.round(
