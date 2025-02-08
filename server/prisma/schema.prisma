@@ -19,6 +19,27 @@ enum Role {
   STUDENT
 }
 
+enum CourseTag {
+  JAVASCRIPT
+  TYPESCRIPT
+  REACT
+  NEXTJS
+  NODE
+  PYTHON
+  JAVA
+  GOLANG
+  CSS
+  HTML
+  DESIGN
+  DEVOPS
+  DATABASE
+  MOBILE
+  TESTING
+  SECURITY
+  TECHNICAL_WRITING
+  MARKETING
+}
+
 model User {
   id              String    @id @default(uuid())
   email           String    @unique
@@ -37,15 +58,15 @@ model User {
 }
 
 model Course {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   title       String
   description String
-  tags        String[]
+  tags        CourseTag[]
   coverImage  String?
-  price       Float    @default(10)
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  price       Float       @default(10)
+  isPublished Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   owner    User       @relation("CourseOwner", fields: [ownerId], references: [id])
   ownerId  String

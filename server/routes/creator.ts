@@ -11,6 +11,7 @@ import {
   ZGetCourseByIdSchema,
   ZGetLessonByIdSchema,
   ZUpdateChapterSchema,
+  ZUpdateCourseSchema,
   ZUpdateLessonSchema,
 } from "@/shared/types";
 
@@ -50,6 +51,54 @@ const router = createRouter()
       } catch (error) {
         console.error("Failed to get course:", error);
         return c.json("Failed to get course", 500);
+      }
+    }
+  )
+  .patch(
+    "/creator/courses/:id",
+    loggedIn,
+    zValidator("param", ZGetCourseByIdSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid ID", 400);
+      }
+    }),
+    zValidator("json", ZUpdateCourseSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid data", 400);
+      }
+    }),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      const courseCreator = c.get("Variables").user;
+
+      if (!courseCreator) {
+        return c.json("Something went wrong", 500);
+      }
+
+      const course = await db.course.findUnique({
+        where: {
+          id,
+          ownerId: courseCreator.id,
+        },
+      });
+
+      if (!course) {
+        return c.json("Course not found", 404);
+      }
+
+      try {
+        const updatedCourse = await db.course.update({
+          where: {
+            id,
+            ownerId: courseCreator.id,
+          },
+          data: c.req.valid("json"),
+        });
+
+        return c.json(updatedCourse);
+      } catch (error) {
+        console.error("Failed to update course:", error);
+        return c.json("Failed to update course", 500);
       }
     }
   )

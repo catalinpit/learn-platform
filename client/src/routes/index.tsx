@@ -17,6 +17,7 @@ import { Link } from "@tanstack/react-router";
 import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
+import { courseTagToString } from "@/lib/utils";
 
 export type IndexRouteParams = {
   search: string;
@@ -119,7 +120,7 @@ function Index() {
                     key={tag}
                     className="px-2 py-1 bg-neutral-100 rounded-full text-sm dark:bg-neutral-800"
                   >
-                    {tag}
+                    {courseTagToString(tag)}
                   </span>
                 ))}
               </div>

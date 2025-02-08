@@ -37,8 +37,6 @@ export function UpdateLessonForm({
     },
   });
 
-  console.log({ defaultValues });
-
   return (
     <div>
       <Form {...form}>

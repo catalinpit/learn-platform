@@ -11,6 +11,7 @@ import { getCourseByIdQueryOptions } from "@/lib/api";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { CourseChapterList } from "@/components/course-chapters/course-chapter-list";
+import { courseTagToString } from "@/lib/utils";
 
 export const Route = createFileRoute("/courses/$courseId")({
   component: CoursePage,
@@ -41,6 +42,8 @@ export function CoursePage() {
     setExpandedLessonId(expandedLessonId === lessonId ? null : lessonId);
   };
 
+  const tags = course.tags.map((tag) => courseTagToString(tag));
+
   return (
     <>
       <Card className="mx-8 my-8">
@@ -64,7 +67,7 @@ export function CoursePage() {
 
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {course.tags.map((tag) => (
+            {tags.map((tag) => (
               <span
                 key={tag}
                 className="px-2 py-1 bg-neutral-100 rounded-full text-sm dark:bg-neutral-800"

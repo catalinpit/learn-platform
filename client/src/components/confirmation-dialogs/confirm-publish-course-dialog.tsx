@@ -15,18 +15,20 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-interface ConfirmPublishCourseDialogProps {
+type ConfirmPublishCourseDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   courseId: string;
   courseTitle: string;
-}
+  disabled: boolean;
+};
 
 export function ConfirmPublishCourseDialog({
   open,
   onOpenChange,
   courseId,
   courseTitle,
+  disabled,
 }: ConfirmPublishCourseDialogProps) {
   const queryClient = useQueryClient();
   const [confirmCourseTitle, setConfirmCourseTitle] = useState("");
@@ -72,13 +74,14 @@ export function ConfirmPublishCourseDialog({
         />
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild>
+          <AlertDialogAction variant="default" asChild>
             <Button
-              variant="default"
               size="sm"
               onClick={handlePublishCourse}
               disabled={
-                publishMutation.isPending || confirmCourseTitle !== courseTitle
+                publishMutation.isPending ||
+                confirmCourseTitle !== courseTitle ||
+                disabled
               }
             >
               {publishMutation.isPending ? "Publishing..." : "Publish"}

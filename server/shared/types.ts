@@ -1,7 +1,7 @@
 import type { Chapter, Lesson, User } from "@prisma/client";
 import type { PinoLogger } from "hono-pino";
 
-import { Role } from "@prisma/client";
+import { CourseTag, Role } from "@prisma/client";
 import { z } from "zod";
 
 import type { AppType } from "../app";
@@ -20,7 +20,7 @@ export interface AuthType {
   };
 }
 
-export { type AppType, type Chapter, type Lesson, Role, type User };
+export { type AppType, type Chapter, CourseTag, type Lesson, Role, type User };
 
 ////////////////////////////
 // Courses Router Schemas //
@@ -56,16 +56,13 @@ export type TGetLessonByIdType = z.infer<typeof ZGetLessonByIdSchema>;
 export const ZCreateCourseSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  tags: z.string().transform((str) =>
-    str
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter(Boolean)
-  ),
+  tags: z.nativeEnum(CourseTag).array(),
   coverImage: z.string().url("Invalid image URL").optional(),
   price: z.number().min(0, "Price must be non-negative"),
   isPublished: z.boolean().default(false),
 });
+
+export const ZUpdateCourseSchema = ZCreateCourseSchema;
 
 export const ZCreateChapterSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -86,6 +83,7 @@ export const ZCreateLessonSchema = z.object({
 export const ZUpdateLessonSchema = ZCreateLessonSchema;
 
 export type TCreateCourseType = z.infer<typeof ZCreateCourseSchema>;
+export type TUpdateCourseType = z.infer<typeof ZUpdateCourseSchema>;
 export type TCreateChapterType = z.infer<typeof ZCreateChapterSchema>;
 export type TUpdateChapterType = z.infer<typeof ZUpdateChapterSchema>;
 export type TCreateLessonType = z.infer<typeof ZCreateLessonSchema>;

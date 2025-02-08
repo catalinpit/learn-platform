@@ -11,7 +11,7 @@ import { ConfirmDeleteLessonDialog } from "@/components/confirmation-dialogs/con
 import { ConfirmDeleteChapterDialog } from "@/components/confirmation-dialogs/confirm-delete-chapter-dialog";
 import { Chapter, Lesson } from "@server/shared/types";
 
-interface CourseChapterListProps {
+type CourseChapterListProps = {
   chapters: (Chapter & { lessons: Lesson[] })[];
   isEditing?: boolean;
   expandedLessonId: string | null;
@@ -20,7 +20,7 @@ interface CourseChapterListProps {
   onAddLesson?: (chapterId: string) => void;
   onEditChapter?: (chapterId: string) => void;
   onEditLesson?: (lessonId: string, chapterId: string) => void;
-}
+};
 
 export function CourseChapterList({
   chapters,

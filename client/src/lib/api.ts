@@ -2,6 +2,7 @@ import { hc } from "hono/client";
 import type {
   AppType,
   TCreateLessonType,
+  TUpdateCourseType,
   TUpdateLessonType,
 } from "@server/shared/types";
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
@@ -95,12 +96,33 @@ export const createCourse = async (data: TCreateCourseType) => {
   const res = await client.creator.courses.$post({
     json: {
       ...data,
-      tags: data.tags.map((tag) => tag.trim()).join(","),
     },
   });
 
   if (!res.ok) {
     throw new Error("Failed to create course");
+  }
+
+  const course = await res.json();
+  return course;
+};
+
+export const updateCourse = async (id: string, data: TUpdateCourseType) => {
+  if (data.isPublished) {
+    throw new Error("Cannot update this field");
+  }
+
+  const res = await client.creator.courses[":id"].$patch({
+    param: {
+      id,
+    },
+    json: {
+      ...data,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update course");
   }
 
   const course = await res.json();
