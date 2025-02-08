@@ -35,7 +35,7 @@ const router = createRouter()
       try {
         const course = await db.course.findUnique({
           where: {
-            id: String(id),
+            id,
             ownerId: courseCreator.id,
           },
           include: {
@@ -69,6 +69,7 @@ const router = createRouter()
     }),
     async (c) => {
       const { id } = c.req.valid("param");
+      const courseData = c.req.valid("json");
       const courseCreator = c.get("Variables").user;
 
       if (!courseCreator) {
@@ -92,7 +93,7 @@ const router = createRouter()
             id,
             ownerId: courseCreator.id,
           },
-          data: c.req.valid("json"),
+          data: courseData,
         });
 
         return c.json(updatedCourse);

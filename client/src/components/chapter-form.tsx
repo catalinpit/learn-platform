@@ -17,13 +17,11 @@ import { TCreateChapterType, ZCreateChapterSchema } from "@server/shared/types";
 
 type ChapterFormProps = {
   onSubmit: (values: TCreateChapterType) => void;
-  defaultValues?: Partial<TCreateChapterType>;
   setShowChapterForm: (show: boolean) => void;
 };
 
 export function ChapterForm({
   onSubmit,
-  defaultValues,
   setShowChapterForm,
 }: ChapterFormProps) {
   const form = useForm<TCreateChapterType>({
@@ -33,7 +31,6 @@ export function ChapterForm({
       description: "",
       isPublished: false,
       isFree: false,
-      ...defaultValues,
     },
   });
 

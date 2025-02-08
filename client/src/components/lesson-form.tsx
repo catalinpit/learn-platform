@@ -18,10 +18,9 @@ import { TCreateLessonType, ZCreateLessonSchema } from "@server/shared/types";
 
 type LessonFormProps = {
   onSubmit: (values: TCreateLessonType) => void;
-  defaultValues?: Partial<TCreateLessonType>;
 };
 
-export function LessonForm({ onSubmit, defaultValues }: LessonFormProps) {
+export function LessonForm({ onSubmit }: LessonFormProps) {
   const form = useForm<TCreateLessonType>({
     resolver: zodResolver(ZCreateLessonSchema),
     defaultValues: {
@@ -29,7 +28,6 @@ export function LessonForm({ onSubmit, defaultValues }: LessonFormProps) {
       content: "",
       isPublished: false,
       isFree: false,
-      ...defaultValues,
     },
   });
 

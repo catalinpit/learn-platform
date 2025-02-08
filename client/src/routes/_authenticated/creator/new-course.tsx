@@ -68,7 +68,6 @@ function RouteComponent() {
   const completedFieldsProgress = `${completedFields.length} fields out of ${totalFields} completed`;
 
   const onSubmit = async (values: TCreateCourseType) => {
-    console.log({ values });
     try {
       const course = await createCourse(values);
 
