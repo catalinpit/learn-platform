@@ -12,6 +12,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { CourseChapterList } from "@/components/course-chapters/course-chapter-list";
 import { courseTagToString } from "@/lib/utils";
+import NotFound from "@/components/not-found";
 
 export const Route = createFileRoute("/courses/$courseId")({
   component: CoursePage,
@@ -31,7 +32,7 @@ export function CoursePage() {
   );
 
   if ("message" in course) {
-    return <div>Error: {course.message}</div>;
+    return <NotFound />;
   }
 
   const handleLessonClick = (lessonId: string, isFree: boolean) => {

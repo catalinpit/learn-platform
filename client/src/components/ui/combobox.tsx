@@ -42,7 +42,7 @@ export function TagsCombobox({ value, onChange }: MultiSelectProps) {
   const placeholder =
     selectedTags.length === 0
       ? "Select tags..."
-      : `${selectedTags.length} tags selected`;
+      : `${selectedTags.length} tag(s) selected`;
 
   return (
     <div className="flex flex-col gap-2">
