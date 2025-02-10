@@ -7,6 +7,7 @@ import {
   ZCreateChapterSchema,
   ZCreateCourseSchema,
   ZCreateLessonSchema,
+  ZGetAllCreatorCoursesSchema,
   ZGetChapterByIdSchema,
   ZGetCourseByIdSchema,
   ZGetLessonByIdSchema,
@@ -16,6 +17,60 @@ import {
 } from "@/shared/types";
 
 const router = createRouter()
+  .get(
+    "/creator/courses",
+    loggedIn,
+    zValidator("query", ZGetAllCreatorCoursesSchema, (result, c) => {
+      if (!result.success) {
+        return c.json("Invalid parameters", 400);
+      }
+    }),
+    async (c) => {
+      const { query, page, perPage } = c.req.valid("query");
+      const user = c.get("Variables").user;
+
+      if (!user) {
+        return c.json("Something went wrong", 500);
+      }
+
+      try {
+        const [courses, count] = await Promise.all([
+          db.course.findMany({
+            where: {
+              title: {
+                contains: query,
+                mode: "insensitive",
+              },
+              ownerId: user.id,
+            },
+            skip: (Number(page) - 1) * Number(perPage),
+            take: Number(perPage),
+            orderBy: {
+              createdAt: "desc",
+            },
+          }),
+          db.course.count({
+            where: {
+              title: {
+                contains: query,
+                mode: "insensitive",
+              },
+              ownerId: user.id,
+            },
+          }),
+        ]);
+
+        return c.json({
+          courses,
+          totalPages: Math.ceil(count / Number(perPage)),
+          total: count,
+        });
+      } catch (error) {
+        console.error("Failed to get courses:", error);
+        return c.json("Failed to get courses", 500);
+      }
+    }
+  )
   .get(
     "/creator/courses/:id",
     loggedIn,

@@ -53,6 +53,8 @@ export type TGetLessonByIdType = z.infer<typeof ZGetLessonByIdSchema>;
 // Creator Router Schemas //
 ////////////////////////////
 
+export const ZGetAllCreatorCoursesSchema = ZGetAllCoursesSchema;
+
 export const ZCreateCourseSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
@@ -82,6 +84,9 @@ export const ZCreateLessonSchema = z.object({
 
 export const ZUpdateLessonSchema = ZCreateLessonSchema;
 
+export type TGetAllCreatorCoursesType = z.infer<
+  typeof ZGetAllCreatorCoursesSchema
+>;
 export type TCreateCourseType = z.infer<typeof ZCreateCourseSchema>;
 export type TUpdateCourseType = z.infer<typeof ZUpdateCourseSchema>;
 export type TCreateChapterType = z.infer<typeof ZCreateChapterSchema>;

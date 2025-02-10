@@ -2,6 +2,7 @@ import { hc } from "hono/client";
 import type {
   AppType,
   TCreateLessonType,
+  TGetAllCreatorCoursesType,
   TUpdateCourseType,
   TUpdateLessonType,
 } from "@server/shared/types";
@@ -67,6 +68,39 @@ export const getCourseByIdQueryOptions = (id: string) =>
   queryOptions({
     queryKey: ["get-course-by-id", id],
     queryFn: () => getCourseById(id),
+    staleTime: 1000 * 60 * 5,
+  });
+
+export const getCreatorCourses = async ({
+  query,
+  page,
+  perPage,
+}: TGetAllCreatorCoursesType) => {
+  const res = await client.creator.courses.$get({
+    query: {
+      query,
+      page: String(page),
+      perPage: String(perPage),
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch courses");
+  }
+
+  const courses = await res.json();
+  return courses;
+};
+
+export const getCreatorCoursesOptions = ({
+  query,
+  page,
+  perPage,
+}: TGetAllCreatorCoursesType) =>
+  queryOptions({
+    queryKey: ["get-creator-courses", query, page, perPage],
+    queryFn: () => getCreatorCourses({ query, page, perPage }),
+    placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
   });
 
