@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Role, CourseTag } from "@server/shared/types";
+import type { CourseWithChapterAndLessonsAndProgress } from "@server/shared/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -36,4 +37,26 @@ export const courseTagToString = (tag: CourseTag): string => {
 
 export const mapCourseTags = (tags: string[]) => {
   return tags.map((tag) => tag.trim()) as CourseTag[];
+};
+
+export const calculateCourseProgress = (
+  course: CourseWithChapterAndLessonsAndProgress
+) => {
+  const totalLessons = course.chapters.reduce(
+    (total, chapter) => total + chapter.lessons.length,
+    0
+  );
+
+  const completedLessons = course.chapters.reduce((total, chapter) => {
+    return (
+      total +
+      chapter.lessons.filter((lesson) =>
+        lesson.progress.some((p) => p.completed)
+      ).length
+    );
+  }, 0);
+
+  return totalLessons === 0
+    ? 0
+    : Math.round((completedLessons / totalLessons) * 100);
 };
