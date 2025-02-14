@@ -3,6 +3,7 @@ import type {
   AppType,
   TCreateLessonType,
   TGetAllCreatorCoursesType,
+  TGetAllStudentCoursesType,
   TUpdateCourseType,
   TUpdateLessonType,
 } from "@server/shared/types";
@@ -70,6 +71,10 @@ export const getCourseByIdQueryOptions = (id: string) =>
     queryFn: () => getCourseById(id),
     staleTime: 1000 * 60 * 5,
   });
+
+////////////////////////////
+// Creator API Endpoints  //
+////////////////////////////
 
 export const getCreatorCourses = async ({
   query,
@@ -346,3 +351,63 @@ export const unpublishCourse = async (id: string) => {
   const course = await res.json();
   return course;
 };
+
+////////////////////////////
+// Student API Endpoints  //
+////////////////////////////
+
+export const getStudentCourses = async ({
+  query,
+  page,
+  perPage,
+}: TGetAllStudentCoursesType) => {
+  const res = await client.student.courses.$get({
+    query: {
+      query,
+      page: String(page),
+      perPage: String(perPage),
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch courses");
+  }
+
+  const courses = await res.json();
+  return courses;
+};
+
+export const getStudentCoursesOptions = ({
+  query,
+  page,
+  perPage,
+}: TGetAllStudentCoursesType) =>
+  queryOptions({
+    queryKey: ["get-student-courses", query, page, perPage],
+    queryFn: () => getStudentCourses({ query, page, perPage }),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+  });
+
+export const getStudentCourseById = async (id: string) => {
+  const res = await client.student.courses[":id"].$get({
+    param: {
+      id: id.toString(),
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch course");
+  }
+
+  const course = await res.json();
+  return course;
+};
+
+export const getStudentCourseByIdOptions = (id: string) =>
+  queryOptions({
+    queryKey: ["get-student-course-by-id", id],
+    queryFn: () => getStudentCourseById(id),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+  });

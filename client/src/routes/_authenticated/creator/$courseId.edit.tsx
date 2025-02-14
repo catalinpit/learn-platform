@@ -35,7 +35,6 @@ import { ConfirmDeleteCourseDialog } from "@/components/confirmation-dialogs/con
 import { ConfirmPublishCourseDialog } from "@/components/confirmation-dialogs/confirm-publish-course-dialog";
 import { ConfirmUnpublishCourseDialog } from "@/components/confirmation-dialogs/confirm-unpublish-course-dialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { InfoIcon } from "lucide-react";
 import { InfoCard } from "@/components/ui/info-card";
 import { courseTagToString } from "@/lib/utils";
 
@@ -49,6 +48,7 @@ export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
 });
 
 function RouteComponent() {
+  const course = Route.useLoaderData();
   const { courseId } = Route.useParams();
   const { queryClient } = Route.useRouteContext();
 
@@ -86,10 +86,6 @@ function RouteComponent() {
     lessonToEdit,
     showUpdateCourseForm,
   ]);
-
-  const { data: course } = useSuspenseQuery(
-    getCreatorCourseByIdOptions(courseId)
-  );
 
   const addChapterMutation = useMutation({
     mutationFn: (values: TCreateChapterType) => {

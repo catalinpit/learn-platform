@@ -18,7 +18,6 @@ export function NavBar() {
 
   const studentLinks = [
     { name: "My Learning", href: "/student/courses" },
-    { name: "Browse Courses", href: "/courses" },
     { name: "Wishlist", href: "/student/wishlist" },
   ];
 
