@@ -7,7 +7,7 @@ import {
   updateCourseLesson,
   updateCourse,
 } from "@/lib/api";
-import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Card,

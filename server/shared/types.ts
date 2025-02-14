@@ -131,12 +131,16 @@ export const ZGetAllStudentCoursesSchema = z.object({
   perPage: z.coerce.number().min(1).optional().default(4),
 });
 
-export type TGetAllStudentCoursesType = z.infer<
-  typeof ZGetAllStudentCoursesSchema
->;
-
 export const ZGetStudentCourseSchema = z.object({
   id: z.string(),
 });
 
+export const ZCompleteLessonSchema = z.object({
+  lessonId: z.string(),
+});
+
+export type TGetAllStudentCoursesType = z.infer<
+  typeof ZGetAllStudentCoursesSchema
+>;
 export type TGetStudentCourseType = z.infer<typeof ZGetStudentCourseSchema>;
+export type TCompleteLessonType = z.infer<typeof ZCompleteLessonSchema>;

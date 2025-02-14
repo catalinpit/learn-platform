@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getStudentCourseByIdOptions } from "@/lib/api";
+import { getStudentCourseByIdOptions, completeLesson } from "@/lib/api";
 import { CourseNavigation } from "@/components/course-sidebar";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -10,6 +10,9 @@ import { CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { calculateCourseProgress } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { TCompleteLessonType } from "@server/shared/types";
 
 export const Route = createFileRoute(
   "/_authenticated/student/courses/$courseId/lessons/$lessonId"
@@ -25,7 +28,18 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { courseId, lessonId } = Route.useParams();
   const course = Route.useLoaderData();
+  const { queryClient } = Route.useRouteContext();
   const isMobile = useIsMobile();
+
+  const completeLessonMutation = useMutation({
+    mutationFn: ({ lessonId }: TCompleteLessonType) => {
+      if (!courseId || !lessonId) {
+        throw new Error("Missing course id or lesson id");
+      }
+
+      return completeLesson(courseId, lessonId);
+    },
+  });
 
   if (!course) {
     return <LoadingSpinner fullScreen />;
@@ -40,6 +54,26 @@ function RouteComponent() {
   );
 
   const progress = calculateCourseProgress(course);
+
+  const markLessonAsComplete = () => {
+    completeLessonMutation.mutate(
+      { lessonId },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getStudentCourseByIdOptions(courseId).queryKey,
+            exact: true,
+          });
+
+          toast.success("Lesson has been marked as complete");
+        },
+        onError: (error) => {
+          toast.error("Failed to complete lesson");
+          console.error(error);
+        },
+      }
+    );
+  };
 
   return (
     <SidebarProvider>
@@ -72,6 +106,12 @@ function RouteComponent() {
                 variant={isCompleted ? "outline" : "default"}
                 size="sm"
                 className="gap-2"
+                onClick={() => {
+                  if (!isCompleted) {
+                    markLessonAsComplete();
+                  }
+                }}
+                disabled={completeLessonMutation.isPending}
               >
                 <CheckCircle
                   className={`h-4 w-4 ${isCompleted ? "text-green-500" : ""}`}

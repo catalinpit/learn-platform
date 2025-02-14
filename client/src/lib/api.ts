@@ -411,3 +411,21 @@ export const getStudentCourseByIdOptions = (id: string) =>
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
   });
+
+export const completeLesson = async (id: string, lessonId: string) => {
+  const res = await client.student.courses[":id"]["complete-lesson"].$post({
+    param: {
+      id,
+    },
+    json: {
+      lessonId,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to complete lesson");
+  }
+
+  const progress = await res.json();
+  return progress;
+};
