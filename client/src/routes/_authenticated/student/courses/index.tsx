@@ -18,6 +18,7 @@ import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
 import {
   calculateCourseProgress,
   convertDatesToDateObjects,
+  cn,
 } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { getStudentCoursesOptions } from "@/lib/api";
@@ -131,6 +132,7 @@ function RouteComponent() {
                   </div>
                   <Progress
                     value={calculateCourseProgress(course)}
+                    completed={calculateCourseProgress(course) === 100}
                     className="w-full"
                   />
                 </div>
