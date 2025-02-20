@@ -15,7 +15,10 @@ import { Input } from "@/components/ui/input";
 import { Link } from "@tanstack/react-router";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
-import { calculateCourseProgress } from "@/lib/utils";
+import {
+  calculateCourseProgress,
+  convertDatesToDateObjects,
+} from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { getStudentCoursesOptions } from "@/lib/api";
 import { Progress } from "@/components/ui/progress";
@@ -63,7 +66,7 @@ function RouteComponent() {
     })
   );
 
-  const courses = data?.courses;
+  const courses = convertDatesToDateObjects(data?.courses);
   const count = data?.totalPages;
 
   if (isPending) {
@@ -73,8 +76,6 @@ function RouteComponent() {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
-
-  console.log(courses);
 
   if (!courses?.length) {
     return (
@@ -138,7 +139,7 @@ function RouteComponent() {
                 <Link
                   to="/student/courses/$courseId"
                   params={{ courseId: course.id }}
-                  className="text-blue-600 hover:underline"
+                  className="text-primary hover:underline"
                 >
                   Continue Learning →
                 </Link>

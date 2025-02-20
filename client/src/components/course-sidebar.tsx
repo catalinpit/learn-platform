@@ -19,7 +19,7 @@ import {
   PlayCircle,
   CheckCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 type CourseNavigationProps = {
@@ -49,11 +49,35 @@ export function CourseNavigation({
 }: CourseNavigationProps) {
   const [expandedChapters, setExpandedChapters] = useState<string[]>([]);
 
+  useEffect(() => {
+    if (lessonId) {
+      const chapterWithLesson = course.chapters?.find((chapter) =>
+        chapter.lessons?.some((lesson) => lesson.id === lessonId)
+      );
+
+      if (
+        chapterWithLesson &&
+        !expandedChapters.includes(chapterWithLesson.id)
+      ) {
+        setExpandedChapters((current) => [...current, chapterWithLesson.id]);
+      }
+    }
+  }, [lessonId, course.chapters, expandedChapters]);
+
   const toggleChapter = (chapterId: string) => {
     setExpandedChapters((current) =>
       current.includes(chapterId)
         ? current.filter((id) => id !== chapterId)
         : [...current, chapterId]
+    );
+  };
+
+  const isChapterCompleted = (
+    chapter: NonNullable<CourseNavigationProps["course"]["chapters"]>[0]
+  ) => {
+    return (
+      chapter.lessons?.every((lesson) => lesson.progress?.[0]?.completed) ??
+      false
     );
   };
 
@@ -78,7 +102,12 @@ export function CourseNavigation({
                     ) : (
                       <ChevronRight className="h-4 w-4" />
                     )}
-                    <BookOpen className="h-4 w-4" />
+                    <BookOpen
+                      className={cn(
+                        "h-4 w-4",
+                        isChapterCompleted(chapter) && "text-green-500"
+                      )}
+                    />
                     <span>{chapter.title}</span>
                   </SidebarMenuButton>
                   {expandedChapters.includes(chapter.id) && (

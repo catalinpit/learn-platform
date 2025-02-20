@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { getStudentCourseByIdOptions } from "@/lib/api";
 import { CourseNavigation } from "@/components/course-sidebar";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute(
   "/_authenticated/student/courses/$courseId/"
@@ -41,6 +42,17 @@ function RouteComponent() {
           <h1 className="text-3xl font-bold">{course.title}</h1>
           <p className="mt-2 text-muted-foreground">{course.description}</p>
         </div>
+        <Button asChild>
+          <Link
+            to="/student/courses/$courseId/lessons/$lessonId"
+            params={{
+              courseId,
+              lessonId: course.chapters?.[0]?.lessons?.[0]?.id,
+            }}
+          >
+            Start Learning
+          </Link>
+        </Button>
       </main>
     </SidebarProvider>
   );

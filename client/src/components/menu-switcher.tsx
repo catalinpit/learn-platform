@@ -22,7 +22,7 @@ export function MenuSwitcher() {
         <DropdownMenuTrigger asChild>
           <Button
             data-testid="menu-switcher"
-            className="bg-transparent focus:bg-transparent hover:bg-transparent"
+            className="bg-background hover:bg-background shadow-none"
           >
             <AvatarWithText
               avatarSrc={session?.user?.image}
@@ -45,7 +45,10 @@ export function MenuSwitcher() {
               signOut({
                 fetchOptions: {
                   onSuccess: () => {
-                    router.navigate({ to: "/" });
+                    router.navigate({
+                      to: "/",
+                      search: { search: "", page: 1, perPage: 10 },
+                    });
                   },
                 },
               });
