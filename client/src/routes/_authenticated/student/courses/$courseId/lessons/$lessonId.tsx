@@ -81,6 +81,21 @@ function RouteComponent() {
     );
   };
 
+  const currentChapterIndex = course.chapters.findIndex((chapter) =>
+    chapter.lessons.some((lesson) => lesson.id === lessonId)
+  );
+
+  const currentLessonIndex = course.chapters[
+    currentChapterIndex
+  ]?.lessons.findIndex((lesson) => lesson.id === lessonId);
+
+  const isFirstLesson = currentChapterIndex === 0 && currentLessonIndex === 0;
+
+  const isLastLesson =
+    currentChapterIndex === course.chapters.length - 1 &&
+    currentLessonIndex ===
+      course.chapters[currentChapterIndex]?.lessons.length - 1;
+
   const handleNextLesson = () => {
     const allLessons =
       course.chapters?.flatMap((chapter) => chapter.lessons) ?? [];
@@ -158,7 +173,7 @@ function RouteComponent() {
             )}
           </nav>
 
-          <Card className="border-none shadow-lg">
+          <Card className="border-border shadow-md">
             <CardHeader className="space-y-4 pb-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
@@ -196,7 +211,7 @@ function RouteComponent() {
             </CardContent>
           </Card>
 
-          <Card className="bg-muted/50 shadow-md">
+          <Card className="bg-muted/15 shadow-md border-border border">
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -219,6 +234,7 @@ function RouteComponent() {
               variant="outline"
               onClick={handlePreviousLesson}
               className="text-sm"
+              disabled={isFirstLesson}
             >
               <span className="hidden sm:inline">← Previous Lesson</span>
               <span className="sm:hidden">← Previous</span>
@@ -227,6 +243,7 @@ function RouteComponent() {
               variant="outline"
               onClick={handleNextLesson}
               className="text-sm"
+              disabled={isLastLesson}
             >
               <span className="hidden sm:inline">Next Lesson →</span>
               <span className="sm:hidden">Next →</span>
