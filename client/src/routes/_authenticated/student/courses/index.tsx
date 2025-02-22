@@ -17,7 +17,6 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
 import {
   calculateCourseProgress,
-  convertDatesToDateObjects,
 } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { getStudentCoursesOptions } from "@/lib/api";
@@ -66,7 +65,7 @@ function RouteComponent() {
     })
   );
 
-  const courses = convertDatesToDateObjects(data?.courses);
+  const courses = data?.courses;
   const count = data?.totalPages;
 
   if (isPending) {
