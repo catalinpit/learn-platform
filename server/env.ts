@@ -19,6 +19,12 @@ export const EnvSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
+  RESEND_KEY: z.string(),
+  SMTP_HOST: z.string(),
+  SMTP_PORT: z.coerce.number(),
+  SMTP_USERNAME: z.string(),
+  SMTP_PASSWORD: z.string(),
+  SMTP_FROM: z.string(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
@@ -29,8 +35,7 @@ let env: Env;
 try {
   // eslint-disable-next-line node/no-process-env
   env = EnvSchema.parse(process.env);
-}
-catch (err) {
+} catch (err) {
   const error = err as ZodError;
   console.error("Invalid env:");
   console.error(error.flatten().fieldErrors);
