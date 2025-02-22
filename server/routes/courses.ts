@@ -41,7 +41,7 @@ const router = createRouter()
         courses,
         totalPages: Math.ceil(count / perPage),
       });
-    }
+    },
   )
   .get(
     "/courses/:id",
@@ -71,7 +71,7 @@ const router = createRouter()
       }
 
       return c.json(course);
-    }
+    },
   );
 
 export default router;

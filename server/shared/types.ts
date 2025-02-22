@@ -26,6 +26,7 @@ export {
   type Course,
   CourseTag,
   type Lesson,
+  type Progress,
   Role,
   type User,
 };
@@ -43,10 +44,9 @@ export type CourseWithChapterAndLessons = Course & {
 export type CourseWithChapterAndLessonsAndProgress = Course & {
   chapters: (Chapter & {
     lessons: (Lesson & {
-      progress: Progress[];
+      progress: Pick<Progress, "completed">[];
     })[];
   })[];
-  progress: Progress[];
 };
 
 ////////////////////////////
