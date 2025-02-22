@@ -71,13 +71,13 @@ export function NavBar() {
               <>
                 <Link
                   to="/login"
-                  className="text-zinc-300 hover:text-white transition-colors"
+                  className="text-foreground hover:text-muted-foreground transition-colors"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="text-zinc-300 hover:text-white transition-colors"
+                  className="text-foreground hover:text-muted-foreground transition-colors"
                 >
                   Register
                 </Link>
