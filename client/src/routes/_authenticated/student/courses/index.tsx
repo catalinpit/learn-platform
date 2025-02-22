@@ -18,7 +18,6 @@ import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
 import {
   calculateCourseProgress,
   convertDatesToDateObjects,
-  cn,
 } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { getStudentCoursesOptions } from "@/lib/api";

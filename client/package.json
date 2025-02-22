@@ -7,6 +7,7 @@
     "dev": "bunx --bun vite",
     "build": "bunx --bun vite build",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -50,7 +51,9 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^4.3.0",
     "@eslint/js": "^9.15.0",
+    "@stylistic/eslint-plugin": "^4.0.1",
     "@tailwindcss/typography": "^0.5.15",
     "@tanstack/eslint-plugin-query": "^5.62.1",
     "@tanstack/router-devtools": "^1.87.9",

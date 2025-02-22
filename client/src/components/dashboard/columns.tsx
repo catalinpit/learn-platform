@@ -1,17 +1,15 @@
-"use client"
-
-import { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import { ColumnDef } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export type Student = {
-  id: string
-  name: string
-  email: string
-  enrolledCourses: number
-  lastActive: string
-  status: "active" | "inactive"
-}
+  id: string;
+  name: string;
+  email: string;
+  enrolledCourses: number;
+  lastActive: string;
+  status: "active" | "inactive";
+};
 
 export const columns: ColumnDef<Student>[] = [
   {
@@ -48,4 +46,4 @@ export const columns: ColumnDef<Student>[] = [
       </Badge>
     ),
   },
-]
+];

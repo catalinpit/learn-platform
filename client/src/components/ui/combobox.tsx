@@ -83,6 +83,7 @@ export function TagsCombobox({ value, onChange }: MultiSelectProps) {
                           : "opacity-0"
                       )}
                     />
+
                     {tag.label}
                   </CommandItem>
                 ))}

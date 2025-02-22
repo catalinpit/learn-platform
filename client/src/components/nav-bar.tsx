@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { Role } from "@server/shared/types";
 
 import { MenuSwitcher } from "@/components/menu-switcher";
 import { useSession } from "@/lib/auth-client";
@@ -17,12 +18,12 @@ export function NavBar() {
   const studentLinks = [{ name: "My Learning", href: "/student/courses" }];
   const creatorLinks = [
     { name: "Create Course", href: "/creator/new-course" },
-    { name: "Creator Dashboard", href: "/creator/dashboard" }
+    { name: "Creator Dashboard", href: "/creator/dashboard" },
   ];
 
   const links = [
     ...commonLinks,
-    ...(session ? studentLinks : []),
+    ...(session?.user?.roles?.includes(Role.STUDENT) ? studentLinks : []),
     ...(showCreateCourseButton ? creatorLinks : []),
   ];
 

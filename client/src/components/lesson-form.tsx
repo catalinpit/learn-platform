@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -46,10 +45,7 @@ export function LessonForm({ onSubmit }: LessonFormProps) {
                     Give your lesson a clear and descriptive title
                   </FormDescription>
                   <FormControl>
-                    <Input
-                      placeholder="Enter lesson title..."
-                      {...field}
-                    />
+                    <Input placeholder="Enter lesson title..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -66,7 +62,10 @@ export function LessonForm({ onSubmit }: LessonFormProps) {
                     Write your lesson content using the rich text editor
                   </FormDescription>
                   <FormControl>
-                    <Tiptap onChange={field.onChange} initialValue={field.value} />
+                    <Tiptap
+                      onChange={field.onChange}
+                      initialValue={field.value}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

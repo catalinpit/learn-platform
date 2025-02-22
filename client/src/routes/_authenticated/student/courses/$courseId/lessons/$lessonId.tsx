@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { getStudentCourseByIdOptions, completeLesson } from "@/lib/api";
-import { CourseNavigation } from "@/components/course-sidebar";
+import { CourseSidebar } from "@/components/course-sidebar";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,10 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  calculateCourseProgress,
-  convertDatesToDateObjects,
-} from "@/lib/utils";
+import { calculateCourseProgress } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -30,12 +27,12 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { courseId, lessonId } = Route.useParams();
-  const { data } = useSuspenseQuery(getStudentCourseByIdOptions(courseId));
+  const { data: course } = useSuspenseQuery(
+    getStudentCourseByIdOptions(courseId)
+  );
   const { queryClient } = Route.useRouteContext();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-
-  const course = convertDatesToDateObjects(data);
 
   const completeLessonMutation = useMutation({
     mutationFn: ({ lessonId }: TCompleteLessonType) => {
@@ -59,6 +56,9 @@ function RouteComponent() {
     (progress) => progress.completed
   );
 
+  // hono rpc causes this issue because the date cannot be passed via json
+  // TODO: fix later
+  // @ts-expect-error fix later
   const progress = calculateCourseProgress(course);
 
   const markLessonAsComplete = () => {
@@ -99,9 +99,11 @@ function RouteComponent() {
   const handleNextLesson = () => {
     const allLessons =
       course.chapters?.flatMap((chapter) => chapter.lessons) ?? [];
+
     const currentIndex = allLessons.findIndex(
       (lesson) => lesson?.id === lessonId
     );
+
     const nextLesson = allLessons[currentIndex + 1];
 
     if (!nextLesson) {
@@ -117,9 +119,11 @@ function RouteComponent() {
   const handlePreviousLesson = () => {
     const allLessons =
       course.chapters?.flatMap((chapter) => chapter.lessons) ?? [];
+
     const currentIndex = allLessons.findIndex(
       (lesson) => lesson?.id === lessonId
     );
+
     const previousLesson = allLessons[currentIndex - 1];
 
     if (!previousLesson) {
@@ -142,11 +146,8 @@ function RouteComponent() {
           </span>
         </div>
       )}
-      <CourseNavigation
-        course={course}
-        courseId={courseId}
-        lessonId={lessonId}
-      />
+      <CourseSidebar course={course} courseId={courseId} lessonId={lessonId} />
+
       <main className="flex-1 overflow-y-auto">
         <div className="container max-w-4xl space-y-8 p-6 md:p-8">
           <nav className="flex items-center space-x-2 text-sm text-muted-foreground max-w-full overflow-hidden">

@@ -7,7 +7,7 @@ import {
   updateCourseLesson,
   updateCourse,
 } from "@/lib/api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Card,
@@ -48,8 +48,10 @@ export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
 });
 
 function RouteComponent() {
-  const course = Route.useLoaderData();
   const { courseId } = Route.useParams();
+  const { data: course } = useSuspenseQuery(
+    getCreatorCourseByIdOptions(courseId)
+  );
   const { queryClient } = Route.useRouteContext();
 
   const [showChapterForm, setShowChapterForm] = useState(false);

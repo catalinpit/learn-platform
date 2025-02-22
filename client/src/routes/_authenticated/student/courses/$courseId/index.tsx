@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { getStudentCourseByIdOptions } from "@/lib/api";
-import { CourseNavigation } from "@/components/course-sidebar";
+import { CourseSidebar } from "@/components/course-sidebar";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -36,7 +36,8 @@ function RouteComponent() {
           </span>
         </div>
       )}
-      <CourseNavigation course={course} courseId={courseId} />
+      <CourseSidebar course={course} courseId={courseId} />
+
       <main className="flex-1 overflow-y-auto p-4">
         <div className="container max-w-3xl space-y-6 py-8">
           <h1 className="text-3xl font-bold">{course.title}</h1>

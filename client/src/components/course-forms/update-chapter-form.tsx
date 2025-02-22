@@ -40,7 +40,9 @@ export function UpdateChapterForm({
     <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-6 border-border p-4 border rounded-md">
+          <div
+            className="flex flex-col gap-6 border-border p-4 border rounded-md"
+          >
             <FormField
               control={form.control}
               name="title"
@@ -51,7 +53,10 @@ export function UpdateChapterForm({
                     Give your chapter a clear and descriptive title
                   </FormDescription>
                   <FormControl>
-                    <Input placeholder="Enter chapter title..." {...field} />
+                    <Input
+                      placeholder="Enter chapter title..."
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -78,12 +83,16 @@ export function UpdateChapterForm({
               )}
             />
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8">
+            <div
+              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8"
+            >
               <FormField
                 control={form.control}
                 name="isPublished"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-2">
+                  <FormItem
+                    className="flex flex-row items-center gap-2"
+                  >
                     <FormControl>
                       <Switch
                         checked={field.value}
@@ -104,7 +113,9 @@ export function UpdateChapterForm({
                 control={form.control}
                 name="isFree"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-2">
+                  <FormItem
+                    className="flex flex-row items-center gap-2"
+                  >
                     <FormControl>
                       <Switch
                         checked={field.value}
@@ -122,8 +133,12 @@ export function UpdateChapterForm({
               />
             </div>
 
-            <div className="flex flex-col sm:items-center space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2">
-              <Button type="submit">Update Chapter</Button>
+            <div
+              className="flex flex-col sm:items-center space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2"
+            >
+              <Button type="submit">
+                Update Chapter
+              </Button>
               <Button
                 type="button"
                 onClick={() => {

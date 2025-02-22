@@ -31,6 +31,7 @@ export function InfoCard({
       <CardHeader className="py-3">
         <div className="flex items-center gap-2">
           <InfoIcon className={cn("h-5 w-5", iconStyles[variant])} />
+
           <CardDescription
             className={cn("text-sm font-medium", iconStyles[variant])}
           >

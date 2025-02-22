@@ -21,32 +21,29 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import type { Course, Chapter, Lesson, Progress } from "@server/shared/types";
 
-type CourseNavigationProps = {
-  course: {
-    title: string;
-    description: string;
-    chapters?: Array<{
-      id: string;
-      title: string;
-      lessons?: Array<{
-        id: string;
-        title: string;
-        progress?: Array<{
-          completed: boolean;
-        }>;
-      }>;
-    }>;
+type CourseSidebarProps = {
+  course: Pick<Course, "title" | "description"> & {
+    chapters?: Array<
+      Pick<Chapter, "id" | "title"> & {
+        lessons?: Array<
+          Pick<Lesson, "id" | "title"> & {
+            progress?: Array<Pick<Progress, "completed">>;
+          }
+        >;
+      }
+    >;
   };
   courseId: string;
   lessonId?: string;
 };
 
-export function CourseNavigation({
+export function CourseSidebar({
   course,
   courseId,
   lessonId,
-}: CourseNavigationProps) {
+}: CourseSidebarProps) {
   const [expandedChapters, setExpandedChapters] = useState<string[]>([]);
 
   useEffect(() => {
@@ -65,15 +62,17 @@ export function CourseNavigation({
   }, [lessonId, course.chapters, expandedChapters]);
 
   const toggleChapter = (chapterId: string) => {
-    setExpandedChapters((current) =>
-      current.includes(chapterId)
-        ? current.filter((id) => id !== chapterId)
-        : [...current, chapterId]
-    );
+    setExpandedChapters((current) => {
+      if (current.includes(chapterId)) {
+        return current.filter((id) => id !== chapterId);
+      } else {
+        return [...current, chapterId];
+      }
+    });
   };
 
   const isChapterCompleted = (
-    chapter: NonNullable<CourseNavigationProps["course"]["chapters"]>[0]
+    chapter: NonNullable<CourseSidebarProps["course"]["chapters"]>[0]
   ) => {
     return (
       chapter.lessons?.every((lesson) => lesson.progress?.[0]?.completed) ??
@@ -108,6 +107,7 @@ export function CourseNavigation({
                         isChapterCompleted(chapter) && "text-green-500"
                       )}
                     />
+
                     <span>{chapter.title}</span>
                   </SidebarMenuButton>
                   {expandedChapters.includes(chapter.id) && (

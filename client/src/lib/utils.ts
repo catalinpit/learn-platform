@@ -60,25 +60,3 @@ export const calculateCourseProgress = (
     ? 0
     : Math.round((completedLessons / totalLessons) * 100);
 };
-
-export function convertDatesToDateObjects<T>(obj: T): T {
-  if (obj === null || typeof obj !== "object") {
-    return obj;
-  }
-
-  const result = Array.isArray(obj) ? [...obj] : { ...obj };
-
-  for (const key in result) {
-    if (Object.prototype.hasOwnProperty.call(result, key)) {
-      const value = result[key];
-
-      if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) {
-        (result as any)[key] = new Date(value);
-      } else if (typeof value === "object") {
-        result[key] = convertDatesToDateObjects(value);
-      }
-    }
-  }
-
-  return result;
-}
