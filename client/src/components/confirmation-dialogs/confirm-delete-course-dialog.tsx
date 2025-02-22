@@ -62,12 +62,10 @@ export function ConfirmDeleteCourseDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete course "{courseTitle}"</AlertDialogTitle>
           <AlertDialogDescription>
-            This deletes the course and{" "}
-            <span className="underline">all of its chapters and lessons</span>.
-            Are you sure you want to do this? This action cannot be undone.
+            This deletes the course and all of its chapters and lessons. Are you sure you want to do this? This action cannot be undone.
             <br />
             <br />
-            <span>Type the course title to confirm - "{courseTitle}"</span>
+            Type the course title to confirm - "{courseTitle}"
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Input
@@ -75,6 +73,7 @@ export function ConfirmDeleteCourseDialog({
           value={confirmCourseTitle}
           onChange={(e) => setConfirmCourseTitle(e.target.value)}
         />
+
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction asChild>

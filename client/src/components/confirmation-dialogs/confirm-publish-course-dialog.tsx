@@ -72,6 +72,7 @@ export function ConfirmPublishCourseDialog({
           value={confirmCourseTitle}
           onChange={(e) => setConfirmCourseTitle(e.target.value)}
         />
+
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction variant="default" asChild>

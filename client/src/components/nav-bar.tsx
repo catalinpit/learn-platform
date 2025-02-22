@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { Role } from "@server/shared/types";
 
 import { MenuSwitcher } from "@/components/menu-switcher";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "./mode-toggle";
 import { canCreateCourse } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 export function NavBar() {
   const { data: session } = useSession();
@@ -15,16 +15,16 @@ export function NavBar() {
   const showCreateCourseButton = canCreateCourse(session?.user?.roles ?? []);
 
   const commonLinks = [{ name: "Home", href: "/" }];
-
-  const studentLinks = [
-    { name: "My Learning", href: "/student/courses" },
-    { name: "Browse Courses", href: "/courses" },
-    { name: "Wishlist", href: "/student/wishlist" },
+  const studentLinks = [{ name: "My Learning", href: "/student/courses" }];
+  const creatorLinks = [
+    { name: "Create Course", href: "/creator/new-course" },
+    { name: "Creator Dashboard", href: "/creator/dashboard" },
   ];
 
   const links = [
     ...commonLinks,
-    ...(session && !showCreateCourseButton ? studentLinks : []),
+    ...(session?.user?.roles?.includes(Role.STUDENT) ? studentLinks : []),
+    ...(showCreateCourseButton ? creatorLinks : []),
   ];
 
   return (
@@ -37,7 +37,7 @@ export function NavBar() {
                 <Link
                   to="/"
                   search={{ search: "", page: 1, perPage: 10 }}
-                  className="text-xl text-background dark:text-foreground font-bold md:block hidden"
+                  className="text-xl font-bold text-foreground md:block hidden"
                 >
                   Learn Course
                 </Link>
@@ -61,7 +61,7 @@ export function NavBar() {
               <Link
                 key={href}
                 to={href}
-                className="text-zinc-300 hover:text-white transition-colors"
+                className="text-foreground hover:text-muted-foreground transition-colors"
               >
                 {name}
               </Link>
@@ -85,23 +85,6 @@ export function NavBar() {
               </>
             ) : (
               <>
-                {showCreateCourseButton && (
-                  <>
-                    <Button variant="outline">
-                      <Link
-                        to="/creator/new-course"
-                        className="text-foreground"
-                      >
-                        Create Course
-                      </Link>
-                    </Button>
-                    <Button variant="outline">
-                      <Link to="/creator/dashboard" className="text-foreground">
-                        Creator Dashboard
-                      </Link>
-                    </Button>
-                  </>
-                )}
                 <MenuSwitcher />
                 <ModeToggle />
               </>
@@ -111,7 +94,7 @@ export function NavBar() {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-zinc-300 hover:text-white"
+              className="text-foreground hover:text-muted-foreground transition-colors"
               aria-label="Open mobile menu"
             >
               <svg
@@ -138,7 +121,7 @@ export function NavBar() {
             <Link
               key={href}
               to={href}
-              className="block px-3 py-2 text-zinc-300 hover:text-white rounded-md text-center"
+              className="block px-3 py-2 text-foreground hover:text-muted-foreground rounded-md text-center"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <span className="hover:bg-slate-800 hover:p-2 rounded-lg">
@@ -169,31 +152,11 @@ export function NavBar() {
             </>
           ) : (
             <div className="text-center space-y-2">
-              {showCreateCourseButton && (
-                <div className="flex flex-col space-y-3">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Link to="/creator/new-course" className="text-foreground">
-                      Create Course
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Link to="/creator/dashboard" className="text-foreground">
-                      Creator Dashboard
-                    </Link>
-                  </Button>
-                </div>
-              )}
+              <div className="flex justify-center pt-2">
+                <ModeToggle />
+              </div>
             </div>
           )}
-          <div className="flex justify-center pt-2">
-            <ModeToggle />
-          </div>
         </div>
       </div>
     </nav>

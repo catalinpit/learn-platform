@@ -1,4 +1,4 @@
-import type { Chapter, Lesson, User } from "@prisma/client";
+import type { Chapter, Course, Lesson, Progress, User } from "@prisma/client";
 import type { PinoLogger } from "hono-pino";
 
 import { CourseTag, Role } from "@prisma/client";
@@ -20,7 +20,34 @@ export interface AuthType {
   };
 }
 
-export { type AppType, type Chapter, CourseTag, type Lesson, Role, type User };
+export {
+  type AppType,
+  type Chapter,
+  type Course,
+  CourseTag,
+  type Lesson,
+  type Progress,
+  Role,
+  type User,
+};
+
+export type CourseWithChapter = Course & {
+  chapters: Chapter[];
+};
+
+export type CourseWithChapterAndLessons = Course & {
+  chapters: (Chapter & {
+    lessons: Lesson[];
+  })[];
+};
+
+export type CourseWithChapterAndLessonsAndProgress = Course & {
+  chapters: (Chapter & {
+    lessons: (Lesson & {
+      progress: Pick<Progress, "completed">[];
+    })[];
+  })[];
+};
 
 ////////////////////////////
 // Courses Router Schemas //
@@ -93,3 +120,27 @@ export type TCreateChapterType = z.infer<typeof ZCreateChapterSchema>;
 export type TUpdateChapterType = z.infer<typeof ZUpdateChapterSchema>;
 export type TCreateLessonType = z.infer<typeof ZCreateLessonSchema>;
 export type TUpdateLessonType = z.infer<typeof ZUpdateLessonSchema>;
+
+////////////////////////////
+// Student Router Schemas //
+////////////////////////////
+
+export const ZGetAllStudentCoursesSchema = z.object({
+  query: z.string().optional(),
+  page: z.coerce.number().min(1).optional().default(1),
+  perPage: z.coerce.number().min(1).optional().default(4),
+});
+
+export const ZGetStudentCourseSchema = z.object({
+  id: z.string(),
+});
+
+export const ZCompleteLessonSchema = z.object({
+  lessonId: z.string(),
+});
+
+export type TGetAllStudentCoursesType = z.infer<
+  typeof ZGetAllStudentCoursesSchema
+>;
+export type TGetStudentCourseType = z.infer<typeof ZGetStudentCourseSchema>;
+export type TCompleteLessonType = z.infer<typeof ZCompleteLessonSchema>;

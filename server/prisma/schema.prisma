@@ -78,32 +78,32 @@ model Course {
 }
 
 model Chapter {
-  id          String     @id @default(uuid())
+  id          String   @id @default(uuid())
   title       String
   description String
   courseId    String
-  course      Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  isPublished Boolean    @default(false)
-  isFree      Boolean    @default(false)
-  progress    Progress[]
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isPublished Boolean  @default(false)
+  isFree      Boolean  @default(false)
   lessons     Lesson[]
 
   @@index([courseId])
 }
 
 model Lesson {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   title       String
   content     String
   chapterId   String
-  chapter     Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapter     Chapter    @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   position    Int
-  isPublished Boolean  @default(false)
-  isFree      Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isPublished Boolean    @default(false)
+  isFree      Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  progress    Progress[]
 
   @@index([chapterId])
 }
@@ -111,17 +111,17 @@ model Lesson {
 model Progress {
   id        String   @id @default(uuid())
   userId    String
-  chapterId String
-  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   courseId  String
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   completed Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, chapterId])
-  @@unique([userId, courseId])
+  @@unique([userId, lessonId])
   @@index([userId])
+  @@index([courseId])
 }
 
 model Session {

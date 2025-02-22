@@ -29,7 +29,8 @@ let env: Env;
 try {
   // eslint-disable-next-line node/no-process-env
   env = EnvSchema.parse(process.env);
-} catch (err) {
+}
+catch (err) {
   const error = err as ZodError;
   console.error("Invalid env:");
   console.error(error.flatten().fieldErrors);

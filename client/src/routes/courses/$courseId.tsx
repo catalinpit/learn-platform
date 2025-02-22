@@ -18,7 +18,7 @@ export const Route = createFileRoute("/courses/$courseId")({
   component: CoursePage,
   loader: async ({ params, context }) => {
     return await context.queryClient.ensureQueryData(
-      getCourseByIdQueryOptions(params.courseId)
+      getCourseByIdQueryOptions(params.courseId),
     );
   },
 });
@@ -28,7 +28,7 @@ export function CoursePage() {
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
   const { data: course } = useSuspenseQuery(
-    getCourseByIdQueryOptions(courseId)
+    getCourseByIdQueryOptions(courseId),
   );
 
   if ("message" in course) {
@@ -59,9 +59,13 @@ export function CoursePage() {
             {course.title}
           </CardTitle>
           <CardDescription>
-            <div className="prose dark:prose-headings:text-white dark:text-white dark:prose-strong:text-white">
+            <div
+              className="prose dark:prose-headings:text-white dark:text-white dark:prose-strong:text-white"
+            >
               {/* TODO: FIX THIS ASAP */}
-              <div dangerouslySetInnerHTML={{ __html: course.description }} />
+              <div
+                dangerouslySetInnerHTML={{ __html: course.description }}
+              />
             </div>
           </CardDescription>
         </CardHeader>

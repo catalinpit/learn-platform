@@ -7,7 +7,7 @@ import {
   updateCourseLesson,
   updateCourse,
 } from "@/lib/api";
-import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Card,
@@ -35,7 +35,6 @@ import { ConfirmDeleteCourseDialog } from "@/components/confirmation-dialogs/con
 import { ConfirmPublishCourseDialog } from "@/components/confirmation-dialogs/confirm-publish-course-dialog";
 import { ConfirmUnpublishCourseDialog } from "@/components/confirmation-dialogs/confirm-unpublish-course-dialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { InfoIcon } from "lucide-react";
 import { InfoCard } from "@/components/ui/info-card";
 import { courseTagToString } from "@/lib/utils";
 
@@ -50,6 +49,9 @@ export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
 
 function RouteComponent() {
   const { courseId } = Route.useParams();
+  const { data: course } = useSuspenseQuery(
+    getCreatorCourseByIdOptions(courseId)
+  );
   const { queryClient } = Route.useRouteContext();
 
   const [showChapterForm, setShowChapterForm] = useState(false);
@@ -86,10 +88,6 @@ function RouteComponent() {
     lessonToEdit,
     showUpdateCourseForm,
   ]);
-
-  const { data: course } = useSuspenseQuery(
-    getCreatorCourseByIdOptions(courseId)
-  );
 
   const addChapterMutation = useMutation({
     mutationFn: (values: TCreateChapterType) => {

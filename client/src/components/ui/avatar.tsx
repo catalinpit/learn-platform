@@ -85,10 +85,8 @@ function AvatarWithText({
           textSectionClassName
         )}
       >
-        <span className="text-background dark:text-foreground truncate">
-          {primaryText}
-        </span>
-        <span className="text-muted-background dark:text-muted-foreground truncate text-xs">
+        <span className="text-foreground truncate">{primaryText}</span>
+        <span className="text-muted-foreground truncate text-xs">
           {secondaryText}
         </span>
       </div>

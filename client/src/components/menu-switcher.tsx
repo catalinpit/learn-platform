@@ -17,44 +17,45 @@ export function MenuSwitcher() {
   const { data: session } = useSession();
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            data-testid="menu-switcher"
-            className="bg-transparent focus:bg-transparent hover:bg-transparent"
-          >
-            <AvatarWithText
-              avatarSrc={session?.user?.image}
-              avatarFallback={session?.user?.name ?? ""}
-              primaryText={session?.user?.name}
-            />
-          </Button>
-        </DropdownMenuTrigger>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          data-testid="menu-switcher"
+          className="bg-background hover:bg-background shadow-none"
+        >
+          <AvatarWithText
+            avatarSrc={session?.user?.image}
+            avatarFallback={session?.user?.name ?? ""}
+            primaryText={session?.user?.name}
+          />
+        </Button>
+      </DropdownMenuTrigger>
 
-        <DropdownMenuContent>
-          <DropdownMenuLabel>Profile</DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <Link to="/settings" className="block w-full">
-              Settings
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onSelect={async () => {
-              signOut({
-                fetchOptions: {
-                  onSuccess: () => {
-                    router.navigate({ to: "/" });
-                  },
+      <DropdownMenuContent>
+        <DropdownMenuLabel>Profile</DropdownMenuLabel>
+        <DropdownMenuItem asChild>
+          <Link to="/settings" className="block w-full">
+            Settings
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={async () => {
+            signOut({
+              fetchOptions: {
+                onSuccess: () => {
+                  router.navigate({
+                    to: "/",
+                    search: { search: "", page: 1, perPage: 10 },
+                  });
                 },
-              });
-            }}
-          >
-            Sign Out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+              },
+            });
+          }}
+        >
+          Sign Out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
