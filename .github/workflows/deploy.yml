@@ -69,21 +69,79 @@ jobs:
             --namespace learn-platform \
             --wait --timeout 5m
 
-      - name: Deploy applications
+      - name: Create server config
         run: |
-          # Copy built client files to server's public directory
-          mkdir -p server/public
-          cp -r client/dist/* server/public/
-          
-          # Deploy server and client
-          kubectl create configmap learn-platform-server \
-            --from-file=server \
+          # Create a ConfigMap for environment variables
+          kubectl create configmap learn-platform-config \
+            --from-literal=NODE_ENV=production \
             --namespace learn-platform \
             --dry-run=client -o yaml | kubectl apply -f -
-            
+
+      - name: Deploy server code
+        run: |
+          # Create a tar of the server directory
+          tar -czf server.tar.gz -C server .
+          
+          # Create a PVC for server code
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: server-code
+            namespace: learn-platform
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 1Gi
+          EOF
+          
+          # Create an init container job to copy code
+          cat <<EOF | kubectl apply -f -
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: copy-server-code
+            namespace: learn-platform
+          spec:
+            template:
+              spec:
+                containers:
+                - name: copy-code
+                  image: busybox
+                  command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    cd /server-code
+                    tar xzf /tmp/server.tar.gz
+                  volumeMounts:
+                  - name: server-code
+                    mountPath: /server-code
+                  - name: server-tar
+                    mountPath: /tmp/server.tar.gz
+                    subPath: server.tar.gz
+                volumes:
+                - name: server-code
+                  persistentVolumeClaim:
+                    claimName: server-code
+                - name: server-tar
+                  configMap:
+                    name: server-tar
+                restartPolicy: Never
+          EOF
+          
+          # Create ConfigMap with the tar file
+          kubectl create configmap server-tar \
+            --from-file=server.tar.gz \
+            --namespace learn-platform \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
+          # Deploy the application
           helm upgrade --install learn-platform ./learn-platform \
             --namespace learn-platform \
-            --set server.configMap=learn-platform-server \
+            --set server.volumeClaimName=server-code \
             --wait --timeout 5m
 
       - name: Verify deployment
