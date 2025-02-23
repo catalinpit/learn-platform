@@ -14,6 +14,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install server dependencies
+        working-directory: server
+        run: bun install
+
+      - name: Install client dependencies
+        working-directory: client
+        run: bun install
+
+      - name: Build client
+        working-directory: client
+        run: bunx --bun vite build
+
       - name: Install kubectl
         run: |
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -47,6 +64,23 @@ jobs:
         run: |
           helm upgrade --install postgresql ./learn-platform \
             --namespace learn-platform \
+            --wait --timeout 5m
+
+      - name: Deploy applications
+        run: |
+          # Copy built client files to server's public directory
+          mkdir -p server/public
+          cp -r client/dist/* server/public/
+          
+          # Deploy server and client
+          kubectl create configmap learn-platform-server \
+            --from-file=server \
+            --namespace learn-platform \
+            --dry-run=client -o yaml | kubectl apply -f -
+            
+          helm upgrade --install learn-platform ./learn-platform \
+            --namespace learn-platform \
+            --set server.configMap=learn-platform-server \
             --wait --timeout 5m
 
       - name: Verify deployment

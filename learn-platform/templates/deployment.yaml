@@ -4,15 +4,18 @@ metadata:
   name: {{ .Release.Name }}-postgresql
   labels:
     app: postgresql
+    instance: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.app.replicas }}
   selector:
     matchLabels:
       app: postgresql
+      instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
         app: postgresql
+        instance: {{ .Release.Name }}
     spec:
       containers:
         - name: postgresql
