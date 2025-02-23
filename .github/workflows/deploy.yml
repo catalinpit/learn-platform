@@ -49,7 +49,7 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
-          helm upgrade --install postgresql ./learn-platform-chart \
+          helm upgrade --install postgresql ./learn-platform \
             --namespace learn-platform \
             --set postgresql.database=${POSTGRES_DB} \
             --set postgresql.username=${POSTGRES_USER} \
