@@ -1,4 +1,4 @@
-name: Deploy to k3s
+name: Deploy to K3s
 
 on:
   push:
@@ -9,29 +9,55 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Helm
-        uses: azure/setup-helm@v3
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
 
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v3
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
       - name: Configure kubectl
         run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ~/.kube/config
-          chmod 600 ~/.kube/config
+          export KUBE_HOST="${{ secrets.KUBE_HOST }}"
+          export KUBE_CERTIFICATE="${{ secrets.KUBE_CERTIFICATE }}"
+          export KUBE_TOKEN="${{ secrets.KUBE_TOKEN }}"
+          mkdir -p $HOME/.kube
+          echo "$KUBE_CERTIFICATE" | base64 -d > $HOME/.kube/certificate
+          kubectl config set-cluster default --server=https://$KUBE_HOST --certificate-authority=$HOME/.kube/certificate > /dev/null
+          kubectl config set-credentials cluster-admin --token="${KUBE_TOKEN}" > /dev/null
+          kubectl config set-context default --cluster=default --user=cluster-admin > /dev/null
+          kubectl config use-context default > /dev/null
 
-      - name: Deploy to k3s
+      - name: Check connection
+        run: kubectl get nodes
+
+      - name: Create namespace if not exists
+        run: |
+          kubectl create namespace learn-platform --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy PostgreSQL
         env:
-          POSTGRES_DB: ${{ secrets.POSTGRES_DATABASE }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USERNAME }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
-          helm upgrade --install learn-platform ./learn-platform-chart \
+          helm upgrade --install postgresql ./learn-platform-chart \
+            --namespace learn-platform \
             --set postgresql.database=${POSTGRES_DB} \
             --set postgresql.username=${POSTGRES_USER} \
-            --set postgresql.password=${POSTGRES_PASSWORD}
+            --set postgresql.password=${POSTGRES_PASSWORD} \
+            --wait --timeout 5m
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n learn-platform
+          kubectl get services -n learn-platform
+          kubectl get pvc -n learn-platform
