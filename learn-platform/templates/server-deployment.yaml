@@ -17,6 +17,15 @@ spec:
         app: server
         instance: {{ .Release.Name }}
     spec:
+      initContainers:
+        - name: install-deps
+          image: oven/bun:latest
+          command: ["bun"]
+          args: ["install"]
+          workingDir: /app
+          volumeMounts:
+            - name: server-code
+              mountPath: /app
       containers:
         - name: server
           image: oven/bun:latest
@@ -34,12 +43,7 @@ spec:
             - name: server-code
               mountPath: /app
           resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
+            {{- toYaml .Values.server.resources | nindent 12 }}
       volumes:
         - name: server-code
           persistentVolumeClaim:

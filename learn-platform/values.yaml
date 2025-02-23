@@ -19,6 +19,20 @@ postgresql:
     type: ClusterIP
     port: 5432
 
+# Server configuration
+server:
+  volumeClaimName: server-code
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
 # Common labels
 labels:
   app: learn-platform
