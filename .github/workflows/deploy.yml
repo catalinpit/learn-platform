@@ -62,6 +62,9 @@ jobs:
 
       - name: Deploy PostgreSQL
         run: |
+          # Delete the existing deployment first
+          kubectl delete deployment postgresql-postgresql -n learn-platform --ignore-not-found=true
+          
           helm upgrade --install postgresql ./learn-platform \
             --namespace learn-platform \
             --wait --timeout 5m
