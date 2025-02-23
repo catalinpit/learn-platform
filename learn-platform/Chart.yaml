@@ -1,0 +1,6 @@
+apiVersion: v2
+name: learn-platform
+description: A Helm chart for Learn Platform
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

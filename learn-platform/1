@@ -1,0 +1,24 @@
+# Application configuration
+app:
+  name: learn-platform
+  replicas: 1
+
+# PostgreSQL configuration
+postgresql:
+  image:
+    repository: postgres
+    tag: "17"
+  database: "${POSTGRES_DB}"
+  username: "${POSTGRES_USER}"
+  password: "${POSTGRES_PASSWORD}"
+  persistence:
+    enabled: true
+    storageClass: "local-path" # k3s default storage class
+    size: 1Gi
+  service:
+    type: ClusterIP
+    port: 5432
+
+# Common labels
+labels:
+  app: learn-platform
