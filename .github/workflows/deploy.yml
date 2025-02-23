@@ -44,16 +44,9 @@ jobs:
           kubectl create namespace learn-platform --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy PostgreSQL
-        env:
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
           helm upgrade --install postgresql ./learn-platform \
             --namespace learn-platform \
-            --set postgresql.database=${POSTGRES_DB} \
-            --set postgresql.username=${POSTGRES_USER} \
-            --set postgresql.password=${POSTGRES_PASSWORD} \
             --wait --timeout 5m
 
       - name: Verify deployment

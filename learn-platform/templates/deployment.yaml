@@ -3,28 +3,41 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-postgresql
   labels:
-    {{- include "learn-platform.labels" . | nindent 4 }}
+    app: postgresql
 spec:
   replicas: {{ .Values.app.replicas }}
   selector:
     matchLabels:
-      {{- include "learn-platform.selectorLabels" . | nindent 6 }}
+      app: postgresql
   template:
     metadata:
       labels:
-        {{- include "learn-platform.selectorLabels" . | nindent 8 }}
+        app: postgresql
     spec:
       containers:
         - name: postgresql
           image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
           imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-credentials
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-credentials
+                  key: POSTGRES_USER
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-credentials
+                  key: POSTGRES_DB
           ports:
             - name: postgresql
               containerPort: 5432
               protocol: TCP
-          envFrom:
-            - secretRef:
-                name: {{ .Release.Name }}-postgresql
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
