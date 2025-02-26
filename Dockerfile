@@ -28,4 +28,5 @@ COPY --from=build /usr/src/app/client/dist ./client/dist/
 
 USER bun
 EXPOSE 9999/tcp
-ENTRYPOINT [ "bun", "server/index.ts" ]
+WORKDIR /usr/src/app/server
+ENTRYPOINT [ "bun", "run", "start" ]
