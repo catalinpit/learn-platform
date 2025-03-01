@@ -80,23 +80,30 @@ jobs:
         run: |
           kubectl create namespace learn-platform --dry-run=client -o yaml | kubectl apply -f -
 
-      # The secrets should already exist in the cluster, created by an admin
-      # We're just verifying they exist before proceeding
-      - name: Verify required secrets exist
+      - name: Create PostgreSQL credentials secret
         run: |
-          # Check if PostgreSQL credentials secret exists
-          if ! kubectl get secret postgresql-credentials -n learn-platform &>/dev/null; then
-            echo "Error: Secret 'postgresql-credentials' not found in namespace 'learn-platform'"
-            echo "Please create this secret manually with POSTGRES_DB, POSTGRES_USER, and POSTGRES_PASSWORD"
-            exit 1
-          fi
+          kubectl create secret generic postgresql-credentials \
+            --namespace learn-platform \
+            --from-literal=POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+            --from-literal=POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+            --from-literal=POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+            --dry-run=client -o yaml | kubectl apply -f -
 
-          # Check if application environment secret exists
-          if ! kubectl get secret learn-platform-env -n learn-platform &>/dev/null; then
-            echo "Error: Secret 'learn-platform-env' not found in namespace 'learn-platform'"
-            echo "Please create this secret manually with required environment variables"
-            exit 1
-          fi
+      - name: Create application environment secret
+        run: |
+          kubectl create secret generic learn-platform-env \
+            --namespace learn-platform \
+            --from-literal=PORT=${{ secrets.PORT }} \
+            --from-literal=DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@learn-platform-postgresql:5432/${{ secrets.POSTGRES_DB }}?schema=public \
+            --from-literal=BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }} \
+            --from-literal=BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }} \
+            --from-literal=GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} \
+            --from-literal=GITHUB_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }} \
+            --from-literal=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+            --from-literal=GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            --from-literal=RESEND_KEY=${{ secrets.RESEND_KEY }} \
+            --from-literal=NODE_ENV=production \
+            --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy application with Helm
         run: |
