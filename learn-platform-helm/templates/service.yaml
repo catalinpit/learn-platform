@@ -12,4 +12,5 @@ spec:
       protocol: TCP
       name: postgresql
   selector:
-    {{- include "learn-platform.selectorLabels" . | nindent 4 }}
+    app: postgresql
+    instance: {{ .Release.Name }}
