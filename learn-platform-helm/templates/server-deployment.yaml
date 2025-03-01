@@ -17,6 +17,14 @@ spec:
         app: server
         instance: {{ .Release.Name }}
     spec:
+      initContainers:
+        - name: run-migrations
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["npx", "prisma", "migrate", "deploy"]
+          envFrom:
+            - secretRef:
+                name: {{ .Values.server.existingSecret }}
       containers:
         - name: server
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
