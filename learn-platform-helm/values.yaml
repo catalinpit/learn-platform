@@ -5,7 +5,7 @@ app:
 
 # Docker image configuration
 image:
-  repository: ghcr.io/yourusername/learn-platform
+  repository: ghcr.io/catalinpit/learn-platform
   tag: latest
   pullPolicy: Always
 
