@@ -16,7 +16,7 @@ routes.forEach((route) => {
 });
 
 app.get("*", serveStatic({ root: "../client/dist" }));
-app.get("*", serveStatic({ path: "../client/dist/index.html" }));
+app.get("*", serveStatic({ path: "index.html", root: "../client/dist" }));
 
 export type AppType = (typeof routes)[number];
 
