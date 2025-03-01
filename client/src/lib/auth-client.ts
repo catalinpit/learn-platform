@@ -1,7 +1,8 @@
 import { createAuthClient } from "better-auth/react";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 
-const baseURL = process.env.PUBLIC_BETTER_AUTH_URL || "http://localhost:9999";
+const baseURL =
+  import.meta.env.PUBLIC_BETTER_AUTH_URL || "http://localhost:9999";
 
 export const authClient = createAuthClient({
   baseURL,
