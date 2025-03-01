@@ -19,7 +19,7 @@ export default function createApp() {
 
   app.use(customLogger());
   app.use("*", authMiddleware);
-  app.use("/api/auth/**", corsMiddleware);
+  app.use("/api/**", corsMiddleware);
 
   app.notFound(notFound);
   app.onError(onError);
