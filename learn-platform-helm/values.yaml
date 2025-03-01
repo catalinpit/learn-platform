@@ -53,6 +53,11 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
+          backend:
+            service:
+              name: learn-platform-server
+              port:
+                number: 80
   tls:
     - secretName: learn-tls
       hosts:
