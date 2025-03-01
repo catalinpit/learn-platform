@@ -47,17 +47,13 @@ ingress:
   className: "nginx"
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # Uncomment the following line if you have cert-manager installed
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
     - host: sf.catalins.tech
       paths:
         - path: /
           pathType: Prefix
-          backend:
-            service:
-              name: learn-platform-server
-              port:
-                number: 80
   tls:
     - secretName: learn-tls
       hosts:

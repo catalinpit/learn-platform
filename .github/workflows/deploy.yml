@@ -97,6 +97,7 @@ jobs:
             --from-literal=DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@learn-platform-postgresql:5432/${{ secrets.POSTGRES_DB }}?schema=public \
             --from-literal=BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }} \
             --from-literal=BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }} \
+            --from-literal=PUBLIC_BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }} \
             --from-literal=GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} \
             --from-literal=GITHUB_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }} \
             --from-literal=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
