@@ -28,7 +28,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:9999",
+        target: process.env.PUBLIC_BETTER_AUTH_URL || "http://localhost:9999",
         changeOrigin: true,
       },
     },
