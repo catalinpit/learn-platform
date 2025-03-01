@@ -31,6 +31,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Clear Docker cache
+        run: |
+          docker builder prune --all --force
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
@@ -50,6 +54,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          no-cache: true
 
       - name: Install kubectl
         run: |
@@ -105,6 +110,10 @@ jobs:
             --from-literal=RESEND_KEY=${{ secrets.RESEND_KEY }} \
             --from-literal=NODE_ENV=production \
             --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Clear Kubernetes cache
+        run: |
+          kubectl delete pods -n learn-platform -l app=learn-platform --ignore-not-found
 
       - name: Deploy application with Helm
         run: |
