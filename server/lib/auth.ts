@@ -6,12 +6,12 @@ import prisma from "@/db/index";
 import env from "@/env";
 
 export const auth = betterAuth({
-  baseURL: "http://127.0.0.1:9999",
+  baseURL: env.BETTER_AUTH_URL,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
   // couldn't make requests from the frontend to the backend without this trustedOrigins property
-  trustedOrigins: ["*"],
+  trustedOrigins: ["http://localhost:5173", "https://sf.catalins.tech"],
   emailAndPassword: {
     enabled: true,
   },
