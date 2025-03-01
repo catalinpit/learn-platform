@@ -1,7 +1,6 @@
-import type { Chapter, Course, Lesson, Progress, User } from "@prisma/client";
 import type { PinoLogger } from "hono-pino";
 
-import { CourseTag, Role } from "@prisma/client";
+import { CourseTag } from "@prisma/client";
 import { z } from "zod";
 
 import type { AppType } from "../app";
@@ -20,34 +19,7 @@ export interface AuthType {
   };
 }
 
-export {
-  type AppType,
-  type Chapter,
-  type Course,
-  CourseTag,
-  type Lesson,
-  type Progress,
-  Role,
-  type User,
-};
-
-export type CourseWithChapter = Course & {
-  chapters: Chapter[];
-};
-
-export type CourseWithChapterAndLessons = Course & {
-  chapters: (Chapter & {
-    lessons: Lesson[];
-  })[];
-};
-
-export type CourseWithChapterAndLessonsAndProgress = Course & {
-  chapters: (Chapter & {
-    lessons: (Lesson & {
-      progress: Pick<Progress, "completed">[];
-    })[];
-  })[];
-};
+export { type AppType };
 
 ////////////////////////////
 // Courses Router Schemas //

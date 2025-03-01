@@ -13,7 +13,7 @@ import { signUp, signIn } from "@/lib/auth-client";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Role } from "@server/shared/types";
+import { RoleType as Role } from "@server/prisma/generated/types/index";
 
 export function RegisterForm({
   className,
@@ -51,7 +51,7 @@ export function RegisterForm({
         email,
         password,
         name,
-        roles: [Role.STUDENT],
+        roles: ["STUDENT" as Role],
       },
       {
         onSuccess: () => {

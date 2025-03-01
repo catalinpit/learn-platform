@@ -21,7 +21,12 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import type { Course, Chapter, Lesson, Progress } from "@server/shared/types";
+import type {
+  Course,
+  Chapter,
+  Lesson,
+  Progress,
+} from "@server/prisma/generated/types/index";
 
 type CourseSidebarProps = {
   course: Pick<Course, "title" | "description"> & {

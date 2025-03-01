@@ -1,42 +1,56 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Role, CourseTag } from "@server/shared/types";
-import type { CourseWithChapterAndLessonsAndProgress } from "@server/shared/types";
+import {
+  RoleType as Role,
+  CourseTagType as CourseTag,
+  Course,
+  Chapter,
+  Lesson,
+  Progress,
+} from "@server/prisma/generated/types/index";
+
+export type CourseWithChapterAndLessonsAndProgress = Course & {
+  chapters: (Chapter & {
+    lessons: (Lesson & {
+      progress: Pick<Progress, "completed">[];
+    })[];
+  })[];
+};
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export const canCreateCourse = (roles: string[]) => {
-  return roles.includes(Role.CREATOR) || roles.includes(Role.ADMIN);
+  return roles.includes("CREATOR" as Role) || roles.includes("ADMIN" as Role);
 };
 
 export const courseTagToString = (tag: CourseTag): string => {
   const tagMap: Record<CourseTag, string> = {
-    [CourseTag.JAVASCRIPT]: "JavaScript",
-    [CourseTag.TYPESCRIPT]: "TypeScript",
-    [CourseTag.REACT]: "React",
-    [CourseTag.NEXTJS]: "Next.js",
-    [CourseTag.NODE]: "Node.js",
-    [CourseTag.PYTHON]: "Python",
-    [CourseTag.JAVA]: "Java",
-    [CourseTag.GOLANG]: "Go",
-    [CourseTag.CSS]: "CSS",
-    [CourseTag.HTML]: "HTML",
-    [CourseTag.DESIGN]: "Design",
-    [CourseTag.DEVOPS]: "DevOps",
-    [CourseTag.DATABASE]: "Database",
-    [CourseTag.MOBILE]: "Mobile Development",
-    [CourseTag.TESTING]: "Testing",
-    [CourseTag.SECURITY]: "Security",
-    [CourseTag.TECHNICAL_WRITING]: "Technical Writing",
-    [CourseTag.MARKETING]: "Marketing",
-  };
+    JAVASCRIPT: "JavaScript",
+    TYPESCRIPT: "TypeScript",
+    REACT: "React",
+    NEXTJS: "Next.js",
+    NODE: "Node.js",
+    PYTHON: "Python",
+    JAVA: "Java",
+    GOLANG: "Go",
+    CSS: "CSS",
+    HTML: "HTML",
+    DESIGN: "Design",
+    DEVOPS: "DevOps",
+    DATABASE: "Database",
+    MOBILE: "Mobile Development",
+    TESTING: "Testing",
+    SECURITY: "Security",
+    TECHNICAL_WRITING: "Technical Writing",
+    MARKETING: "Marketing",
+  } as const;
   return tagMap[tag];
 };
 
 export const mapCourseTags = (tags: string[]) => {
-  return tags.map((tag) => tag.trim()) as CourseTag[];
+  return tags.map((tag) => tag.trim() as CourseTag);
 };
 
 export const calculateCourseProgress = (
