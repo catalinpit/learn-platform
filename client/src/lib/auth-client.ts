@@ -1,7 +1,8 @@
 import { createAuthClient } from "better-auth/react";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 
-const baseURL = "/api";
+const baseURL =
+  import.meta.env.PUBLIC_BETTER_AUTH_URL || "http://127.0.0.1:9999";
 
 export const authClient = createAuthClient({
   baseURL,
