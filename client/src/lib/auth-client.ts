@@ -2,7 +2,7 @@ import { createAuthClient } from "better-auth/react";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 
 const baseURL =
-  import.meta.env.PUBLIC_BETTER_AUTH_URL || "http://localhost:9999";
+  import.meta.env.PUBLIC_BETTER_AUTH_URL || "https://sf.catalins.tech";
 
 export const authClient = createAuthClient({
   baseURL,
