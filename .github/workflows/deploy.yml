@@ -6,30 +6,50 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
         with:
-          bun-version: latest
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install server dependencies
-        working-directory: server
-        run: bun install
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+            latest
 
-      - name: Install client dependencies
-        working-directory: client
-        run: bun install
-
-      - name: Build client
-        working-directory: client
-        run: bunx --bun vite build
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Install kubectl
         run: |
@@ -60,92 +80,37 @@ jobs:
         run: |
           kubectl create namespace learn-platform --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Deploy PostgreSQL
+      # The secrets should already exist in the cluster, created by an admin
+      # We're just verifying they exist before proceeding
+      - name: Verify required secrets exist
         run: |
-          # Delete the existing deployment first
-          kubectl delete deployment postgresql-postgresql -n learn-platform --ignore-not-found=true
-          
-          helm upgrade --install postgresql ./learn-platform \
-            --namespace learn-platform \
-            --wait --timeout 5m
+          # Check if PostgreSQL credentials secret exists
+          if ! kubectl get secret postgresql-credentials -n learn-platform &>/dev/null; then
+            echo "Error: Secret 'postgresql-credentials' not found in namespace 'learn-platform'"
+            echo "Please create this secret manually with POSTGRES_DB, POSTGRES_USER, and POSTGRES_PASSWORD"
+            exit 1
+          fi
 
-      - name: Create server config
-        run: |
-          # Create a ConfigMap for environment variables
-          kubectl create configmap learn-platform-config \
-            --from-literal=NODE_ENV=production \
-            --namespace learn-platform \
-            --dry-run=client -o yaml | kubectl apply -f -
+          # Check if application environment secret exists
+          if ! kubectl get secret learn-platform-env -n learn-platform &>/dev/null; then
+            echo "Error: Secret 'learn-platform-env' not found in namespace 'learn-platform'"
+            echo "Please create this secret manually with required environment variables"
+            exit 1
+          fi
 
-      - name: Deploy server code
+      - name: Deploy application with Helm
         run: |
-          # Create a tar of the server directory
-          tar -czf server.tar.gz -C server .
-          
-          # Create a PVC for server code
-          cat <<EOF | kubectl apply -f -
-          apiVersion: v1
-          kind: PersistentVolumeClaim
-          metadata:
-            name: server-code
-            namespace: learn-platform
-          spec:
-            accessModes:
-              - ReadWriteOnce
-            resources:
-              requests:
-                storage: 1Gi
-          EOF
-          
-          # Create an init container job to copy code
-          cat <<EOF | kubectl apply -f -
-          apiVersion: batch/v1
-          kind: Job
-          metadata:
-            name: copy-server-code
-            namespace: learn-platform
-          spec:
-            template:
-              spec:
-                containers:
-                - name: copy-code
-                  image: busybox
-                  command:
-                  - /bin/sh
-                  - -c
-                  - |
-                    cd /server-code
-                    tar xzf /tmp/server.tar.gz
-                  volumeMounts:
-                  - name: server-code
-                    mountPath: /server-code
-                  - name: server-tar
-                    mountPath: /tmp/server.tar.gz
-                    subPath: server.tar.gz
-                volumes:
-                - name: server-code
-                  persistentVolumeClaim:
-                    claimName: server-code
-                - name: server-tar
-                  configMap:
-                    name: server-tar
-                restartPolicy: Never
-          EOF
-          
-          # Create ConfigMap with the tar file
-          kubectl create configmap server-tar \
-            --from-file=server.tar.gz \
+          # Get the image tag from the metadata step
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
+
+          # Deploy the application using Helm
+          helm upgrade --install learn-platform ./learn-platform-helm \
             --namespace learn-platform \
-            --dry-run=client -o yaml | kubectl apply -f -
-          
-          # Deploy the application
-          helm upgrade --install learn-platform ./learn-platform \
-            --namespace learn-platform \
-            --set server.volumeClaimName=server-code \
+            --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
+            --set image.tag=${IMAGE_TAG##*:} \
             --wait --timeout 5m
 
       - name: Verify deployment
         run: |
           kubectl get pods -n learn-platform
           kubectl get services -n learn-platform
-          kubectl get pvc -n learn-platform
