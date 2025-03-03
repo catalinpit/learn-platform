@@ -48,10 +48,14 @@ export function LoginForm({
   };
 
   return (
+<<<<<<< Updated upstream
     <div
       className={cn("flex flex-col gap-6", className)}
       {...props}
     >
+=======
+    <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
+>>>>>>> Stashed changes
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">
