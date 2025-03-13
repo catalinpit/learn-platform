@@ -60,9 +60,7 @@ helm upgrade --install cnpg \
   --create-namespace \
   cnpg/cloudnative-pg
 
-# Build Helm dependencies
-echo "Building Helm dependencies..."
-helm dependency build ./
+# No need to build dependencies as CloudNativePG is installed separately
 
 # Deploy Learn Platform
 echo "Deploying Learn Platform..."

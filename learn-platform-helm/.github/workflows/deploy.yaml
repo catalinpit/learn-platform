@@ -79,10 +79,6 @@ jobs:
             --from-literal=SMTP_FROM=${{ secrets.SMTP_FROM }} \
             --from-literal=RESEND_KEY=${{ secrets.RESEND_KEY }}
 
-      - name: Build Helm dependencies
-        run: |
-          helm dependency build ./learn-platform-helm
-
       - name: Deploy Learn Platform
         run: |
           helm upgrade --install learn-platform ./learn-platform-helm \

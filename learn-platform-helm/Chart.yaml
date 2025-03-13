@@ -4,8 +4,5 @@ description: A Helm chart for Learn Platform
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
-dependencies:
-  - name: cloudnative-pg
-    version: "0.18.0"
-    repository: "https://cloudnative-pg.github.io/charts"
-    condition: cloudnativepg.enabled
+# CloudNativePG is installed separately via GitHub Actions
+# or manually using the instructions in the README

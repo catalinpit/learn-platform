@@ -8,7 +8,7 @@ This Helm chart deploys the Learn Platform application on Kubernetes.
 - Helm 3.x
 - kubectl configured to access your cluster
 - NGINX Ingress Controller installed
-- CloudNativePG operator (installed automatically by this chart)
+- CloudNativePG operator (installed separately, instructions included below)
 
 ## Required Secrets
 
@@ -108,13 +108,7 @@ helm upgrade --install cnpg \
   cnpg/cloudnative-pg
 ```
 
-4. Build the Helm chart dependencies:
-
-```bash
-helm dependency build ./learn-platform-helm
-```
-
-5. Install or upgrade the Helm chart:
+4. Install or upgrade the Helm chart:
 
 ```bash
 helm upgrade --install learn-platform ./learn-platform-helm \
@@ -130,7 +124,7 @@ This Helm chart integrates with CloudNativePG to provide a robust PostgreSQL dat
 
 ### How It Works
 
-1. The chart automatically installs the CloudNativePG operator as a dependency.
+1. The CloudNativePG operator is installed separately (either via GitHub Actions or manually).
 2. A PostgreSQL cluster is created using the CloudNativePG custom resource definition.
 3. The application connects to the PostgreSQL cluster using the service endpoints provided by CloudNativePG.
 
