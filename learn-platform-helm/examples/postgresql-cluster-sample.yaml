@@ -1,0 +1,32 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: yourdb-db
+  namespace: your-workspace
+spec:
+  instances: 1
+  storage:
+    size: 10Gi
+  bootstrap:
+    initdb:
+      database: yourdb
+      owner: your-name
+      secret:
+        name: your-db-secret # <- should have a username + password
+  postInitApplicationSQL:
+    - |
+      /** If you need to create tables, add items, etc, do it here **/
+
+  postgresGUC:
+    shared_buffers: "128MB"
+    max_connections: "100"
+  postgresql:
+    version: "15"
+  monitoring:
+    enablePodMonitor: true
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      memory: "1Gi"

@@ -8,6 +8,7 @@ This Helm chart deploys the Learn Platform application on Kubernetes.
 - Helm 3.x
 - kubectl configured to access your cluster
 - NGINX Ingress Controller installed
+- CloudNativePG operator (installed automatically by this chart)
 
 ## Required Secrets
 
@@ -33,7 +34,7 @@ This secret contains all the environment variables needed by the application.
 kubectl create secret generic learn-platform-env \
   --namespace learn-platform \
   --from-literal=NODE_ENV=production \
-  --from-literal=DATABASE_URL=postgresql://your_database_user:your_secure_password@learn-platform-postgresql:5432/your_database_name \
+  --from-literal=DATABASE_URL=postgresql://your_database_user:your_secure_password@learn-platform-db-rw.learn-platform.svc.cluster.local:5432/your_database_name \
   --from-literal=JWT_SECRET=your_jwt_secret \
   --from-literal=API_URL=https://your-api-domain.com \
   --from-literal=CLIENT_URL=https://your-client-domain.com \
@@ -82,6 +83,37 @@ helm upgrade --install learn-platform ./learn-platform-helm \
   --set image.tag=latest \
   --set ingress.hosts[0].host=your-domain.com
 ```
+
+## CloudNativePG Integration
+
+This Helm chart integrates with CloudNativePG to provide a robust PostgreSQL database for the Learn Platform application. CloudNativePG is a Kubernetes operator that manages PostgreSQL workloads on Kubernetes.
+
+### How It Works
+
+1. The chart automatically installs the CloudNativePG operator as a dependency.
+2. A PostgreSQL cluster is created using the CloudNativePG custom resource definition.
+3. The application connects to the PostgreSQL cluster using the service endpoints provided by CloudNativePG.
+
+### PostgreSQL Cluster Configuration
+
+The PostgreSQL cluster is configured with the following default settings:
+
+- 1 PostgreSQL instance
+- 10Gi of storage
+- PostgreSQL version 15
+- Resource requests: 500m CPU, 512Mi memory
+- Resource limits: 1Gi memory
+
+You can customize these settings in the `values.yaml` file under the `postgresql.cluster` section.
+
+### Accessing the PostgreSQL Database
+
+CloudNativePG creates the following service endpoints for accessing the PostgreSQL database:
+
+- Read-Write endpoint: `learn-platform-db-rw.learn-platform.svc.cluster.local`
+- Read-Only endpoint: `learn-platform-db-ro.learn-platform.svc.cluster.local`
+
+The application is configured to use the Read-Write endpoint by default.
 
 ## Configuration
 
@@ -163,6 +195,35 @@ To view logs:
 
 ```bash
 kubectl logs -n learn-platform deployment/learn-platform-server
+```
+
+### Troubleshooting CloudNativePG
+
+To check the status of your PostgreSQL cluster:
+
+```bash
+kubectl get cluster -n learn-platform
+kubectl describe cluster learn-platform-db -n learn-platform
+```
+
+To view PostgreSQL logs:
+
+```bash
+# Get the PostgreSQL pod name
+POD_NAME=$(kubectl get pods -n learn-platform -l cnpg.io/cluster=learn-platform-db -o jsonpath='{.items[0].metadata.name}')
+
+# View logs
+kubectl logs -n learn-platform $POD_NAME
+```
+
+To connect to the PostgreSQL database for troubleshooting:
+
+```bash
+# Get the PostgreSQL pod name
+POD_NAME=$(kubectl get pods -n learn-platform -l cnpg.io/cluster=learn-platform-db -o jsonpath='{.items[0].metadata.name}')
+
+# Connect to the PostgreSQL database
+kubectl exec -it $POD_NAME -n learn-platform -- psql -U learn_platform -d learn_platform
 ```
 
 If your ingress is not working:

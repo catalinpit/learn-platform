@@ -19,14 +19,14 @@ spec:
     spec:
       initContainers:
         - name: wait-for-db
-          image: "postgres:17"
-          command: ['sh', '-c', 'until pg_isready -h {{ .Release.Name }}-postgresql -p 5432; do echo "Waiting for PostgreSQL to be ready..."; sleep 2; done;']
+          image: "postgres:15"
+          command: ['sh', '-c', 'until pg_isready -h {{ .Values.postgresql.cluster.name }}-rw.{{ .Values.postgresql.cluster.namespace }}.svc.cluster.local -p 5432; do echo "Waiting for CloudNativePG to be ready..."; sleep 2; done;']
         - name: run-migrations
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["sh", "-c"]
           args:
-            - "bunx prisma generate"
+            - "bunx prisma generate && bunx prisma migrate deploy"
           envFrom:
             - secretRef:
                 name: {{ .Values.server.existingSecret }}
