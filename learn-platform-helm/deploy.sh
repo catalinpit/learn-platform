@@ -53,18 +53,31 @@ echo "Adding CloudNativePG Helm repository..."
 helm repo add cnpg https://cloudnative-pg.github.io/charts
 helm repo update
 
-# Install CloudNativePG operator
-echo "Installing CloudNativePG operator..."
+# Install CloudNativePG CRDs and operator
+echo "Installing CloudNativePG CRDs and operator..."
+# Install CloudNativePG CRDs first
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_clusters.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_poolers.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_backups.yaml
+
+# Then install the operator
 helm upgrade --install cnpg \
   --namespace cnpg-system \
   --create-namespace \
   cnpg/cloudnative-pg
 
+# Wait for the operator to be ready
+echo "Waiting for CloudNativePG operator to be ready..."
+kubectl wait --for=condition=available --timeout=60s deployment/cnpg-controller-manager -n cnpg-system || true
+
 # No need to build dependencies as CloudNativePG is installed separately
 
 # Deploy Learn Platform
 echo "Deploying Learn Platform..."
-helm upgrade --install $RELEASE_NAME ./ \
+# Since this script is in the learn-platform-helm directory,
+# we use "." to refer to the current directory
+helm upgrade --install $RELEASE_NAME . \
   --namespace $NAMESPACE \
   --set image.repository=$IMAGE_REPOSITORY \
   --set image.tag=$IMAGE_TAG \

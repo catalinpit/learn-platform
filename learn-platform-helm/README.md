@@ -66,9 +66,71 @@ The application is deployed automatically via GitHub Actions when changes are pu
 
 ### Manual Deployment
 
-#### Option 1: Using the deploy script
+#### Deploying from inside the Kubernetes cluster
 
-The easiest way to deploy the chart is to use the provided deploy.sh script:
+If you're running commands directly inside the Kubernetes cluster (e.g., on a node or control plane):
+
+1. Copy the Helm chart to the cluster:
+
+```bash
+# From your local machine, copy the Helm chart to the cluster
+scp -r ./learn-platform-helm user@cluster-node:/path/to/destination
+
+# Or clone the repository directly on the cluster
+ssh user@cluster-node
+git clone https://github.com/yourusername/learn-platform.git
+cd learn-platform
+```
+
+2. Create the namespace if it doesn't exist:
+
+```bash
+kubectl create namespace learn-platform
+```
+
+3. Add the CloudNativePG Helm repository:
+
+```bash
+helm repo add cnpg https://cloudnative-pg.github.io/charts
+helm repo update
+```
+
+4. Install the CloudNativePG CRDs and operator:
+
+```bash
+# Install CloudNativePG CRDs first
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_clusters.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_poolers.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_backups.yaml
+
+# Then install the operator
+helm upgrade --install cnpg \
+  --namespace cnpg-system \
+  --create-namespace \
+  cnpg/cloudnative-pg
+
+# Wait for the operator to be ready
+kubectl wait --for=condition=available --timeout=60s deployment/cnpg-controller-manager -n cnpg-system || true
+```
+
+5. Install or upgrade the Helm chart:
+
+```bash
+# Navigate to the directory containing the Helm chart
+cd /path/to/learn-platform-helm
+
+# Install the chart
+helm upgrade --install learn-platform . \
+  --namespace learn-platform \
+  --set image.repository=ghcr.io/yourusername/learn-platform \
+  --set image.tag=latest \
+  --set ingress.hosts[0].host=your-domain.com
+```
+
+#### Option 1: Using the deploy script (from local machine)
+
+The easiest way to deploy the chart from your local machine is to use the provided deploy.sh script:
 
 ```bash
 cd learn-platform-helm
@@ -82,9 +144,9 @@ The script accepts the following parameters:
 - `--image-tag`: The Docker image tag (default: latest)
 - `--domain`: The domain name for the ingress (default: sf.catalins.tech)
 
-#### Option 2: Using Helm commands
+#### Option 2: Using Helm commands (from local machine)
 
-To deploy manually using Helm commands:
+To deploy manually from your local machine using Helm commands:
 
 1. Create the namespace if it doesn't exist:
 
@@ -99,19 +161,39 @@ helm repo add cnpg https://cloudnative-pg.github.io/charts
 helm repo update
 ```
 
-3. Install the CloudNativePG operator:
+3. Install the CloudNativePG CRDs and operator:
 
 ```bash
+# Install CloudNativePG CRDs first
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_clusters.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_poolers.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_backups.yaml
+
+# Then install the operator
 helm upgrade --install cnpg \
   --namespace cnpg-system \
   --create-namespace \
   cnpg/cloudnative-pg
+
+# Wait for the operator to be ready
+kubectl wait --for=condition=available --timeout=60s deployment/cnpg-controller-manager -n cnpg-system || true
 ```
 
 4. Install or upgrade the Helm chart:
 
 ```bash
+# If you're in the parent directory of learn-platform-helm
 helm upgrade --install learn-platform ./learn-platform-helm \
+  --namespace learn-platform \
+  --set image.repository=ghcr.io/yourusername/learn-platform \
+  --set image.tag=latest \
+  --set ingress.hosts[0].host=your-domain.com
+
+# OR if you've copied/cloned only the learn-platform-helm directory
+# and you're inside that directory
+cd learn-platform-helm
+helm upgrade --install learn-platform . \
   --namespace learn-platform \
   --set image.repository=ghcr.io/yourusername/learn-platform \
   --set image.tag=latest \

@@ -36,10 +36,20 @@ jobs:
 
       - name: Install CloudNativePG
         run: |
+          # Install CloudNativePG CRDs first
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_clusters.yaml
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_poolers.yaml
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_backups.yaml
+          
+          # Then install the operator
           helm upgrade --install cnpg \
             --namespace cnpg-system \
             --create-namespace \
             cnpg/cloudnative-pg
+            
+          # Wait for the operator to be ready
+          kubectl wait --for=condition=available --timeout=60s deployment/cnpg-controller-manager -n cnpg-system || true
 
       - name: Create namespace if not exists
         run: |
@@ -81,7 +91,9 @@ jobs:
 
       - name: Deploy Learn Platform
         run: |
-          helm upgrade --install learn-platform ./learn-platform-helm \
+          # Use the correct path to the Helm chart
+          # If the checkout action puts the repo in the current directory
+          helm upgrade --install learn-platform . \
             --namespace learn-platform \
             --set image.repository=${{ secrets.IMAGE_REPOSITORY }} \
             --set image.tag=${{ github.sha }} \
