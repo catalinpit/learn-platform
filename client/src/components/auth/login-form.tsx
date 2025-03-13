@@ -33,22 +33,31 @@ export function LoginForm({
     });
   };
 
-  const handleSignInWithCredentials = async () => {
+  const handleSignInWithCredentials = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     await signIn.email(
       {
         email,
         password,
       },
       {
+        onSuccess: () => {
+          toast.success("Logged in successfully");
+        },
         onError: (ctx) => {
-          toast.error(ctx.error.message);
+          if (ctx.error.status === 403) {
+            toast("Please verify your email address");
+          } else {
+            toast.error("Something went wrong");
+          }
         },
       }
     );
   };
 
   return (
-    <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
@@ -113,12 +122,12 @@ export function LoginForm({
                 <div className="grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
-                    <a
-                      href="#"
+                    <Link
+                      to="/forgot-password"
                       className="ml-auto text-sm underline-offset-4 hover:underline"
                     >
                       Forgot your password?
-                    </a>
+                    </Link>
                   </div>
                   <Input
                     id="password"
