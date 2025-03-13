@@ -111,6 +111,19 @@ jobs:
             --from-literal=NODE_ENV=production \
             --dry-run=client -o yaml | kubectl apply -f -
 
+      - name: Install CloudNativePG Operator
+        run: |
+          # Add the CloudNativePG Helm repository
+          helm repo add cnpg https://cloudnative-pg.github.io/charts
+          helm repo update
+          
+          # Install the CloudNativePG Operator
+          helm upgrade --install cnpg \
+            cnpg/cloudnative-pg \
+            --namespace cloudnative-pg \
+            --create-namespace \
+            --wait --timeout 2m
+
       - name: Clear Kubernetes cache
         run: |
           kubectl delete pods -n learn-platform -l app=learn-platform --ignore-not-found
