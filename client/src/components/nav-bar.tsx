@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { RoleType as Role } from "@server/prisma/generated/types/index";
+import { Role } from "@server/shared/types";
+
 import { MenuSwitcher } from "@/components/menu-switcher";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -22,7 +23,7 @@ export function NavBar() {
 
   const links = [
     ...commonLinks,
-    ...(session?.user?.roles?.includes("STUDENT" as Role) ? studentLinks : []),
+    ...(session?.user?.roles?.includes(Role.STUDENT) ? studentLinks : []),
     ...(showCreateCourseButton ? creatorLinks : []),
   ];
 

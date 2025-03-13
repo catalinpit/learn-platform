@@ -13,8 +13,10 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as UnverifiedImport } from './routes/unverified'
 import { Route as SignoutImport } from './routes/signout'
+import { Route as ResetPasswordImport } from './routes/reset-password'
 import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
+import { Route as ForgotPasswordImport } from './routes/forgot-password'
 import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
@@ -42,6 +44,12 @@ const SignoutRoute = SignoutImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const ResetPasswordRoute = ResetPasswordImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const RegisterRoute = RegisterImport.update({
   id: '/register',
   path: '/register',
@@ -51,6 +59,12 @@ const RegisterRoute = RegisterImport.update({
 const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ForgotPasswordRoute = ForgotPasswordImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -159,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -171,6 +192,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterImport
+      parentRoute: typeof rootRoute
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordImport
       parentRoute: typeof rootRoute
     }
     '/signout': {
@@ -287,8 +315,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signout': typeof SignoutRoute
   '/unverified': typeof UnverifiedRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
@@ -306,8 +336,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signout': typeof SignoutRoute
   '/unverified': typeof UnverifiedRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
@@ -326,8 +358,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signout': typeof SignoutRoute
   '/unverified': typeof UnverifiedRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
@@ -347,8 +381,10 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/signout'
     | '/unverified'
     | '/courses/$courseId'
@@ -365,8 +401,10 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/about'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/signout'
     | '/unverified'
     | '/courses/$courseId'
@@ -383,8 +421,10 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/signout'
     | '/unverified'
     | '/courses/$courseId'
@@ -403,8 +443,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignoutRoute: typeof SignoutRoute
   UnverifiedRoute: typeof UnverifiedRoute
   CoursesCourseIdRoute: typeof CoursesCourseIdRoute
@@ -414,8 +456,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignoutRoute: SignoutRoute,
   UnverifiedRoute: UnverifiedRoute,
   CoursesCourseIdRoute: CoursesCourseIdRoute,
@@ -434,8 +478,10 @@ export const routeTree = rootRoute
         "/",
         "/_authenticated",
         "/about",
+        "/forgot-password",
         "/login",
         "/register",
+        "/reset-password",
         "/signout",
         "/unverified",
         "/courses/$courseId"
@@ -460,11 +506,17 @@ export const routeTree = rootRoute
     "/about": {
       "filePath": "about.tsx"
     },
+    "/forgot-password": {
+      "filePath": "forgot-password.tsx"
+    },
     "/login": {
       "filePath": "login.tsx"
     },
     "/register": {
       "filePath": "register.tsx"
+    },
+    "/reset-password": {
+      "filePath": "reset-password.tsx"
     },
     "/signout": {
       "filePath": "signout.tsx"
