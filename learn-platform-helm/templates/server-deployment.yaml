@@ -52,19 +52,60 @@ spec:
           args:
             - |
               echo "Starting database migrations..."
-              cd /usr/src/app
+              
+              # Find the prisma directory
+              echo "Searching for prisma directory..."
+              find / -name "prisma" -type d 2>/dev/null || echo "No prisma directory found"
               
               # Check if we're in the right directory
-              echo "Current directory: $(pwd)"
+              echo "Current working directory: $(pwd)"
               ls -la
               
-              # Generate Prisma client
+              # Try different possible locations
+              if [ -d "/usr/src/app/prisma" ]; then
+                echo "Found prisma at /usr/src/app/prisma"
+                cd /usr/src/app
+              elif [ -d "/app/prisma" ]; then
+                echo "Found prisma at /app/prisma"
+                cd /app
+              elif [ -d "/prisma" ]; then
+                echo "Found prisma at /prisma"
+                cd /
+              else
+                echo "Could not find prisma directory, checking environment..."
+                env | grep -i prisma
+                echo "Listing root directory:"
+                ls -la /
+                echo "Listing /usr/src/app directory (if exists):"
+                ls -la /usr/src/app || echo "Directory does not exist"
+                echo "Listing /app directory (if exists):"
+                ls -la /app || echo "Directory does not exist"
+                exit 1
+              fi
+              
+              # Ensure prisma directories exist
+              mkdir -p node_modules/.prisma prisma/generated
+              chmod -R 777 node_modules/.prisma prisma/generated
+              
+              # Try to run prisma commands with proper error handling
               echo "Generating Prisma client..."
-              bunx prisma generate || { echo "Failed to generate Prisma client"; exit 1; }
+              bunx prisma generate --schema=./prisma/schema.prisma || { 
+                echo "Failed to generate Prisma client, trying alternative paths..."; 
+                bunx prisma generate || { 
+                  echo "All attempts to generate Prisma client failed"; 
+                  exit 1; 
+                }
+              }
               
               # Run migrations
               echo "Running database migrations..."
-              bunx prisma migrate deploy || { echo "Failed to run migrations"; exit 1; }
+              bunx prisma migrate deploy --schema=./prisma/schema.prisma || { 
+                echo "Failed to run migrations, trying alternative paths..."; 
+                bunx prisma migrate deploy || { 
+                  echo "All attempts to run migrations failed"; 
+                  exit 1; 
+                }
+              }
               
               echo "Migrations completed successfully"
           # Run as the bun user to match the main container
