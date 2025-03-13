@@ -25,18 +25,48 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command: ["sh", "-c"]
           args:
-            - "mkdir -p /usr/src/app/server/node_modules/.prisma /usr/src/app/server/prisma/generated && chmod -R 777 /usr/src/app/server/node_modules/.prisma /usr/src/app/server/prisma/generated"
+            - |
+              echo "Checking directory structure..."
+              ls -la /usr/src/app || echo "Main app directory not found"
+              
+              # Create directories with proper error handling
+              echo "Creating Prisma directories..."
+              mkdir -p /usr/src/app/node_modules/.prisma || echo "Failed to create .prisma directory"
+              mkdir -p /usr/src/app/prisma/generated || echo "Failed to create prisma/generated directory"
+              
+              # Set permissions with proper error handling
+              echo "Setting permissions..."
+              chmod -R 777 /usr/src/app/node_modules/.prisma || echo "Failed to set permissions on .prisma directory"
+              chmod -R 777 /usr/src/app/prisma/generated || echo "Failed to set permissions on prisma/generated directory"
+              
+              echo "Directory setup complete"
           volumeMounts:
             - name: prisma-data
-              mountPath: /usr/src/app/server/node_modules/.prisma
+              mountPath: /usr/src/app/node_modules/.prisma
             - name: prisma-generated
-              mountPath: /usr/src/app/server/prisma/generated
+              mountPath: /usr/src/app/prisma/generated
         - name: run-migrations
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["sh", "-c"]
           args:
-            - "bunx prisma generate && bunx prisma migrate deploy"
+            - |
+              echo "Starting database migrations..."
+              cd /usr/src/app
+              
+              # Check if we're in the right directory
+              echo "Current directory: $(pwd)"
+              ls -la
+              
+              # Generate Prisma client
+              echo "Generating Prisma client..."
+              bunx prisma generate || { echo "Failed to generate Prisma client"; exit 1; }
+              
+              # Run migrations
+              echo "Running database migrations..."
+              bunx prisma migrate deploy || { echo "Failed to run migrations"; exit 1; }
+              
+              echo "Migrations completed successfully"
           # Run as the bun user to match the main container
           securityContext:
             runAsUser: 1000
@@ -47,9 +77,9 @@ spec:
           # Add volume mounts to ensure directories are writable
           volumeMounts:
             - name: prisma-data
-              mountPath: /usr/src/app/server/node_modules/.prisma
+              mountPath: /usr/src/app/node_modules/.prisma
             - name: prisma-generated
-              mountPath: /usr/src/app/server/prisma/generated
+              mountPath: /usr/src/app/prisma/generated
       containers:
         - name: server
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -78,9 +108,9 @@ spec:
           # Add volume mounts to the main container as well
           volumeMounts:
             - name: prisma-data
-              mountPath: /usr/src/app/server/node_modules/.prisma
+              mountPath: /usr/src/app/node_modules/.prisma
             - name: prisma-generated
-              mountPath: /usr/src/app/server/prisma/generated
+              mountPath: /usr/src/app/prisma/generated
       # Add volumes for Prisma data
       volumes:
         - name: prisma-data
