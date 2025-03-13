@@ -7,8 +7,8 @@ import { auth } from "@/lib/auth";
 import type { AppBindings, AuthType } from "../shared/types";
 
 export const corsMiddleware = cors({
-  origin: "http://localhost:5173",
-  allowHeaders: ["Content-Type", "Authorization"],
+  origin: ["http://localhost:5173", "https://sf.catalins.tech"],
+  allowHeaders: ["Origin", "Content-Type", "Authorization"],
   allowMethods: ["POST", "GET", "OPTIONS"],
   exposeHeaders: ["Content-Length"],
   maxAge: 600,

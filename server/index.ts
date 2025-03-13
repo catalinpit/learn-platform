@@ -8,5 +8,6 @@ console.log(`Server is running on http://localhost:${port}`);
 
 Bun.serve({
   fetch: app.fetch,
-  port,
+  hostname: "0.0.0.0",
+  port: env.PORT || 9999,
 });

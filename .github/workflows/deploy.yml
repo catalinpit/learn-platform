@@ -1,0 +1,133 @@
+name: Deploy to K3s
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clear Docker cache
+        run: |
+          docker builder prune --all --force
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+            latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          no-cache: true
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Configure kubectl
+        run: |
+          export KUBE_HOST="${{ secrets.KUBE_HOST }}"
+          export KUBE_CERTIFICATE="${{ secrets.KUBE_CERTIFICATE }}"
+          export KUBE_TOKEN="${{ secrets.KUBE_TOKEN }}"
+          mkdir -p $HOME/.kube
+          echo "$KUBE_CERTIFICATE" | base64 -d > $HOME/.kube/certificate
+          kubectl config set-cluster default --server=https://$KUBE_HOST --certificate-authority=$HOME/.kube/certificate > /dev/null
+          kubectl config set-credentials cluster-admin --token="${KUBE_TOKEN}" > /dev/null
+          kubectl config set-context default --cluster=default --user=cluster-admin > /dev/null
+          kubectl config use-context default > /dev/null
+
+      - name: Check connection
+        run: kubectl get nodes
+
+      - name: Create namespace if not exists
+        run: |
+          kubectl create namespace learn-platform --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create PostgreSQL credentials secret
+        run: |
+          kubectl create secret generic postgresql-credentials \
+            --namespace learn-platform \
+            --from-literal=POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+            --from-literal=POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+            --from-literal=POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create application environment secret
+        run: |
+          kubectl create secret generic learn-platform-env \
+            --namespace learn-platform \
+            --from-literal=PORT=${{ secrets.PORT }} \
+            --from-literal=DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@learn-platform-postgresql:5432/${{ secrets.POSTGRES_DB }}?schema=public \
+            --from-literal=BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }} \
+            --from-literal=BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }} \
+            --from-literal=PUBLIC_BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }} \
+            --from-literal=GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} \
+            --from-literal=GITHUB_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }} \
+            --from-literal=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+            --from-literal=GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            --from-literal=RESEND_KEY=${{ secrets.RESEND_KEY }} \
+            --from-literal=NODE_ENV=production \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Clear Kubernetes cache
+        run: |
+          kubectl delete pods -n learn-platform -l app=learn-platform --ignore-not-found
+
+      - name: Deploy application with Helm
+        run: |
+          # Get the image tag from the metadata step
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
+
+          # Deploy the application using Helm
+          helm upgrade --install learn-platform ./learn-platform-helm \
+            --namespace learn-platform \
+            --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
+            --set image.tag=${IMAGE_TAG##*:} \
+            --wait --timeout 5m
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n learn-platform
+          kubectl get services -n learn-platform

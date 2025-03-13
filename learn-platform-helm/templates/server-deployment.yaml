@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-server
+  labels:
+    app: server
+    instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.app.replicas }}
+  selector:
+    matchLabels:
+      app: server
+      instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: server
+        instance: {{ .Release.Name }}
+    spec:
+      initContainers:
+        - name: wait-for-db
+          image: "postgres:17"
+          command: ['sh', '-c', 'until pg_isready -h {{ .Release.Name }}-postgresql -p 5432; do echo "Waiting for PostgreSQL to be ready..."; sleep 2; done;']
+        - name: run-migrations
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args:
+            - "bunx prisma generate"
+          envFrom:
+            - secretRef:
+                name: {{ .Values.server.existingSecret }}
+      containers:
+        - name: server
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.server.port }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: {{ .Values.server.existingSecret }}
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.server.resources | nindent 12 }}

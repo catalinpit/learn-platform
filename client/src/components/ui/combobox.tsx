@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
-import { CourseTag } from "@server/shared/types";
+import { z } from "zod";
+import { CourseTagSchema } from "@server/prisma/generated/types/index";
 
 import { cn, courseTagToString } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+type CourseTag = z.infer<typeof CourseTagSchema>;
+
 interface MultiSelectProps {
   value: CourseTag[];
   onChange: (value: CourseTag[]) => void;
@@ -29,7 +32,7 @@ interface MultiSelectProps {
 export function TagsCombobox({ value, onChange }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
 
-  const tags = Object.values(CourseTag).map((tag) => ({
+  const tags = CourseTagSchema.options.map((tag) => ({
     value: tag,
     label: courseTagToString(tag),
   }));
@@ -68,19 +71,17 @@ export function TagsCombobox({ value, onChange }: MultiSelectProps) {
                   <CommandItem
                     key={tag.value}
                     onSelect={() => {
-                      const isSelected = value.includes(tag.value as CourseTag);
+                      const isSelected = value.includes(tag.value);
                       const newValue = isSelected
                         ? value.filter((t) => t !== tag.value)
-                        : [...value, tag.value as CourseTag];
+                        : [...value, tag.value];
                       onChange(newValue);
                     }}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        value.includes(tag.value as CourseTag)
-                          ? "opacity-100"
-                          : "opacity-0"
+                        value.includes(tag.value) ? "opacity-100" : "opacity-0"
                       )}
                     />
 

@@ -1,26 +1,32 @@
 {
   "compilerOptions": {
-    "incremental": true,
-    "composite": true,
     "target": "ESNext",
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "rootDir": ".",
+    // Enable latest features
+    "lib": ["ESNext"],
+    "moduleDetection": "force",
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+
+    // Bundler mode
+    "moduleResolution": "bundler",
+
     "paths": {
       "@/*": ["./*"]
     },
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+
+    // Best practices
     "strict": true,
-    "declaration": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
-    "noEmitOnError": true,
-    "outDir": "./dist",
-    "sourceMap": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "noPropertyAccessFromIndexSignature": true,
+    // Some stricter flags
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noEmit": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
-  },
-  "include": ["./**/*.ts", "./**/*.tsx"],
-  "exclude": ["node_modules"]
+  }
 }
