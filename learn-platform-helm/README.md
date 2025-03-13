@@ -66,7 +66,25 @@ The application is deployed automatically via GitHub Actions when changes are pu
 
 ### Manual Deployment
 
-To deploy manually:
+#### Option 1: Using the deploy script
+
+The easiest way to deploy the chart is to use the provided deploy.sh script:
+
+```bash
+cd learn-platform-helm
+./deploy.sh --image-repository ghcr.io/yourusername/learn-platform --image-tag latest --domain your-domain.com
+```
+
+The script accepts the following parameters:
+- `--namespace`: The namespace to deploy to (default: learn-platform)
+- `--release-name`: The Helm release name (default: learn-platform)
+- `--image-repository`: The Docker image repository (default: ghcr.io/catalinpit/learn-platform)
+- `--image-tag`: The Docker image tag (default: latest)
+- `--domain`: The domain name for the ingress (default: sf.catalins.tech)
+
+#### Option 2: Using Helm commands
+
+To deploy manually using Helm commands:
 
 1. Create the namespace if it doesn't exist:
 
@@ -74,7 +92,29 @@ To deploy manually:
 kubectl create namespace learn-platform
 ```
 
-2. Install or upgrade the Helm chart:
+2. Add the CloudNativePG Helm repository:
+
+```bash
+helm repo add cnpg https://cloudnative-pg.github.io/charts
+helm repo update
+```
+
+3. Install the CloudNativePG operator:
+
+```bash
+helm upgrade --install cnpg \
+  --namespace cnpg-system \
+  --create-namespace \
+  cnpg/cloudnative-pg
+```
+
+4. Build the Helm chart dependencies:
+
+```bash
+helm dependency build ./learn-platform-helm
+```
+
+5. Install or upgrade the Helm chart:
 
 ```bash
 helm upgrade --install learn-platform ./learn-platform-helm \
