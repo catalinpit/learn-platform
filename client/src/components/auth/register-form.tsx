@@ -56,9 +56,9 @@ export function RegisterForm({
       {
         onSuccess: () => {
           navigate({
-            to: "/",
-            search: { search: "", page: 1, perPage: 10 },
+            to: "/unverified",
           });
+
           toast.success("Account created successfully");
         },
         onError: (ctx) => {
