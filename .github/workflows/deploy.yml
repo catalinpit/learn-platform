@@ -122,23 +122,49 @@ jobs:
             cnpg/cloudnative-pg \
             --namespace cloudnative-pg \
             --create-namespace \
-            --wait --timeout 2m
+            --set fullnameOverride=cloudnative-pg \
+            --wait --timeout 3m
+          
+          # Verify the operator is running
+          kubectl get pods -n cloudnative-pg
+          
+          # Wait for the CRDs to be properly registered
+          echo "Waiting for CloudNativePG CRDs to be properly registered..."
+          sleep 10
+          kubectl get crds | grep cnpg
 
       - name: Clear Kubernetes cache
         run: |
           kubectl delete pods -n learn-platform -l app=learn-platform --ignore-not-found
 
+      - name: Prepare for deployment
+        id: prepare
+        run: |
+          # Get the image tag
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | grep -m 1 "ghcr.io" | sed 's/.*://')
+          
+          echo "Using image tag: $IMAGE_TAG"
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          
+          # Check if the release exists and delete it if it does
+          if helm status learn-platform -n learn-platform &> /dev/null; then
+            echo "Existing release found, deleting it..."
+            helm uninstall learn-platform -n learn-platform
+            
+            # Wait for resources to be deleted
+            echo "Waiting for resources to be deleted..."
+            kubectl wait --for=delete pods -l app=learn-platform -n learn-platform --timeout=2m || true
+          fi
+
       - name: Deploy application with Helm
         run: |
-          # Get the image tag from the metadata step
-          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
-
           # Deploy the application using Helm
           helm upgrade --install learn-platform ./learn-platform-helm \
             --namespace learn-platform \
             --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
-            --set image.tag=${IMAGE_TAG##*:} \
-            --wait --timeout 5m
+            --set image.tag=${{ steps.prepare.outputs.image_tag }} \
+            --set cloudnativepg.enabled=true \
+            --wait --timeout 10m
 
       - name: Verify deployment
         run: |

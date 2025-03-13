@@ -20,7 +20,7 @@ spec:
       initContainers:
         - name: wait-for-db
           image: "postgres:15"
-          command: ['sh', '-c', 'until pg_isready -h {{ .Values.postgresql.cluster.name }}-rw.{{ .Values.postgresql.cluster.namespace }}.svc.cluster.local -p 5432; do echo "Waiting for CloudNativePG to be ready..."; sleep 2; done;']
+          command: ['sh', '-c', 'until pg_isready -h {{ .Values.postgresql.cluster.name }}-rw.{{ .Values.postgresql.cluster.namespace }}.svc.cluster.local -p 5432; do echo "Waiting for CloudNativePG to be ready..."; sleep 2; done; echo "PostgreSQL is ready!";']
         - name: init-permissions
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command: ["sh", "-c"]

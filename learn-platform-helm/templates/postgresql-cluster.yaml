@@ -8,6 +8,11 @@ metadata:
     {{- include "learn-platform.labels" . | nindent 4 }}
 spec:
   instances: {{ .Values.postgresql.cluster.instances }}
+  postgresql:
+    parameters:
+      shared_buffers: {{ .Values.postgresql.cluster.postgresGUC.shared_buffers }}
+      max_connections: {{ .Values.postgresql.cluster.postgresGUC.max_connections }}
+    version: {{ .Values.postgresql.cluster.postgresql.version }}
   storage:
     size: {{ .Values.postgresql.cluster.storage.size }}
   bootstrap:
@@ -16,11 +21,6 @@ spec:
       owner: {{ .Values.postgresql.cluster.bootstrap.initdb.owner }}
       secret:
         name: {{ .Values.postgresql.cluster.bootstrap.initdb.secret.name }}
-  postgresGUC:
-    shared_buffers: {{ .Values.postgresql.cluster.postgresGUC.shared_buffers }}
-    max_connections: {{ .Values.postgresql.cluster.postgresGUC.max_connections }}
-  postgresql:
-    version: {{ .Values.postgresql.cluster.postgresql.version }}
   monitoring:
     enablePodMonitor: {{ .Values.postgresql.cluster.monitoring.enablePodMonitor }}
   resources:
