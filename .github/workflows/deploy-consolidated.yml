@@ -1,0 +1,158 @@
+name: Deploy Learn Platform
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+            latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "latest"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: "latest"
+
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Check connection
+        run: kubectl get nodes
+
+      - name: Create namespace if not exists
+        run: |
+          kubectl create namespace learn-platform --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Add CloudNativePG Helm repository
+        run: |
+          helm repo add cnpg https://cloudnative-pg.github.io/charts
+          helm repo update
+
+      - name: Install CloudNativePG CRDs and operator
+        run: |
+          # Install CloudNativePG CRDs first
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_clusters.yaml
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_poolers.yaml
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_backups.yaml
+
+          # Then install the operator
+          helm upgrade --install cnpg \
+            --namespace cnpg-system \
+            --create-namespace \
+            cnpg/cloudnative-pg
+            
+          # Wait for the operator to be ready
+          kubectl wait --for=condition=available --timeout=60s deployment/cnpg-controller-manager -n cnpg-system || true
+
+      - name: Create PostgreSQL credentials secret
+        run: |
+          kubectl create secret generic postgresql-credentials \
+            --namespace learn-platform \
+            --from-literal=username=${{ secrets.POSTGRES_USER }} \
+            --from-literal=password=${{ secrets.POSTGRES_PASSWORD }} \
+            --from-literal=POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+            --from-literal=POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+            --from-literal=POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create application environment secret
+        run: |
+          kubectl create secret generic learn-platform-env \
+            --namespace learn-platform \
+            --from-literal=NODE_ENV=production \
+            --from-literal=PORT=9999 \
+            --from-literal=DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@learn-platform-postgresql:5432/${{ secrets.POSTGRES_DB }}?schema=public \
+            --from-literal=JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            --from-literal=API_URL=${{ secrets.API_URL }} \
+            --from-literal=CLIENT_URL=${{ secrets.CLIENT_URL }} \
+            --from-literal=BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }} \
+            --from-literal=BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }} \
+            --from-literal=PUBLIC_BETTER_AUTH_URL=${{ secrets.PUBLIC_BETTER_AUTH_URL }} \
+            --from-literal=GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }} \
+            --from-literal=GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }} \
+            --from-literal=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+            --from-literal=GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            --from-literal=SMTP_HOST=${{ secrets.SMTP_HOST }} \
+            --from-literal=SMTP_PORT=${{ secrets.SMTP_PORT }} \
+            --from-literal=SMTP_USERNAME=${{ secrets.SMTP_USERNAME }} \
+            --from-literal=SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} \
+            --from-literal=SMTP_FROM=${{ secrets.SMTP_FROM }} \
+            --from-literal=RESEND_KEY=${{ secrets.RESEND_KEY }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Prepare for deployment
+        id: prepare
+        run: |
+          # Get the image tag from the SHA
+          IMAGE_TAG=$(echo "${{ github.sha }}" | cut -c1-7)
+          echo "Using image tag: $IMAGE_TAG"
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Deploy application with Helm
+        run: |
+          # Deploy the application using Helm
+          helm upgrade --install learn-platform ./learn-platform-helm \
+            --namespace learn-platform \
+            --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
+            --set image.tag=${{ steps.prepare.outputs.image_tag }} \
+            --set cloudnativepg.enabled=true \
+            --set ingress.hosts[0].host=${{ secrets.DOMAIN }} \
+            --wait --timeout 10m
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n learn-platform
+          kubectl get services -n learn-platform
+          kubectl get ingress -n learn-platform
