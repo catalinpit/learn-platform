@@ -4,7 +4,16 @@ import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 import { z } from "zod";
 
-expand(config());
+// Only load .env file in development environment
+// In production, environment variables should come from Kubernetes
+if (process.env.NODE_ENV !== "production") {
+  console.log("Loading environment variables from .env file (development mode)");
+  expand(config());
+} else {
+  console.log("Using environment variables from the system (production mode)");
+  // Log environment variables for debugging in production
+  console.log("Available environment variables:", Object.keys(process.env).join(", "));
+}
 
 export const EnvSchema = z.object({
   NODE_ENV: z.string().default("development"),
