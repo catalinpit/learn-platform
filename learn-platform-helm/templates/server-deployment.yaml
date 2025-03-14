@@ -20,7 +20,28 @@ spec:
       initContainers:
         - name: wait-for-db
           image: "postgres:15"
-          command: ['sh', '-c', 'until pg_isready -h {{ .Release.Name }}-postgresql -p 5432; do echo "Waiting for PostgreSQL to be ready..."; sleep 2; done; echo "PostgreSQL is ready!";']
+          command: ['sh', '-c', '
+            # Try both service naming patterns
+            for i in $(seq 1 60); do
+              echo "Attempt $i: Checking PostgreSQL readiness..."
+              if pg_isready -h {{ .Values.postgresql.cluster.name }} -p 5432; then
+                echo "PostgreSQL is ready at {{ .Values.postgresql.cluster.name }}!"
+                exit 0
+              fi
+              if pg_isready -h {{ .Values.postgresql.cluster.name }}-rw -p 5432; then
+                echo "PostgreSQL is ready at {{ .Values.postgresql.cluster.name }}-rw!"
+                exit 0
+              fi
+              if pg_isready -h {{ .Release.Name }}-postgresql -p 5432; then
+                echo "PostgreSQL is ready at {{ .Release.Name }}-postgresql!"
+                exit 0
+              fi
+              echo "Waiting for PostgreSQL to be ready... (attempt $i/60)"
+              sleep 5
+            done
+            echo "PostgreSQL did not become ready within timeout period"
+            exit 1
+          ']
         - name: init-permissions
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command: ["sh", "-c"]

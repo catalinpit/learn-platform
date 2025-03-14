@@ -99,7 +99,7 @@ jobs:
           kubectl create secret generic learn-platform-env \
             --namespace learn-platform \
             --from-literal=PORT=${{ secrets.PORT }} \
-            --from-literal=DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@learn-platform-postgresql:5432/${{ secrets.POSTGRES_DB }}?schema=public \
+            --from-literal=DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@learn-platform-db-rw:5432/${{ secrets.POSTGRES_DB }}?schema=public \
             --from-literal=BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }} \
             --from-literal=BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }} \
             --from-literal=PUBLIC_BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }} \
@@ -158,13 +158,17 @@ jobs:
 
       - name: Deploy application with Helm
         run: |
+          # Wait for the PostgreSQL cluster to be ready
+          echo "Waiting for PostgreSQL cluster to be ready..."
+          kubectl wait --for=condition=ready cluster.postgresql.cnpg.io/learn-platform-db --namespace learn-platform --timeout=5m || true
+          
           # Deploy the application using Helm
           helm upgrade --install learn-platform ./learn-platform-helm \
             --namespace learn-platform \
             --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
             --set image.tag=${{ steps.prepare.outputs.image_tag }} \
             --set cloudnativepg.enabled=true \
-            --wait --timeout 10m
+            --wait --timeout 15m
 
       - name: Verify deployment
         run: |
