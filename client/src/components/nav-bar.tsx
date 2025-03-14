@@ -39,7 +39,7 @@ export function NavBar() {
                   search={{ search: "", page: 1, perPage: 10 }}
                   className="text-xl font-bold text-foreground md:block hidden"
                 >
-                  Learn Course
+                  Learn Course test
                 </Link>
                 <div className="md:hidden">
                   <MenuSwitcher />
