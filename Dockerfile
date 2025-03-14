@@ -17,6 +17,8 @@ RUN bun install --frozen-lockfile
 FROM base as build
 WORKDIR /usr/src/app
 COPY . .
+# Remove any .env files to prevent local development credentials from being used in production
+RUN rm -f server/.env
 COPY --from=install /temp/prod/server/node_modules server/node_modules/
 COPY --from=install /temp/prod/client/node_modules client/node_modules/
 ENV NODE_ENV=production
@@ -29,7 +31,7 @@ RUN bun run build
 FROM base as release
 WORKDIR /usr/src/app
 COPY --from=install /temp/prod/server/node_modules server/node_modules/
-COPY --exclude=client --from=build /usr/src/app/ .
+COPY --exclude=client --exclude=server/.env --from=build /usr/src/app/ .
 COPY --from=build /usr/src/app/client/dist ./client/dist/
 
 USER bun

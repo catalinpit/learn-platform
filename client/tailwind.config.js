@@ -6,14 +6,14 @@ export default {
     extend: {
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        md: "calc(var(--radius) - 0.125rem)",
+        sm: "calc(var(--radius) - 0.25rem)",
       },
       colors: {
         background: "oklch(var(--background))",
         foreground: "oklch(var(--foreground))",
         card: {
-          DEFAULT: "oklch(var(--card))",
+          DEFAULT: "var(--card)",
           foreground: "oklch(var(--card-foreground))",
         },
         popover: {
@@ -51,7 +51,7 @@ export default {
           5: "oklch(var(--chart-5))",
         },
         sidebar: {
-          DEFAULT: "oklch(var(--sidebar))",
+          DEFAULT: "var(--sidebar)",
           foreground: "oklch(var(--sidebar-foreground))",
           primary: "oklch(var(--sidebar-primary))",
           "primary-foreground": "oklch(var(--sidebar-primary-foreground))",
@@ -60,6 +60,13 @@ export default {
           border: "oklch(var(--sidebar-border))",
           ring: "oklch(var(--sidebar-ring))",
         },
+      },
+      boxShadow: {
+        sm: "var(--shadow-sm)",
+        DEFAULT: "var(--shadow)",
+        md: "var(--shadow-md)",
+        lg: "var(--shadow-lg)",
+        xl: "var(--shadow-xl)",
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
