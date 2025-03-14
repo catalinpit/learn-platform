@@ -19,17 +19,80 @@ spec:
     spec:
       initContainers:
         - name: wait-for-db
-          image: "postgres:17"
-          command: ['sh', '-c', 'until pg_isready -h {{ .Release.Name }}-postgresql -p 5432; do echo "Waiting for PostgreSQL to be ready..."; sleep 2; done;']
+          image: "postgres:15"
+          command: ['sh', '-c', '
+            # Try both service naming patterns
+            for i in $(seq 1 60); do
+              echo "Attempt $i: Checking PostgreSQL readiness..."
+              if pg_isready -h {{ .Values.postgresql.cluster.name }} -p 5432; then
+                echo "PostgreSQL is ready at {{ .Values.postgresql.cluster.name }}!"
+                exit 0
+              fi
+              if pg_isready -h {{ .Values.postgresql.cluster.name }}-rw -p 5432; then
+                echo "PostgreSQL is ready at {{ .Values.postgresql.cluster.name }}-rw!"
+                exit 0
+              fi
+              if pg_isready -h {{ .Release.Name }}-postgresql -p 5432; then
+                echo "PostgreSQL is ready at {{ .Release.Name }}-postgresql!"
+                exit 0
+              fi
+              echo "Waiting for PostgreSQL to be ready... (attempt $i/60)"
+              sleep 5
+            done
+            echo "PostgreSQL did not become ready within timeout period"
+            exit 1
+          ']
+        - name: init-permissions
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "Setting up Prisma directories..."
+              mkdir -p /usr/src/app/node_modules/.prisma
+              mkdir -p /usr/src/app/prisma/generated
+              chmod -R 777 /usr/src/app/node_modules/.prisma
+              chmod -R 777 /usr/src/app/prisma/generated
+              echo "Directory setup complete"
+          volumeMounts:
+            - name: prisma-data
+              mountPath: /usr/src/app/node_modules/.prisma
+            - name: prisma-generated
+              mountPath: /usr/src/app/prisma/generated
         - name: run-migrations
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["sh", "-c"]
           args:
-            - "bunx prisma generate"
+            - |
+              echo "Starting database migrations..."
+              cd /usr/src/app/server
+
+              # Ensure prisma directories exist and are writable
+              mkdir -p /usr/src/app/node_modules/.prisma /usr/src/app/prisma/generated
+              chmod -R 777 /usr/src/app/node_modules/.prisma /usr/src/app/prisma/generated
+
+              # Generate Prisma client
+              echo "Generating Prisma client..."
+              bunx prisma generate
+
+              # Run migrations
+              echo "Running database migrations..."
+              bunx prisma migrate deploy
+
+              echo "Migrations completed successfully"
+          # Run as the bun user to match the main container
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
           envFrom:
             - secretRef:
                 name: {{ .Values.server.existingSecret }}
+          # Add volume mounts to ensure directories are writable
+          volumeMounts:
+            - name: prisma-data
+              mountPath: /usr/src/app/node_modules/.prisma
+            - name: prisma-generated
+              mountPath: /usr/src/app/prisma/generated
       containers:
         - name: server
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -55,3 +118,15 @@ spec:
             periodSeconds: 10
           resources:
             {{- toYaml .Values.server.resources | nindent 12 }}
+          # Add volume mounts to the main container as well
+          volumeMounts:
+            - name: prisma-data
+              mountPath: /usr/src/app/node_modules/.prisma
+            - name: prisma-generated
+              mountPath: /usr/src/app/prisma/generated
+      # Add volumes for Prisma data
+      volumes:
+        - name: prisma-data
+          emptyDir: {}
+        - name: prisma-generated
+          emptyDir: {}

@@ -8,6 +8,7 @@ This Helm chart deploys the Learn Platform application on Kubernetes.
 - Helm 3.x
 - kubectl configured to access your cluster
 - NGINX Ingress Controller installed
+- CloudNativePG operator (installed separately, instructions included below)
 
 ## Required Secrets
 
@@ -33,7 +34,7 @@ This secret contains all the environment variables needed by the application.
 kubectl create secret generic learn-platform-env \
   --namespace learn-platform \
   --from-literal=NODE_ENV=production \
-  --from-literal=DATABASE_URL=postgresql://your_database_user:your_secure_password@learn-platform-postgresql:5432/your_database_name \
+  --from-literal=DATABASE_URL=postgresql://your_database_user:your_secure_password@learn-platform-db-rw.learn-platform.svc.cluster.local:5432/your_database_name \
   --from-literal=JWT_SECRET=your_jwt_secret \
   --from-literal=API_URL=https://your-api-domain.com \
   --from-literal=CLIENT_URL=https://your-client-domain.com \
@@ -65,7 +66,87 @@ The application is deployed automatically via GitHub Actions when changes are pu
 
 ### Manual Deployment
 
-To deploy manually:
+#### Deploying from inside the Kubernetes cluster
+
+If you're running commands directly inside the Kubernetes cluster (e.g., on a node or control plane):
+
+1. Copy the Helm chart to the cluster:
+
+```bash
+# From your local machine, copy the Helm chart to the cluster
+scp -r ./learn-platform-helm user@cluster-node:/path/to/destination
+
+# Or clone the repository directly on the cluster
+ssh user@cluster-node
+git clone https://github.com/yourusername/learn-platform.git
+cd learn-platform
+```
+
+2. Create the namespace if it doesn't exist:
+
+```bash
+kubectl create namespace learn-platform
+```
+
+3. Add the CloudNativePG Helm repository:
+
+```bash
+helm repo add cnpg https://cloudnative-pg.github.io/charts
+helm repo update
+```
+
+4. Install the CloudNativePG CRDs and operator:
+
+```bash
+# Install CloudNativePG CRDs first
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_clusters.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_poolers.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_backups.yaml
+
+# Then install the operator
+helm upgrade --install cnpg \
+  --namespace cnpg-system \
+  --create-namespace \
+  cnpg/cloudnative-pg
+
+# Wait for the operator to be ready
+kubectl wait --for=condition=available --timeout=60s deployment/cnpg-controller-manager -n cnpg-system || true
+```
+
+5. Install or upgrade the Helm chart:
+
+```bash
+# Navigate to the directory containing the Helm chart
+cd /path/to/learn-platform-helm
+
+# Install the chart
+helm upgrade --install learn-platform . \
+  --namespace learn-platform \
+  --set image.repository=ghcr.io/yourusername/learn-platform \
+  --set image.tag=latest \
+  --set ingress.hosts[0].host=your-domain.com
+```
+
+#### Option 1: Using the deploy script (from local machine)
+
+The easiest way to deploy the chart from your local machine is to use the provided deploy.sh script:
+
+```bash
+cd learn-platform-helm
+./deploy.sh --image-repository ghcr.io/yourusername/learn-platform --image-tag latest --domain your-domain.com
+```
+
+The script accepts the following parameters:
+- `--namespace`: The namespace to deploy to (default: learn-platform)
+- `--release-name`: The Helm release name (default: learn-platform)
+- `--image-repository`: The Docker image repository (default: ghcr.io/catalinpit/learn-platform)
+- `--image-tag`: The Docker image tag (default: latest)
+- `--domain`: The domain name for the ingress (default: sf.catalins.tech)
+
+#### Option 2: Using Helm commands (from local machine)
+
+To deploy manually from your local machine using Helm commands:
 
 1. Create the namespace if it doesn't exist:
 
@@ -73,15 +154,82 @@ To deploy manually:
 kubectl create namespace learn-platform
 ```
 
-2. Install or upgrade the Helm chart:
+2. Add the CloudNativePG Helm repository:
 
 ```bash
+helm repo add cnpg https://cloudnative-pg.github.io/charts
+helm repo update
+```
+
+3. Install the CloudNativePG CRDs and operator:
+
+```bash
+# Install CloudNativePG CRDs first
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_clusters.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_poolers.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_backups.yaml
+
+# Then install the operator
+helm upgrade --install cnpg \
+  --namespace cnpg-system \
+  --create-namespace \
+  cnpg/cloudnative-pg
+
+# Wait for the operator to be ready
+kubectl wait --for=condition=available --timeout=60s deployment/cnpg-controller-manager -n cnpg-system || true
+```
+
+4. Install or upgrade the Helm chart:
+
+```bash
+# If you're in the parent directory of learn-platform-helm
 helm upgrade --install learn-platform ./learn-platform-helm \
   --namespace learn-platform \
   --set image.repository=ghcr.io/yourusername/learn-platform \
   --set image.tag=latest \
   --set ingress.hosts[0].host=your-domain.com
+
+# OR if you've copied/cloned only the learn-platform-helm directory
+# and you're inside that directory
+cd learn-platform-helm
+helm upgrade --install learn-platform . \
+  --namespace learn-platform \
+  --set image.repository=ghcr.io/yourusername/learn-platform \
+  --set image.tag=latest \
+  --set ingress.hosts[0].host=your-domain.com
 ```
+
+## CloudNativePG Integration
+
+This Helm chart integrates with CloudNativePG to provide a robust PostgreSQL database for the Learn Platform application. CloudNativePG is a Kubernetes operator that manages PostgreSQL workloads on Kubernetes.
+
+### How It Works
+
+1. The CloudNativePG operator is installed separately (either via GitHub Actions or manually).
+2. A PostgreSQL cluster is created using the CloudNativePG custom resource definition.
+3. The application connects to the PostgreSQL cluster using the service endpoints provided by CloudNativePG.
+
+### PostgreSQL Cluster Configuration
+
+The PostgreSQL cluster is configured with the following default settings:
+
+- 1 PostgreSQL instance
+- 10Gi of storage
+- PostgreSQL version 15
+- Resource requests: 500m CPU, 512Mi memory
+- Resource limits: 1Gi memory
+
+You can customize these settings in the `values.yaml` file under the `postgresql.cluster` section.
+
+### Accessing the PostgreSQL Database
+
+CloudNativePG creates the following service endpoints for accessing the PostgreSQL database:
+
+- Read-Write endpoint: `learn-platform-db-rw.learn-platform.svc.cluster.local`
+- Read-Only endpoint: `learn-platform-db-ro.learn-platform.svc.cluster.local`
+
+The application is configured to use the Read-Write endpoint by default.
 
 ## Configuration
 
@@ -163,6 +311,35 @@ To view logs:
 
 ```bash
 kubectl logs -n learn-platform deployment/learn-platform-server
+```
+
+### Troubleshooting CloudNativePG
+
+To check the status of your PostgreSQL cluster:
+
+```bash
+kubectl get cluster -n learn-platform
+kubectl describe cluster learn-platform-db -n learn-platform
+```
+
+To view PostgreSQL logs:
+
+```bash
+# Get the PostgreSQL pod name
+POD_NAME=$(kubectl get pods -n learn-platform -l cnpg.io/cluster=learn-platform-db -o jsonpath='{.items[0].metadata.name}')
+
+# View logs
+kubectl logs -n learn-platform $POD_NAME
+```
+
+To connect to the PostgreSQL database for troubleshooting:
+
+```bash
+# Get the PostgreSQL pod name
+POD_NAME=$(kubectl get pods -n learn-platform -l cnpg.io/cluster=learn-platform-db -o jsonpath='{.items[0].metadata.name}')
+
+# Connect to the PostgreSQL database
+kubectl exec -it $POD_NAME -n learn-platform -- psql -U learn_platform -d learn_platform
 ```
 
 If your ingress is not working:

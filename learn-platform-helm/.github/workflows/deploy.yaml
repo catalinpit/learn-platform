@@ -1,0 +1,100 @@
+name: Deploy Learn Platform
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Add CloudNativePG
+        run: |
+          helm repo add cnpg https://cloudnative-pg.github.io/charts
+          helm repo update
+
+      - name: Install CloudNativePG
+        run: |
+          # Install CloudNativePG CRDs first
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_clusters.yaml
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_poolers.yaml
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_scheduledbackups.yaml
+          kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/config/crd/bases/postgresql.cnpg.io_backups.yaml
+          
+          # Then install the operator
+          helm upgrade --install cnpg \
+            --namespace cnpg-system \
+            --create-namespace \
+            cnpg/cloudnative-pg
+            
+          # Wait for the operator to be ready
+          kubectl wait --for=condition=available --timeout=60s deployment/cnpg-controller-manager -n cnpg-system || true
+
+      - name: Create namespace if not exists
+        run: |
+          kubectl create namespace learn-platform --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create PostgreSQL credentials secret if not exists
+        run: |
+          kubectl get secret postgresql-credentials -n learn-platform || \
+          kubectl create secret generic postgresql-credentials \
+            --namespace learn-platform \
+            --from-literal=POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+            --from-literal=POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+            --from-literal=POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+
+      - name: Create application environment secret if not exists
+        run: |
+          kubectl get secret learn-platform-env -n learn-platform || \
+          kubectl create secret generic learn-platform-env \
+            --namespace learn-platform \
+            --from-literal=NODE_ENV=production \
+            --from-literal=DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@learn-platform-db-rw.learn-platform.svc.cluster.local:5432/${{ secrets.POSTGRES_DB }} \
+            --from-literal=JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            --from-literal=API_URL=${{ secrets.API_URL }} \
+            --from-literal=CLIENT_URL=${{ secrets.CLIENT_URL }} \
+            --from-literal=PORT=9999 \
+            --from-literal=BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }} \
+            --from-literal=BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }} \
+            --from-literal=PUBLIC_BETTER_AUTH_URL=${{ secrets.PUBLIC_BETTER_AUTH_URL }} \
+            --from-literal=GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }} \
+            --from-literal=GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }} \
+            --from-literal=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+            --from-literal=GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            --from-literal=SMTP_HOST=${{ secrets.SMTP_HOST }} \
+            --from-literal=SMTP_PORT=${{ secrets.SMTP_PORT }} \
+            --from-literal=SMTP_USERNAME=${{ secrets.SMTP_USERNAME }} \
+            --from-literal=SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} \
+            --from-literal=SMTP_FROM=${{ secrets.SMTP_FROM }} \
+            --from-literal=RESEND_KEY=${{ secrets.RESEND_KEY }}
+
+      - name: Deploy Learn Platform
+        run: |
+          # Use the correct path to the Helm chart
+          # If the checkout action puts the repo in the current directory
+          helm upgrade --install learn-platform . \
+            --namespace learn-platform \
+            --set image.repository=${{ secrets.IMAGE_REPOSITORY }} \
+            --set image.tag=${{ github.sha }} \
+            --set ingress.hosts[0].host=${{ secrets.DOMAIN }}

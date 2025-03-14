@@ -1,0 +1,32 @@
+{{- if .Values.cloudnativepg.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Values.postgresql.cluster.name }}
+  namespace: {{ .Values.postgresql.cluster.namespace }}
+  labels:
+    {{- include "learn-platform.labels" . | nindent 4 }}
+spec:
+  instances: {{ .Values.postgresql.cluster.instances }}
+  imageName: ghcr.io/cloudnative-pg/postgresql:{{ .Values.postgresql.cluster.postgresql.version }}
+  postgresql:
+    parameters:
+      shared_buffers: "{{ .Values.postgresql.cluster.postgresGUC.shared_buffers }}"
+      max_connections: "{{ .Values.postgresql.cluster.postgresGUC.max_connections }}"
+  storage:
+    size: {{ .Values.postgresql.cluster.storage.size }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.postgresql.cluster.bootstrap.initdb.database }}
+      owner: {{ .Values.postgresql.cluster.bootstrap.initdb.owner }}
+      secret:
+        name: {{ .Values.postgresql.cluster.bootstrap.initdb.secret.name }}
+  monitoring:
+    enablePodMonitor: {{ .Values.postgresql.cluster.monitoring.enablePodMonitor }}
+  resources:
+    requests:
+      cpu: {{ .Values.postgresql.cluster.resources.requests.cpu }}
+      memory: {{ .Values.postgresql.cluster.resources.requests.memory }}
+    limits:
+      memory: {{ .Values.postgresql.cluster.resources.limits.memory }}
+{{- end }}

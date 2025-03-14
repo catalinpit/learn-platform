@@ -9,17 +9,41 @@ image:
   tag: latest
   pullPolicy: Always
 
-# PostgreSQL configuration
+# CloudNativePG configuration
+cloudnativepg:
+  enabled: true
+
+# PostgreSQL cluster configuration
 postgresql:
-  image:
-    repository: postgres
-    tag: "17"
-  # Reference existing secrets instead of hardcoding values
+  # Database credentials secret
   existingSecret: "postgresql-credentials"
-  persistence:
-    enabled: true
-    storageClass: "local-path" # k3s default storage class
-    size: 1Gi
+  # CloudNativePG cluster configuration
+  cluster:
+    name: "learn-platform-db"
+    namespace: "learn-platform"
+    instances: 1
+    storage:
+      size: 10Gi
+    bootstrap:
+      initdb:
+        database: "learn_platform"
+        owner: "learn_platform"
+        secret:
+          name: "postgresql-credentials"
+    postgresGUC:
+      shared_buffers: "128MB"
+      max_connections: "100"
+    postgresql:
+      version: "15"
+    monitoring:
+      enablePodMonitor: true
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "512Mi"
+      limits:
+        memory: "1Gi"
+  # Service configuration for backward compatibility
   service:
     type: ClusterIP
     port: 5432

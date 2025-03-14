@@ -1,0 +1,34 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
+  $ helm get all {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+{{- if .Values.ingress.enabled }}
+The application should be available at:
+{{- range .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
+{{- end }}
+{{- else }}
+The application is not exposed externally. To access it, you can port-forward the service:
+
+  $ kubectl port-forward svc/{{ .Release.Name }}-server -n {{ .Release.Namespace }} 8080:80
+
+Then access the application at: http://localhost:8080
+{{- end }}
+
+{{- if .Values.cloudnativepg.enabled }}
+CloudNativePG PostgreSQL cluster has been deployed.
+
+To check the status of the PostgreSQL cluster:
+
+  $ kubectl get cluster {{ .Values.postgresql.cluster.name }} -n {{ .Values.postgresql.cluster.namespace }}
+
+To connect to the PostgreSQL database:
+
+  $ kubectl exec -it $(kubectl get pods -n {{ .Values.postgresql.cluster.namespace }} -l cnpg.io/cluster={{ .Values.postgresql.cluster.name }} -o jsonpath='{.items[0].metadata.name}') -n {{ .Values.postgresql.cluster.namespace }} -- psql -U {{ .Values.postgresql.cluster.bootstrap.initdb.owner }} -d {{ .Values.postgresql.cluster.bootstrap.initdb.database }}
+
+{{- end }}
