@@ -1,5 +1,6 @@
 import { createAuthClient } from "better-auth/react";
 import { inferAdditionalFields } from "better-auth/client/plugins";
+import { polar } from "@polar-sh/better-auth";
 
 export const authClient = createAuthClient({
   plugins: [

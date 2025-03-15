@@ -1,5 +1,7 @@
 /** @jsxImportSource react */
 
+import { polar } from "@polar-sh/better-auth";
+import { Polar } from "@polar-sh/sdk";
 import { Role } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
@@ -7,9 +9,14 @@ import { admin } from "better-auth/plugins";
 
 import prisma from "@/db/index";
 import env from "@/env";
-import { client } from "@/lib/mail-client";
+import { client as mailClient } from "@/lib/mail-client";
 
 import { EmailTemplate } from "../react-email-starter/emails/email-template";
+
+const client = new Polar({
+  accessToken: env.POLAR_ACCESS_TOKEN,
+  server: "sandbox",
+});
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -21,7 +28,7 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
-      await client.emails.send({
+      await mailClient.emails.send({
         from: "Acme <onboarding@resend.dev>",
         to: user.email,
         subject: "Reset your password",
@@ -42,7 +49,7 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
-      await client.emails.send({
+      await mailClient.emails.send({
         from: "Acme <onboarding@resend.dev>",
         to: user.email,
         subject: "Email Verification",
@@ -79,5 +86,22 @@ export const auth = betterAuth({
       },
     },
   },
-  plugins: [admin()],
+  plugins: [
+    admin(),
+    polar({
+      client,
+      createCustomerOnSignUp: true,
+      enableCustomerPortal: true,
+      checkout: {
+        enabled: true,
+        products: [
+          {
+            productId: "60d12c29-54c9-4f41-89d8-fe2c8a715bc4",
+            slug: "pro",
+          },
+        ],
+        successUrl: "/success?checkout_id={CHECKOUT_ID}",
+      },
+    }),
+  ],
 });
