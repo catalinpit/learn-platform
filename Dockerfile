@@ -21,7 +21,6 @@ COPY . .
 RUN rm -f server/.env
 COPY --from=install /temp/prod/server/node_modules server/node_modules/
 COPY --from=install /temp/prod/client/node_modules client/node_modules/
-# Explicitly set NODE_ENV to production
 ENV NODE_ENV=production
 # Generate Prisma client
 WORKDIR /usr/src/app/server
@@ -34,9 +33,6 @@ WORKDIR /usr/src/app
 COPY --from=install /temp/prod/server/node_modules server/node_modules/
 COPY --exclude=client --exclude=server/.env --from=build /usr/src/app/ .
 COPY --from=build /usr/src/app/client/dist ./client/dist/
-
-# Explicitly set NODE_ENV to production in the release stage
-ENV NODE_ENV=production
 
 USER bun
 EXPOSE 9999/tcp
