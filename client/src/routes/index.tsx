@@ -76,7 +76,7 @@ function Index() {
   return (
     <div className="p-6">
       <div className="pb-6 flex-1">
-        <h2 className="text-4xl leading-10">All courses test</h2>
+        <h2 className="text-4xl leading-10">All courses</h2>
         <p className="text-neutral-400 text-lg">
           Browse all the available courses
         </p>
@@ -104,10 +104,7 @@ function Index() {
             )}
             <CardHeader>
               <CardTitle>
-                <Link
-                  to={`/courses/${course.id}`}
-                  params={{ courseId: course.id }}
-                >
+                <Link to="/courses/$courseId" params={{ courseId: course.id }}>
                   {course.title}
                 </Link>
               </CardTitle>
