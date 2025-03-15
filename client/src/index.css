@@ -12,42 +12,42 @@
   --card-foreground: oklch(0.2 0.01 260);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0.01 260);
-  
+
   /* Rich blue primary */
   --primary: oklch(0.55 0.18 240);
   --primary-foreground: oklch(1 0 0);
-  
+
   /* Subtle gray with slight blue undertone */
   --secondary: oklch(0.93 0.02 240);
   --secondary-foreground: oklch(0.3 0.02 250);
-  
+
   /* Muted gray */
   --muted: oklch(0.95 0.01 240);
   --muted-foreground: oklch(0.5 0.02 250);
-  
+
   /* Subtle accent - slightly warmer blue */
   --accent: oklch(0.85 0.05 230);
   --accent-foreground: oklch(0.2 0.02 250);
-  
+
   /* Clear red for destructive actions */
   --destructive: oklch(0.65 0.25 25);
   --destructive-foreground: oklch(1 0 0);
-  
+
   /* Refined borders and input elements */
   --border: oklch(0.85 0.01 240);
   --input: oklch(0.85 0.01 240);
   --ring: oklch(0.55 0.18 240 / 0.5);
-  
+
   /* Harmonious chart colors */
   --chart-1: oklch(0.55 0.18 240); /* Primary blue */
   --chart-2: oklch(0.6 0.15 200);  /* Teal */
   --chart-3: oklch(0.65 0.15 270); /* Purple */
   --chart-4: oklch(0.7 0.15 180);  /* Green */
   --chart-5: oklch(0.6 0.15 30);   /* Orange */
-  
+
   /* Moderate radius for elegant UI */
   --radius: 0.5rem;
-  
+
   /* Sidebar with subtle background */
   --sidebar: oklch(0.97 0.01 245);
   --sidebar-foreground: oklch(0.25 0.02 250);
@@ -57,7 +57,7 @@
   --sidebar-accent-foreground: oklch(0.2 0.02 250);
   --sidebar-border: oklch(0.85 0.01 240);
   --sidebar-ring: oklch(0.55 0.18 240 / 0.5);
-  
+
   /* Subtle shadows for depth */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
   --shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
@@ -74,39 +74,39 @@
   --card-foreground: oklch(0.95 0.01 250);
   --popover: oklch(0.18 0.01 250);
   --popover-foreground: oklch(0.95 0.01 250);
-  
+
   /* Vibrant but not overwhelming blue */
   --primary: oklch(0.65 0.15 240);
   --primary-foreground: oklch(0.1 0.01 250);
-  
+
   /* Deep subtle secondary */
   --secondary: oklch(0.25 0.02 250);
   --secondary-foreground: oklch(0.95 0.01 250);
-  
+
   /* Dark muted with slight color */
   --muted: oklch(0.22 0.01 250);
   --muted-foreground: oklch(0.75 0.02 250);
-  
+
   /* Subtle accent */
   --accent: oklch(0.3 0.03 240);
   --accent-foreground: oklch(0.95 0.01 250);
-  
+
   /* Clear red for destructive actions */
   --destructive: oklch(0.65 0.25 25);
   --destructive-foreground: oklch(0.95 0.01 250);
-  
+
   /* Refined dark borders */
   --border: oklch(0.3 0.02 250);
   --input: oklch(0.3 0.02 250);
   --ring: oklch(0.65 0.15 240 / 0.5);
-  
+
   /* Harmonious chart colors for dark mode */
   --chart-1: oklch(0.65 0.15 240); /* Blue */
   --chart-2: oklch(0.7 0.15 200);  /* Teal */
   --chart-3: oklch(0.65 0.15 270); /* Purple */
   --chart-4: oklch(0.7 0.15 180);  /* Green */
   --chart-5: oklch(0.7 0.15 30);   /* Orange */
-  
+
   /* Sidebar with subtle darker background */
   --sidebar: oklch(0.13 0.01 250);
   --sidebar-foreground: oklch(0.9 0.01 250);
@@ -116,7 +116,7 @@
   --sidebar-accent-foreground: oklch(0.95 0.01 250);
   --sidebar-border: oklch(0.25 0.02 250);
   --sidebar-ring: oklch(0.65 0.15 240 / 0.5);
-  
+
   /* Dark mode shadows with subtle glow */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
   --shadow: 0 2px 4px 0 rgb(0 0 0 / 0.25);
@@ -169,12 +169,18 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 0.125rem);
   --radius-sm: calc(var(--radius) - 0.25rem);
-  
+
   --shadow-sm: var(--shadow-sm);
   --shadow: var(--shadow);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 /*
@@ -222,5 +228,14 @@
   button:hover,
   [role="button"]:hover {
     transform: translateY(-1px);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
