@@ -104,10 +104,7 @@ function Index() {
             )}
             <CardHeader>
               <CardTitle>
-                <Link
-                  to={`/courses/${course.id}`}
-                  params={{ courseId: course.id }}
-                >
+                <Link to="/courses/$courseId" params={{ courseId: course.id }}>
                   {course.title}
                 </Link>
               </CardTitle>
