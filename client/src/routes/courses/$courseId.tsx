@@ -7,18 +7,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { getCourseByIdQueryOptions } from "@/lib/api";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { CourseChapterList } from "@/components/course-chapters/course-chapter-list";
 import { courseTagToString } from "@/lib/utils";
 import NotFound from "@/components/not-found";
+import { useSession } from "@/lib/auth-client";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/courses/$courseId")({
   component: CoursePage,
   loader: async ({ params, context }) => {
     return await context.queryClient.ensureQueryData(
-      getCourseByIdQueryOptions(params.courseId),
+      getCourseByIdQueryOptions(params.courseId)
     );
   },
 });
@@ -28,8 +31,11 @@ export function CoursePage() {
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
   const { data: course } = useSuspenseQuery(
-    getCourseByIdQueryOptions(courseId),
+    getCourseByIdQueryOptions(courseId)
   );
+
+  const session = useSession();
+  const navigate = useNavigate();
 
   if ("message" in course) {
     return <NotFound />;
@@ -59,13 +65,9 @@ export function CoursePage() {
             {course.title}
           </CardTitle>
           <CardDescription>
-            <div
-              className="prose dark:prose-headings:text-white dark:text-white dark:prose-strong:text-white"
-            >
+            <div className="prose dark:prose-headings:text-white dark:text-white dark:prose-strong:text-white">
               {/* TODO: FIX THIS ASAP */}
-              <div
-                dangerouslySetInnerHTML={{ __html: course.description }}
-              />
+              <div dangerouslySetInnerHTML={{ __html: course.description }} />
             </div>
           </CardDescription>
         </CardHeader>
@@ -83,16 +85,45 @@ export function CoursePage() {
           </div>
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="flex justify-between items-center">
           <p className="font-semibold">
             {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
           </p>
+          {course.price > 0 && (
+            <Button
+              onClick={() => {
+                if (!session.data) {
+                  // Redirect to login page if user is not authenticated
+                  navigate({
+                    to: "/login",
+                    search: "?redirect=/courses/" + courseId,
+                  });
+                  return;
+                }
+                
+                window.location.href = `/api/auth/checkout?productId=${course.id}`;
+              }}
+            >
+              Enroll Now
+            </Button>
+          )}
+          {course.price === 0 && (
+            <Button
+              onClick={() => {
+                // For free courses, we can directly grant access or show content
+                setExpandedLessonId(course.chapters[0]?.lessons[0]?.id || null);
+              }}
+            >
+              Start Learning
+            </Button>
+          )}
         </CardFooter>
       </Card>
 
       <div className="my-8 mx-8 space-y-6">
         <CourseChapterList
           chapters={course.chapters}
+          courseId={courseId}
           isEditing={false}
           expandedLessonId={expandedLessonId}
           onLessonClick={handleLessonClick}
