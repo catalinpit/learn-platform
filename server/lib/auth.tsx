@@ -27,6 +27,7 @@ export const auth = betterAuth({
         subject: "Reset your password",
         react: (
           <EmailTemplate
+            username={user.name}
             previewText="Reset your password"
             header="Reset your password"
             emailText="please reset your password"
@@ -47,6 +48,7 @@ export const auth = betterAuth({
         subject: "Email Verification",
         react: (
           <EmailTemplate
+            username={user.name}
             previewText="Verify your email"
             header="Verify your email"
             emailText="please verify your email"
