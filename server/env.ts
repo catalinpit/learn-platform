@@ -4,7 +4,11 @@ import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 import { z } from "zod";
 
-expand(config());
+// Only load .env file in development
+// eslint-disable-next-line node/no-process-env
+if (process.env.NODE_ENV !== "production") {
+  expand(config());
+}
 
 export const EnvSchema = z.object({
   NODE_ENV: z.string().default("development"),
@@ -29,6 +33,17 @@ let env: Env;
 try {
   // eslint-disable-next-line node/no-process-env
   env = EnvSchema.parse(process.env);
+  
+  // In production, log environment variable names (not values) for debugging
+  // eslint-disable-next-line node/no-process-env
+  if (process.env.NODE_ENV === "production") {
+    // eslint-disable-next-line node/no-process-env
+    const envVarNames = Object.keys(process.env).filter(key => {
+      // eslint-disable-next-line node/no-process-env
+      return Boolean(process.env[key]);
+    }).join(", ");
+    console.warn("Available environment variables in production:", envVarNames);
+  }
 } catch (err) {
   const error = err as ZodError;
   console.error("Invalid env:");
