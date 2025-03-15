@@ -60,6 +60,11 @@ model User {
   accounts        Account[]
   roles           Role[]    @default([STUDENT])
 
+  role       String?
+  banned     Boolean?
+  banReason  String?
+  banExpires DateTime?
+
   @@map("user")
 }
 
@@ -140,6 +145,8 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
 
   @@unique([token])
   @@map("session")
