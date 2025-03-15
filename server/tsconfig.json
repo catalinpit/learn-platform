@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "composite": true,
     "target": "ESNext",
     "jsx": "react-jsx",
     "jsxImportSource": "react",
@@ -25,7 +26,6 @@
     // Some stricter flags
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noEmit": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   }
