@@ -15,8 +15,6 @@ cloudnativepg:
 
 # PostgreSQL cluster configuration
 postgresql:
-  # Database credentials secret
-  existingSecret: "postgresql-credentials"
   # CloudNativePG cluster configuration
   cluster:
     name: "learn-platform-db"
@@ -28,8 +26,6 @@ postgresql:
       initdb:
         database: "learn_platform"
         owner: "learn_platform"
-        secret:
-          name: "postgresql-credentials"
     postgresGUC:
       shared_buffers: "128MB"
       max_connections: "100"
@@ -43,10 +39,6 @@ postgresql:
         memory: "512Mi"
       limits:
         memory: "1Gi"
-  # Service configuration for backward compatibility
-  service:
-    type: ClusterIP
-    port: 5432
 
 # Server configuration
 server:

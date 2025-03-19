@@ -19,8 +19,6 @@ spec:
     initdb:
       database: {{ .Values.postgresql.cluster.bootstrap.initdb.database }}
       owner: {{ .Values.postgresql.cluster.bootstrap.initdb.owner }}
-      secret:
-        name: {{ .Values.postgresql.cluster.bootstrap.initdb.secret.name }}
   monitoring:
     enablePodMonitor: {{ .Values.postgresql.cluster.monitoring.enablePodMonitor }}
   resources:
