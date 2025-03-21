@@ -1,21 +1,16 @@
-# Application configuration
 app:
   name: learn-platform
   replicas: 1
 
-# Docker image configuration
 image:
   repository: ghcr.io/catalinpit/learn-platform
   tag: latest
   pullPolicy: Always
 
-# CloudNativePG configuration
 cloudnativepg:
   enabled: true
 
-# PostgreSQL cluster configuration
 postgresql:
-  # CloudNativePG cluster configuration
   cluster:
     name: "learn-platform-db"
     namespace: "learn-platform"
@@ -40,7 +35,6 @@ postgresql:
       limits:
         memory: "1Gi"
 
-# Server configuration
 server:
   port: 9999
   service:
@@ -54,10 +48,8 @@ server:
     limits:
       cpu: 500m
       memory: 512Mi
-  # Reference existing secrets for environment variables
   existingSecret: "learn-platform-env"
 
-# Ingress configuration
 ingress:
   enabled: true
   className: "nginx"
@@ -75,6 +67,5 @@ ingress:
       hosts:
         - sf.catalins.tech
 
-# Common labels
 labels:
   app: learn-platform
