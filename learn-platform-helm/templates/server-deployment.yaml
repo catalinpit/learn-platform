@@ -83,7 +83,10 @@ spec:
             runAsGroup: 1000
           env:
             - name: DATABASE_URL
-              value: postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Values.postgresql.cluster.namespace }}.svc.cluster.local:5432/$(POSTGRES_DB)
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-env
+                  key: DATABASE_URL
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -121,7 +124,10 @@ spec:
               protocol: TCP
           env:
             - name: DATABASE_URL
-              value: postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Values.postgresql.cluster.namespace }}.svc.cluster.local:5432/$(POSTGRES_DB)
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-env
+                  key: DATABASE_URL
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
