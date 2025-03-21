@@ -14,8 +14,11 @@ import { client as mailClient } from "@/lib/mail-client";
 import { EmailTemplate } from "../react-email-starter/emails/email-template";
 
 const client = new Polar({
-  accessToken: env.POLAR_ACCESS_TOKEN,
-  server: "sandbox",
+  accessToken:
+    env.NODE_ENV === "production"
+      ? env.POLAR_ACCESS_TOKEN
+      : env.POLAR_SANDBOX_ACCESS_TOKEN,
+  server: env.NODE_ENV === "production" ? "production" : "sandbox",
 });
 
 export const auth = betterAuth({
@@ -96,7 +99,10 @@ export const auth = betterAuth({
         enabled: true,
         products: [
           {
-            productId: "60d12c29-54c9-4f41-89d8-fe2c8a715bc4",
+            productId:
+              env.NODE_ENV === "production"
+                ? env.POLAR_PRODUCT_ID
+                : env.POLAR_SANDBOX_PRODUCT_ID || "",
             slug: "pro",
           },
         ],

@@ -7,7 +7,7 @@ import { z } from "zod";
 expand(config());
 
 export const EnvSchema = z.object({
-  NODE_ENV: z.string().default("development"),
+  NODE_ENV: z.enum(["production", "development"]).default("development"),
   PORT: z.coerce.number().default(3000),
   LOG_LEVEL: z
     .enum(["fatal", "error", "warn", "info", "debug", "trace"])
@@ -16,6 +16,9 @@ export const EnvSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32).max(32),
   BETTER_AUTH_URL: z.string().url(),
   POLAR_ACCESS_TOKEN: z.string(),
+  POLAR_SANDBOX_ACCESS_TOKEN: z.string().optional(),
+  POLAR_PRODUCT_ID: z.string(),
+  POLAR_SANDBOX_PRODUCT_ID: z.string().optional(),
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),

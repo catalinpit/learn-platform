@@ -93,15 +93,15 @@ export function CoursePage() {
             <Button
               onClick={() => {
                 if (!session.data) {
-                  // Redirect to login page if user is not authenticated
                   navigate({
                     to: "/login",
                     search: "?redirect=/courses/" + courseId,
                   });
                   return;
                 }
-                
-                window.location.href = `/api/auth/checkout?productId=${course.id}`;
+
+                window.location.href =
+                  "/api/auth/checkout?productId=60d12c29-54c9-4f41-89d8-fe2c8a715bc4";
               }}
             >
               Enroll Now
