@@ -75,6 +75,8 @@ spec:
 
               # Run migrations
               echo "Running database migrations..."
+              export DATABASE_URL="postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/$(POSTGRES_DB)"
+              echo "Using connection string: $DATABASE_URL"
               bunx prisma migrate deploy
 
               echo "Migrations completed successfully"
@@ -82,11 +84,6 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
           env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-env
-                  key: DATABASE_URL
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -124,10 +121,7 @@ spec:
               protocol: TCP
           env:
             - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-env
-                  key: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/$(POSTGRES_DB)"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
