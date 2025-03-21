@@ -38,7 +38,7 @@ spec:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.postgresql.cluster.name }}-superuser
+                  name: {{ .Values.postgresql.cluster.name }}-app
                   key: password
         - name: init-permissions
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
