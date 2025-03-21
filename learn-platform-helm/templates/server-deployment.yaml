@@ -83,10 +83,22 @@ spec:
             runAsGroup: 1000
           env:
             - name: DATABASE_URL
+              value: postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Values.postgresql.cluster.namespace }}.svc.cluster.local:5432/$(POSTGRES_DB)
+            - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.postgresql.cluster.name }}-app
-                  key: connectionString
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.cluster.name }}-app
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.cluster.name }}-app
+                  key: dbname
           volumeMounts:
             - name: prisma-data
               mountPath: /usr/src/app/node_modules/.prisma
@@ -102,29 +114,26 @@ spec:
               protocol: TCP
           env:
             - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgresql.cluster.name }}-app
-                  key: connectionString
-            - name: POSTGRES_HOST
-              value: {{ .Values.postgresql.cluster.name }}-rw
-            - name: POSTGRES_PORT
-              value: "5432"
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgresql.cluster.name }}-app
-                  key: dbname
+              value: postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Values.postgresql.cluster.namespace }}.svc.cluster.local:5432/$(POSTGRES_DB)
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.postgresql.cluster.name }}-app
-                  key: user
+                  key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.postgresql.cluster.name }}-app
                   key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.cluster.name }}-app
+                  key: dbname
+            - name: POSTGRES_HOST
+              value: {{ .Values.postgresql.cluster.name }}-rw
+            - name: POSTGRES_PORT
+              value: "5432"
           readinessProbe:
             httpGet:
               path: /api/health
