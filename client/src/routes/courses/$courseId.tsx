@@ -61,7 +61,7 @@ export function CoursePage() {
         />
 
         <CardHeader>
-          <CardTitle className="text-5xl py-4 font-base">
+          <CardTitle className="text-xl sm:text-2xl md:text-4xl md:py-4 font-base">
             {course.title}
           </CardTitle>
           <CardDescription>
@@ -95,13 +95,11 @@ export function CoursePage() {
                 if (!session.data) {
                   navigate({
                     to: "/login",
-                    search: "?redirect=/courses/" + courseId,
                   });
                   return;
                 }
 
-                window.location.href =
-                  "/api/auth/checkout?productId=60d12c29-54c9-4f41-89d8-fe2c8a715bc4";
+                window.location.href = "/api/auth/checkout/pro";
               }}
             >
               Enroll Now

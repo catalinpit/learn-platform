@@ -108,6 +108,87 @@ export const auth = betterAuth({
         ],
         successUrl: "/success?checkout_id={CHECKOUT_ID}",
       },
+      webhooks: {
+        secret:
+          env.NODE_ENV === "production"
+            ? env.POLAR_WEBHOOK_SECRET
+            : (env.POLAR_SANDBOX_WEBHOOK_SECRET ?? ""),
+        onPayload: async (payload: unknown) => {
+          console.log("\nCatch-all webhook event:", payload, "\n");
+        },
+        onCheckoutCreated: async (payload: unknown) => {
+          console.log("\nCheckout created:", payload, "\n");
+        },
+        onCheckoutUpdated: async (payload: unknown) => {
+          console.log("\nCheckout updated:", payload, "\n");
+        },
+        onOrderCreated: async (payload: unknown) => {
+          console.log("\nOrder created:", payload, "\n");
+        },
+        onOrderRefunded: async (payload: unknown) => {
+          console.log("\nOrder refunded:", payload, "\n");
+        },
+        onRefundCreated: async (payload: unknown) => {
+          console.log("\nRefund created:", payload, "\n");
+        },
+        onRefundUpdated: async (payload: unknown) => {
+          console.log("\nRefund updated:", payload, "\n");
+        },
+        onSubscriptionCreated: async (payload: unknown) => {
+          console.log("\nSubscription created:", payload, "\n");
+        },
+        onSubscriptionUpdated: async (payload: unknown) => {
+          console.log("\nSubscription updated:", payload, "\n");
+        },
+        onSubscriptionActive: async (payload: unknown) => {
+          console.log("\nSubscription active:", payload, "\n");
+        },
+        onSubscriptionCanceled: async (payload: unknown) => {
+          console.log("\nSubscription canceled:", payload, "\n");
+        },
+        onSubscriptionRevoked: async (payload: unknown) => {
+          console.log("\nSubscription revoked:", payload, "\n");
+        },
+        onSubscriptionUncanceled: async (payload: unknown) => {
+          console.log("\nSubscription uncanceled:", payload, "\n");
+        },
+        onProductCreated: async (payload: unknown) => {
+          console.log("\nProduct created:", payload, "\n");
+        },
+        onProductUpdated: async (payload: unknown) => {
+          console.log("\nProduct updated:", payload, "\n");
+        },
+        onOrganizationUpdated: async (payload: unknown) => {
+          console.log("\nOrganization updated:", payload, "\n");
+        },
+        onBenefitCreated: async (payload: unknown) => {
+          console.log("\nBenefit created:", payload, "\n");
+        },
+        onBenefitUpdated: async (payload: unknown) => {
+          console.log("\nBenefit updated:", payload, "\n");
+        },
+        onBenefitGrantCreated: async (payload: unknown) => {
+          console.log("\nBenefit grant created:", payload, "\n");
+        },
+        onBenefitGrantUpdated: async (payload: unknown) => {
+          console.log("\nBenefit grant updated:", payload, "\n");
+        },
+        onBenefitGrantRevoked: async (payload: unknown) => {
+          console.log("\nBenefit grant revoked:", payload, "\n");
+        },
+        onCustomerCreated: async (payload: unknown) => {
+          console.log("\nCustomer created:", payload, "\n");
+        },
+        onCustomerUpdated: async (payload: unknown) => {
+          console.log("\nCustomer updated:", payload, "\n");
+        },
+        onCustomerDeleted: async (payload: unknown) => {
+          console.log("\nCustomer deleted:", payload, "\n");
+        },
+        onCustomerStateChanged: async (payload: unknown) => {
+          console.log("\nCustomer state changed:", payload, "\n");
+        },
+      },
     }),
   ],
 });

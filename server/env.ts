@@ -19,6 +19,8 @@ export const EnvSchema = z.object({
   POLAR_SANDBOX_ACCESS_TOKEN: z.string().optional(),
   POLAR_PRODUCT_ID: z.string(),
   POLAR_SANDBOX_PRODUCT_ID: z.string().optional(),
+  POLAR_WEBHOOK_SECRET: z.string(),
+  POLAR_SANDBOX_WEBHOOK_SECRET: z.string().optional(),
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
