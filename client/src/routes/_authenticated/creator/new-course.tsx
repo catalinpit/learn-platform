@@ -38,7 +38,7 @@ function RouteComponent() {
     },
   });
 
-  const formValues = form.getValues();
+  const formValues = form.watch();
   const totalFields = Object.keys(formValues).length;
 
   const isFieldEmpty = (value: unknown) => {

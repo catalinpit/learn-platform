@@ -15,9 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "@tanstack/react-router";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
-import {
-  calculateCourseProgress,
-} from "@/lib/utils";
+import { calculateCourseProgress } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { getStudentCoursesOptions } from "@/lib/api";
 import { Progress } from "@/components/ui/progress";

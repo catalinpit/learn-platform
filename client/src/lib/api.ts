@@ -386,7 +386,8 @@ export const getStudentCoursesOptions = ({
     queryKey: ["get-student-courses", query, page, perPage],
     queryFn: () => getStudentCourses({ query, page, perPage }),
     placeholderData: keepPreviousData,
-    staleTime: 1000 * 60 * 5,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
 export const getStudentCourseById = async (id: string) => {
