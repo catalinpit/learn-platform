@@ -1,7 +1,6 @@
 /** @jsxImportSource react */
 
 import { polar } from "@polar-sh/better-auth";
-import { Polar } from "@polar-sh/sdk";
 import { Role } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
@@ -10,23 +9,20 @@ import { admin } from "better-auth/plugins";
 import prisma from "@/db/index";
 import env from "@/env";
 import { client as mailClient } from "@/lib/mail-client";
+import { client as polarClient } from "@/lib/polar-client";
 
 import { EmailTemplate } from "../react-email-starter/emails/email-template";
-
-const client = new Polar({
-  accessToken:
-    env.NODE_ENV === "production"
-      ? env.POLAR_ACCESS_TOKEN
-      : env.POLAR_SANDBOX_ACCESS_TOKEN,
-  server: env.NODE_ENV === "production" ? "production" : "sandbox",
-});
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
   // couldn't make requests from the frontend to the backend without this trustedOrigins property
-  trustedOrigins: ["http://localhost:5173", "https://sf.catalins.tech"],
+  trustedOrigins: [
+    "http://localhost:5173",
+    "https://sf.catalins.tech",
+    "https://vast-python-reliably.ngrok-free.app",
+  ],
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
@@ -92,7 +88,7 @@ export const auth = betterAuth({
   plugins: [
     admin(),
     polar({
-      client,
+      client: polarClient,
       createCustomerOnSignUp: true,
       enableCustomerPortal: true,
       checkout: {
@@ -121,6 +117,42 @@ export const auth = betterAuth({
         },
         onCheckoutUpdated: async (payload: unknown) => {
           console.log("\nCheckout updated:", payload, "\n");
+
+          try {
+            const data = (payload as any).data;
+
+            if (!data?.customerExternalId) {
+              throw new Error("No customer ID found in payload");
+            }
+
+            const user = await prisma.user.findUnique({
+              where: { id: data.customerExternalId },
+            });
+
+            if (!user) {
+              throw new Error("No user found");
+            }
+
+            if (data.status === "confirmed") {
+              await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                  enrolledCourses: {
+                    connect: {
+                      id: "bc8606a7-fe8d-4cee-8b60-bfdd55eeb13e",
+                    },
+                  },
+                },
+              });
+              console.log(
+                "\nSuccessfully assigned the course to the user:",
+                user.id,
+                "\n"
+              );
+            }
+          } catch (error) {
+            throw new Error("Error processing checkout update");
+          }
         },
         onOrderCreated: async (payload: unknown) => {
           console.log("\nOrder created:", payload, "\n");
