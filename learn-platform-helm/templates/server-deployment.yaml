@@ -21,19 +21,11 @@ spec:
         - name: wait-for-db
           image: "postgres:15"
           command: ['sh', '-c', '
-            # Try both service naming patterns
+            # Check CloudNativePG service patterns
             for i in $(seq 1 60); do
               echo "Attempt $i: Checking PostgreSQL readiness..."
-              if pg_isready -h {{ .Values.postgresql.cluster.name }} -p 5432; then
-                echo "PostgreSQL is ready at {{ .Values.postgresql.cluster.name }}!"
-                exit 0
-              fi
               if pg_isready -h {{ .Values.postgresql.cluster.name }}-rw -p 5432; then
                 echo "PostgreSQL is ready at {{ .Values.postgresql.cluster.name }}-rw!"
-                exit 0
-              fi
-              if pg_isready -h {{ .Release.Name }}-postgresql -p 5432; then
-                echo "PostgreSQL is ready at {{ .Release.Name }}-postgresql!"
                 exit 0
               fi
               echo "Waiting for PostgreSQL to be ready... (attempt $i/60)"
@@ -42,6 +34,12 @@ spec:
             echo "PostgreSQL did not become ready within timeout period"
             exit 1
           ']
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.cluster.name }}-app
+                  key: password
         - name: init-permissions
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command: ["sh", "-c"]
@@ -77,17 +75,37 @@ spec:
 
               # Run migrations
               echo "Running database migrations..."
+              export DATABASE_URL="postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/$(POSTGRES_DB)"
+              echo "Using connection string: $DATABASE_URL"
               bunx prisma migrate deploy
 
               echo "Migrations completed successfully"
-          # Run as the bun user to match the main container
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.cluster.name }}-app
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.cluster.name }}-app
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.cluster.name }}-app
+                  key: dbname
+            - name: POSTGRES_HOST
+              value: {{ .Values.postgresql.cluster.name }}-rw
+            - name: POSTGRES_PORT
+              value: "5432"
           envFrom:
             - secretRef:
                 name: {{ .Values.server.existingSecret }}
-          # Add volume mounts to ensure directories are writable
           volumeMounts:
             - name: prisma-data
               mountPath: /usr/src/app/node_modules/.prisma
@@ -101,6 +119,28 @@ spec:
             - name: http
               containerPort: {{ .Values.server.port }}
               protocol: TCP
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/$(POSTGRES_DB)"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.cluster.name }}-app
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.cluster.name }}-app
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.cluster.name }}-app
+                  key: dbname
+            - name: POSTGRES_HOST
+              value: {{ .Values.postgresql.cluster.name }}-rw
+            - name: POSTGRES_PORT
+              value: "5432"
           envFrom:
             - secretRef:
                 name: {{ .Values.server.existingSecret }}
@@ -118,13 +158,11 @@ spec:
             periodSeconds: 10
           resources:
             {{- toYaml .Values.server.resources | nindent 12 }}
-          # Add volume mounts to the main container as well
           volumeMounts:
             - name: prisma-data
               mountPath: /usr/src/app/node_modules/.prisma
             - name: prisma-generated
               mountPath: /usr/src/app/prisma/generated
-      # Add volumes for Prisma data
       volumes:
         - name: prisma-data
           emptyDir: {}
