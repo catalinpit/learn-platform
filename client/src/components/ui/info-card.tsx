@@ -17,18 +17,18 @@ export function InfoCard({
   variant = "warning",
 }: InfoCardProps) {
   const variantStyles = {
-    warning: "border-yellow-300 bg-yellow-50/10",
-    success: "border-green-300 bg-green-50/10",
+    warning: "border-yellow-300 bg-yellow-50 dark:bg-yellow-900/50",
+    success: "border-green-300 bg-green-50 dark:bg-green-900/50",
   };
 
   const iconStyles = {
-    warning: "text-yellow-300",
-    success: "text-green-300",
+    warning: "text-yellow-500 dark:text-yellow-400",
+    success: "text-green-500 dark:text-green-400",
   };
 
   return (
     <Card className={cn(variantStyles[variant], className)}>
-      <CardHeader className="py-3">
+      <CardHeader className="p-5 gap-0">
         <div className="flex items-center gap-2">
           <InfoIcon className={cn("h-5 w-5", iconStyles[variant])} />
 
@@ -39,7 +39,7 @@ export function InfoCard({
           </CardDescription>
         </div>
         {description && (
-          <CardDescription className="mt-2 text-sm">
+          <CardDescription className="mt-2 text-sm text-muted-foreground dark:text-foreground">
             {description}
           </CardDescription>
         )}

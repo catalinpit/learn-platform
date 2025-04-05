@@ -21,12 +21,12 @@ export function MenuSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button
           data-testid="menu-switcher"
-          className="bg-background hover:bg-background shadow-none"
+          className="bg-none ring-0 border-none shadow-none dark:inset-shadow-none hover:scale-105 transition-all duration-100"
         >
           <AvatarWithText
-            avatarSrc={session?.user?.image}
+            avatarSrc={session?.user?.image ?? undefined}
             avatarFallback={session?.user?.name ?? ""}
-            primaryText={session?.user?.name}
+            primaryText={session?.user?.name ?? ""}
           />
         </Button>
       </DropdownMenuTrigger>

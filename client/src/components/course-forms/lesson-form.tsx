@@ -14,6 +14,13 @@ import { Input } from "@/components/ui/input";
 import Tiptap from "@/components/tip-tap";
 import { Switch } from "@/components/ui/switch";
 import { TCreateLessonType, ZCreateLessonSchema } from "@server/shared/types";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 type LessonFormProps = {
   onSubmit: (values: TCreateLessonType) => void;
@@ -32,10 +39,13 @@ export function LessonForm({ onSubmit, setShowLessonForm }: LessonFormProps) {
   });
 
   return (
-    <div>
+    <Card>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-6 border-border p-4 border rounded-md">
+          <CardHeader>
+            <CardTitle>Create Lesson</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-6">
             <FormField
               control={form.control}
               name="title"
@@ -116,21 +126,21 @@ export function LessonForm({ onSubmit, setShowLessonForm }: LessonFormProps) {
                 )}
               />
             </div>
-
-            <div className="flex flex-col sm:items-center space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2">
-              <Button type="submit">Add Lesson</Button>
-              <Button
-                type="button"
-                onClick={() => {
-                  setShowLessonForm(false);
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
+          </CardContent>
+          <CardFooter className="flex flex-col sm:items-center space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2">
+            <Button type="submit">Add Lesson</Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => {
+                setShowLessonForm(false);
+              }}
+            >
+              Cancel
+            </Button>
+          </CardFooter>
         </form>
       </Form>
-    </div>
+    </Card>
   );
 }

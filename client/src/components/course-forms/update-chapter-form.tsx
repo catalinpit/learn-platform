@@ -14,6 +14,13 @@ import { Input } from "@/components/ui/input";
 import Tiptap from "@/components/tip-tap";
 import { Switch } from "@/components/ui/switch";
 import { TCreateChapterType, ZCreateChapterSchema } from "@server/shared/types";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 type UpdateChapterFormProps = {
   onSubmit: (values: TCreateChapterType) => void;
@@ -37,12 +44,13 @@ export function UpdateChapterForm({
   });
 
   return (
-    <div>
+    <Card>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div
-            className="flex flex-col gap-6 border-border p-4 border rounded-md"
-          >
+          <CardHeader>
+            <CardTitle>Update Chapter</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-6">
             <FormField
               control={form.control}
               name="title"
@@ -53,10 +61,7 @@ export function UpdateChapterForm({
                     Give your chapter a clear and descriptive title
                   </FormDescription>
                   <FormControl>
-                    <Input
-                      placeholder="Enter chapter title..."
-                      {...field}
-                    />
+                    <Input placeholder="Enter chapter title..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -83,16 +88,12 @@ export function UpdateChapterForm({
               )}
             />
 
-            <div
-              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8"
-            >
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8">
               <FormField
                 control={form.control}
                 name="isPublished"
                 render={({ field }) => (
-                  <FormItem
-                    className="flex flex-row items-center gap-2"
-                  >
+                  <FormItem className="flex flex-row items-center gap-2">
                     <FormControl>
                       <Switch
                         checked={field.value}
@@ -113,9 +114,7 @@ export function UpdateChapterForm({
                 control={form.control}
                 name="isFree"
                 render={({ field }) => (
-                  <FormItem
-                    className="flex flex-row items-center gap-2"
-                  >
+                  <FormItem className="flex flex-row items-center gap-2">
                     <FormControl>
                       <Switch
                         checked={field.value}
@@ -132,25 +131,21 @@ export function UpdateChapterForm({
                 )}
               />
             </div>
-
-            <div
-              className="flex flex-col sm:items-center space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2"
+          </CardContent>
+          <CardFooter className="flex flex-col sm:items-center space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2">
+            <Button type="submit">Update Chapter</Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => {
+                setShowUpdateChapterForm(false);
+              }}
             >
-              <Button type="submit">
-                Update Chapter
-              </Button>
-              <Button
-                type="button"
-                onClick={() => {
-                  setShowUpdateChapterForm(false);
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
+              Cancel
+            </Button>
+          </CardFooter>
         </form>
       </Form>
-    </div>
+    </Card>
   );
 }

@@ -376,7 +376,7 @@ function RouteComponent() {
                 <li>At least one chapter to organize your content</li>
                 <li>At least one lesson with educational material</li>
               </ul>
-              <p className="mt-4 text-sm text-muted-foreground">
+              <p className="mt-4 text-sm text-muted-foreground dark:text-foreground">
                 💡 Tip: Use chapters to group related lessons together. This
                 helps students navigate through your course more effectively.
               </p>
