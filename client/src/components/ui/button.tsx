@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-linear-to-b from-primary to-primary-to text-primary-foreground shadow-sm bg-[length:100%_100%] bg-[bottom] hover:bg-[length:100%_150%] inset-shadow-[0_1px_rgb(255_255_255/0.15)] transition-all",
+          "from-primary to-primary/85 text-primary-foreground dark:inset-shadow-2xs dark:inset-shadow-white/10 bg-linear-to-t border border-b-2 border-neutral-950/40 shadow-xs shadow-neutral-950/20 ring-1 ring-inset ring-white/25 transition-[filter] duration-200 hover:brightness-115 active:brightness-90 dark:border-x-0 dark:border-t-0 dark:border-neutral-950/50 dark:ring-white/5",
         destructive:
-          "bg-destructive text-primary-foreground shadow-sm hover:bg-destructive/90 inset-shadow-[0_1px_rgb(255_255_255/0.15)] transition-all",
+          "from-destructive/85 to-destructive text-destructive-background dark:text-foreground inset-shadow-2xs inset-shadow-white/25 bg-linear-to-b dark:from-destructive/75 dark:bg-linear-to-t border border-neutral-950/35 shadow-xs shadow-neutral-950/20 ring-0 transition-[filter] duration-200 hover:brightness-120 active:brightness-95 dark:border-0 dark:border-neutral-950/50",
         outline:
-          "bg-background text-foreground shadow-sm hover:bg-accent/90 inset-shadow-[0_1px_rgb(255_255_255/0.15)] transition-all border",
+          "bg-background text-foreground shadow-sm hover:brightness-115 active:brightness-90 inset-shadow-[0_1px_rgb(255_255_255/0.15)] transition-all border",
         secondary:
-          "bg-secondary border border-secondary-border text-secondary-foreground shadow-sm hover:bg-secondary/60 inset-shadow-[0_1px_rgb(255_255_255/0.15)] transition-all",
+          "bg-radial-[at_52%_-52%] **:[text-shadow:0_1px_0_var(--color-primary)] border-primary from-primary/70 to-primary/95 text-primary-foreground inset-shadow-2xs inset-shadow-white/25 dark:inset-shadow-white dark:from-primary dark:to-primary/70 dark:hover:to-primary border text-sm shadow-md shadow-neutral-950/30 ring-0 transition-[filter] duration-200 hover:brightness-125 active:brightness-95 dark:border-0",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",

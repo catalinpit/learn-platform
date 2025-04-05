@@ -99,7 +99,7 @@ function Index() {
               <img
                 src={course.coverImage}
                 alt={course.title}
-                className="w-full object-cover h-48"
+                className="p-3 object-cover h-48 rounded-2xl"
               />
             )}
             <CardHeader>
