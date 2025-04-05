@@ -21,26 +21,7 @@ spec:
       initContainers:
         - name: wait-for-db
           image: "postgres:15"
-          command: ['sh', '-c', '
-            echo "Waiting for secret and database to be ready..."
-            for i in $(seq 1 120); do
-              echo "Attempt $i: Checking if secret exists..."
-              if kubectl get secret {{ .Values.postgresql.cluster.name }}-app -n {{ .Release.Namespace }} >/dev/null 2>&1; then
-                echo "Secret found. Checking PostgreSQL readiness..."
-                if pg_isready -h {{ .Values.postgresql.cluster.name }}-rw -U {{ .Values.postgresql.cluster.bootstrap.initdb.owner }} -d {{ .Values.postgresql.cluster.bootstrap.initdb.database }}; then
-                  echo "PostgreSQL is ready!"
-                  exit 0
-                else
-                  echo "pg_isready failed with code $?. Retrying..."
-                fi
-              else
-                echo "Secret {{ .Values.postgresql.cluster.name }}-app not found yet. Retrying..."
-              fi
-              sleep 5
-            done
-            echo "Failed: Secret or PostgreSQL not ready after 10 minutes"
-            exit 1
-          ']
+          command: ['sh', '-c', 'echo "Waiting for PostgreSQL at {{ .Values.postgresql.cluster.name }}-rw..."; for i in $(seq 1 120); do echo "Attempt $i: Checking PostgreSQL readiness..."; pg_isready -h {{ .Values.postgresql.cluster.name }}-rw -U {{ .Values.postgresql.cluster.bootstrap.initdb.owner }} -d {{ .Values.postgresql.cluster.bootstrap.initdb.database }}; EXIT_CODE=$?; if [ $EXIT_CODE -eq 0 ]; then echo "PostgreSQL is ready!"; exit 0; fi; echo "pg_isready failed with exit code $EXIT_CODE. Retrying in 5s..."; sleep 5; done; echo "PostgreSQL not ready after 10 minutes"; exit 1']
           env:
             - name: PGPASSWORD
               valueFrom:
@@ -75,21 +56,14 @@ spec:
             - |
               echo "Starting database migrations..."
               cd /usr/src/app/server
-
-              # Ensure prisma directories exist and are writable
               mkdir -p /usr/src/app/node_modules/.prisma /usr/src/app/prisma/generated
               chmod -R 777 /usr/src/app/node_modules/.prisma /usr/src/app/prisma/generated
-
-              # Generate Prisma client
               echo "Generating Prisma client..."
               bunx prisma generate
-
-              # Run migrations
               echo "Running database migrations..."
               export DATABASE_URL="postgresql://$(cat /secrets/username):$(cat /secrets/password)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/{{ .Values.postgresql.cluster.bootstrap.initdb.database }}"
               echo "Using connection string: $DATABASE_URL"
               bunx prisma migrate deploy
-
               echo "Migrations completed successfully"
           securityContext:
             runAsUser: 1000
@@ -112,10 +86,7 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              # Construct the DATABASE_URL with the correct database name
               export DATABASE_URL="postgresql://$(cat /secrets/username):$(cat /secrets/password)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/{{ .Values.postgresql.cluster.bootstrap.initdb.database }}"
-              
-              # Start the application
               cd /usr/src/app/server && bun start
           ports:
             - name: http
