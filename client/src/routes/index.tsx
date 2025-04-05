@@ -11,6 +11,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardImage,
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
@@ -18,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
 import { courseTagToString } from "@/lib/utils";
+import { Tag } from "@/components/ui/card-tag";
 
 export type IndexRouteParams = {
   search: string;
@@ -94,39 +96,36 @@ function Index() {
       </div>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         {courses?.map((course) => (
-          <Card key={course.id} className="flex flex-col max-h-[600px]">
+          <Card key={course.id} className="flex flex-col h-full">
             {course.coverImage && (
-              <img
-                src={course.coverImage}
-                alt={course.title}
-                className="p-3 object-cover h-48 rounded-2xl"
-              />
+              <CardImage src={course.coverImage} alt={course.title} />
             )}
-            <CardHeader>
-              <CardTitle>
-                <Link to="/courses/$courseId" params={{ courseId: course.id }}>
-                  {course.title}
-                </Link>
-              </CardTitle>
-              <CardDescription>{course.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {course.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-1 bg-neutral-100 rounded-full text-sm dark:bg-neutral-800"
+            <div className="flex flex-col flex-1">
+              <CardHeader>
+                <CardTitle>
+                  <Link
+                    to="/courses/$courseId"
+                    params={{ courseId: course.id }}
                   >
-                    {courseTagToString(tag)}
-                  </span>
-                ))}
-              </div>
-            </CardContent>
-            <CardFooter className="mt-auto">
-              <p className="font-semibold">
-                {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
-              </p>
-            </CardFooter>
+                    {course.title}
+                  </Link>
+                </CardTitle>
+                <CardDescription>{course.description}</CardDescription>
+              </CardHeader>
+              <div className="flex-1"></div>
+              <CardContent className="pt-0">
+                <div className="flex flex-wrap gap-2 pt-5">
+                  {course.tags.map((tag) => (
+                    <Tag key={tag}>{courseTagToString(tag)}</Tag>
+                  ))}
+                </div>
+              </CardContent>
+              <CardFooter className="mt-auto">
+                <p className="font-semibold">
+                  {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
+                </p>
+              </CardFooter>
+            </div>
           </Card>
         ))}
       </div>

@@ -9,6 +9,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardImage,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -104,13 +105,9 @@ function RouteComponent() {
       </div>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         {courses?.map((course) => (
-          <Card key={course.id} className="flex flex-col">
+          <Card key={course.id} className="flex flex-col h-full">
             {course.coverImage && (
-              <img
-                src={course.coverImage}
-                alt={course.title}
-                className="w-full h-48 object-cover rounded-t-lg"
-              />
+              <CardImage src={course.coverImage} alt={course.title} />
             )}
             <div className="flex flex-col flex-1">
               <CardHeader className="flex-none">
@@ -119,7 +116,8 @@ function RouteComponent() {
                   {course.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="mt-auto">
+              <div className="flex-1"></div>
+              <CardContent className="pt-0">
                 <div className="mt-2">
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-sm font-medium">

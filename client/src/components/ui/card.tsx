@@ -17,10 +17,13 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
 
 function CardImage({ className, ...props }: React.ComponentProps<"img">) {
   return (
-    <div className="mx-[-1.5rem] mt-[-1.5rem] mb-0 overflow-hidden">
+    <div className="relative p-3">
       <img
         data-slot="card-image"
-        className={cn("w-full object-cover", className)}
+        className={cn(
+          "w-full h-48 object-cover rounded-lg shadow-lg shadow-inset dark:shadow-inset-dark",
+          className
+        )}
         {...props}
       />
     </div>
