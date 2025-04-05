@@ -75,8 +75,8 @@ spec:
 
               # Run migrations
               echo "Running database migrations..."
-              # Use the uri from the secret directly
-              export DATABASE_URL=$(cat /secrets/uri)
+              # Construct the DATABASE_URL with the correct database name
+              export DATABASE_URL="postgresql://$(cat /secrets/username):$(cat /secrets/password)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/$(cat /secrets/dbname)"
               echo "Using connection string: $DATABASE_URL"
               bunx prisma migrate deploy
 
@@ -84,26 +84,6 @@ spec:
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
-          env:
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgresql.cluster.name }}-app
-                  key: username
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgresql.cluster.name }}-app
-                  key: password
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgresql.cluster.name }}-app
-                  key: dbname
-            - name: POSTGRES_HOST
-              value: {{ .Values.postgresql.cluster.name }}-rw
-            - name: POSTGRES_PORT
-              value: "5432"
           envFrom:
             - secretRef:
                 name: {{ .Values.server.existingSecret }}
@@ -122,8 +102,8 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              # Use the uri from the secret directly
-              export DATABASE_URL=$(cat /secrets/uri)
+              # Construct the DATABASE_URL with the correct database name
+              export DATABASE_URL="postgresql://$(cat /secrets/username):$(cat /secrets/password)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/$(cat /secrets/dbname)"
               
               # Start the application
               cd /usr/src/app/server && bun start
@@ -131,26 +111,6 @@ spec:
             - name: http
               containerPort: {{ .Values.server.port }}
               protocol: TCP
-          env:
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgresql.cluster.name }}-app
-                  key: username
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgresql.cluster.name }}-app
-                  key: password
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgresql.cluster.name }}-app
-                  key: dbname
-            - name: POSTGRES_HOST
-              value: {{ .Values.postgresql.cluster.name }}-rw
-            - name: POSTGRES_PORT
-              value: "5432"
           envFrom:
             - secretRef:
                 name: {{ .Values.server.existingSecret }}
