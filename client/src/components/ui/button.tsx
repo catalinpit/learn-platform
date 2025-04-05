@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           "from-primary to-primary/85 text-primary-foreground dark:inset-shadow-2xs dark:inset-shadow-white/10 bg-linear-to-t border border-b-2 border-neutral-950/40 shadow-xs shadow-neutral-950/20 ring-1 ring-inset ring-white/25 transition-[filter] duration-200 hover:brightness-115 active:brightness-90 dark:border-x-0 dark:border-t-0 dark:border-neutral-950/50 dark:ring-white/5",
         destructive:
-          "from-destructive/85 to-destructive text-destructive-background dark:text-foreground inset-shadow-2xs inset-shadow-white/25 bg-linear-to-b dark:from-destructive/75 dark:bg-linear-to-t border border-neutral-950/35 shadow-xs shadow-neutral-950/20 ring-0 transition-[filter] duration-200 hover:brightness-120 active:brightness-95 dark:border-0 dark:border-neutral-950/50",
+          "from-destructive/85 to-destructive text-background dark:text-foreground inset-shadow-2xs inset-shadow-white/25 bg-linear-to-b dark:from-destructive/75 dark:bg-linear-to-t border border-neutral-950/35 shadow-xs shadow-neutral-950/20 ring-0 transition-[filter] duration-200 hover:brightness-120 active:brightness-95 dark:border-0 dark:border-neutral-950/50",
         outline:
           "bg-background text-foreground shadow-sm hover:brightness-115 active:brightness-90 inset-shadow-[0_1px_rgb(255_255_255/0.15)] transition-all border",
         secondary:
