@@ -75,7 +75,8 @@ spec:
 
               # Run migrations
               echo "Running database migrations..."
-              export DATABASE_URL="postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/$(POSTGRES_DB)"
+              # Use the uri from the secret directly
+              export DATABASE_URL=$(cat /secrets/uri)
               echo "Using connection string: $DATABASE_URL"
               bunx prisma migrate deploy
 
@@ -111,17 +112,26 @@ spec:
               mountPath: /usr/src/app/node_modules/.prisma
             - name: prisma-generated
               mountPath: /usr/src/app/prisma/generated
+            - name: db-secrets
+              mountPath: /secrets
+              readOnly: true
       containers:
         - name: server
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              # Use the uri from the secret directly
+              export DATABASE_URL=$(cat /secrets/uri)
+              
+              # Start the application
+              cd /usr/src/app/server && bun start
           ports:
             - name: http
               containerPort: {{ .Values.server.port }}
               protocol: TCP
           env:
-            - name: DATABASE_URL
-              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/$(POSTGRES_DB)"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -163,8 +173,14 @@ spec:
               mountPath: /usr/src/app/node_modules/.prisma
             - name: prisma-generated
               mountPath: /usr/src/app/prisma/generated
+            - name: db-secrets
+              mountPath: /secrets
+              readOnly: true
       volumes:
         - name: prisma-data
           emptyDir: {}
         - name: prisma-generated
           emptyDir: {}
+        - name: db-secrets
+          secret:
+            secretName: {{ .Values.postgresql.cluster.name }}-app

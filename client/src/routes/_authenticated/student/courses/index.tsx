@@ -20,6 +20,7 @@ import { calculateCourseProgress } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { getStudentCoursesOptions } from "@/lib/api";
 import { Progress } from "@/components/ui/progress";
+import { CourseHeader } from "@/components/course-header";
 
 export type EnrolledCoursesRouteParams = {
   search: string;
@@ -86,15 +87,15 @@ function RouteComponent() {
 
   return (
     <div className="p-6">
-      <div className="pb-6 flex-1">
-        <h2 className="text-4xl leading-10">My Courses</h2>
-        <p className="text-neutral-400 text-lg">
-          Browse all your enrolled courses
-        </p>
+      <div className="pb-12 flex-1">
+        <CourseHeader
+          title="My Courses"
+          description="Browse all your enrolled courses"
+        />
         <Input
           type="search"
-          placeholder="Search your courses..."
-          className="mt-4 w-1/3"
+          placeholder="Search courses..."
+          className="mx-auto w-3/4 sm:w-1/2"
           value={search}
           onChange={(e) => {
             navigate({
