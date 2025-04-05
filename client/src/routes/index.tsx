@@ -101,31 +101,12 @@ function Index() {
             {course.coverImage && (
               <CardImage src={course.coverImage} alt={course.title} />
             )}
-<<<<<<< HEAD
-            <CardHeader>
-              <CardTitle>
-                <Link to="/courses/$courseId" params={{ courseId: course.id }}>
-                  {course.title}
-                </Link>
-              </CardTitle>
-              <CardDescription>
-                {stripHTMLTags(course.description)}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {course.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-1 bg-neutral-100 rounded-full text-sm dark:bg-neutral-800"
-=======
             <div className="flex flex-col flex-1">
               <CardHeader>
                 <CardTitle>
                   <Link
                     to="/courses/$courseId"
                     params={{ courseId: course.id }}
->>>>>>> main
                   >
                     {course.title}
                   </Link>
