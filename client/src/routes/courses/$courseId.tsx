@@ -16,6 +16,7 @@ import { courseTagToString } from "@/lib/utils";
 import NotFound from "@/components/not-found";
 import { useSession } from "@/lib/auth-client";
 import { useNavigate } from "@tanstack/react-router";
+import { Tag } from "@/components/ui/card-tag";
 
 export const Route = createFileRoute("/courses/$courseId")({
   component: CoursePage,
@@ -75,12 +76,7 @@ export function CoursePage() {
         <CardContent>
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => (
-              <span
-                key={tag}
-                className="px-2 py-1 bg-neutral-100 rounded-full text-sm dark:bg-neutral-800"
-              >
-                {tag}
-              </span>
+              <Tag key={tag}>{tag}</Tag>
             ))}
           </div>
         </CardContent>

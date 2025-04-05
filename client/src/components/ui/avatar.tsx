@@ -48,6 +48,16 @@ function AvatarFallback({
   );
 }
 
+interface AvatarWithTextProps {
+  avatarClass?: string;
+  avatarSrc?: string;
+  avatarFallback?: string;
+  className?: string;
+  primaryText: string;
+  secondaryText?: string;
+  textSectionClassName?: string;
+}
+
 function AvatarWithText({
   avatarClass,
   avatarSrc,

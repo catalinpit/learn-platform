@@ -6,7 +6,7 @@ import type { Session } from "@/lib/auth-client";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
-
+import { Footer } from "@/components/footer";
 export interface MyRouterContext {
   auth: Session | null | undefined;
   queryClient: QueryClient;
@@ -23,6 +23,7 @@ function Root() {
       <div className="mx-auto max-w-6xl pt-12">
         <Outlet />
       </div>
+      <Footer />
       <Toaster richColors={true} toastOptions={{}} />
       <TanStackRouterDevtools />
     </ThemeProvider>
