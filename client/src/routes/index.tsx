@@ -20,6 +20,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
 import { courseTagToString } from "@/lib/utils";
 import { Tag } from "@/components/ui/card-tag";
+import { CourseHeader } from "@/components/course-header";
 
 export type IndexRouteParams = {
   search: string;
@@ -77,15 +78,15 @@ function Index() {
 
   return (
     <div className="p-6">
-      <div className="pb-6 flex-1">
-        <h2 className="text-4xl leading-10">All courses</h2>
-        <p className="text-neutral-400 text-lg">
-          Browse all the available courses
-        </p>
+      <div className="pb-12 flex-1">
+        <CourseHeader
+          title="All courses"
+          description="Browse all the available courses and learn something new"
+        />
         <Input
           type="search"
           placeholder="Search courses..."
-          className="mt-4 w-1/3"
+          className="mx-auto w-3/4 sm:w-1/2"
           value={search}
           onChange={(e) => {
             navigate({
