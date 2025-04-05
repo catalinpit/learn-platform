@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as UnverifiedImport } from './routes/unverified'
+import { Route as SuccessImport } from './routes/success'
 import { Route as SignoutImport } from './routes/signout'
 import { Route as ResetPasswordImport } from './routes/reset-password'
 import { Route as RegisterImport } from './routes/register'
@@ -35,6 +36,12 @@ import { Route as AuthenticatedStudentCoursesCourseIdLessonsLessonIdImport } fro
 const UnverifiedRoute = UnverifiedImport.update({
   id: '/unverified',
   path: '/unverified',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SuccessRoute = SuccessImport.update({
+  id: '/success',
+  path: '/success',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -208,6 +215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignoutImport
       parentRoute: typeof rootRoute
     }
+    '/success': {
+      id: '/success'
+      path: '/success'
+      fullPath: '/success'
+      preLoaderRoute: typeof SuccessImport
+      parentRoute: typeof rootRoute
+    }
     '/unverified': {
       id: '/unverified'
       path: '/unverified'
@@ -320,6 +334,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signout': typeof SignoutRoute
+  '/success': typeof SuccessRoute
   '/unverified': typeof UnverifiedRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
@@ -341,6 +356,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signout': typeof SignoutRoute
+  '/success': typeof SuccessRoute
   '/unverified': typeof UnverifiedRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
@@ -363,6 +379,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signout': typeof SignoutRoute
+  '/success': typeof SuccessRoute
   '/unverified': typeof UnverifiedRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/_authenticated/creator/courses': typeof AuthenticatedCreatorCoursesRoute
@@ -386,6 +403,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/signout'
+    | '/success'
     | '/unverified'
     | '/courses/$courseId'
     | '/creator/courses'
@@ -406,6 +424,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/signout'
+    | '/success'
     | '/unverified'
     | '/courses/$courseId'
     | '/creator/courses'
@@ -426,6 +445,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/signout'
+    | '/success'
     | '/unverified'
     | '/courses/$courseId'
     | '/_authenticated/creator/courses'
@@ -448,6 +468,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignoutRoute: typeof SignoutRoute
+  SuccessRoute: typeof SuccessRoute
   UnverifiedRoute: typeof UnverifiedRoute
   CoursesCourseIdRoute: typeof CoursesCourseIdRoute
 }
@@ -461,6 +482,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignoutRoute: SignoutRoute,
+  SuccessRoute: SuccessRoute,
   UnverifiedRoute: UnverifiedRoute,
   CoursesCourseIdRoute: CoursesCourseIdRoute,
 }
@@ -483,6 +505,7 @@ export const routeTree = rootRoute
         "/register",
         "/reset-password",
         "/signout",
+        "/success",
         "/unverified",
         "/courses/$courseId"
       ]
@@ -520,6 +543,9 @@ export const routeTree = rootRoute
     },
     "/signout": {
       "filePath": "signout.tsx"
+    },
+    "/success": {
+      "filePath": "success.tsx"
     },
     "/unverified": {
       "filePath": "unverified.tsx"

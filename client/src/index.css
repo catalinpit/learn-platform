@@ -5,130 +5,84 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Elegant light theme with a focused color palette */
-  --background: oklch(0.98 0.005 250);
-  --foreground: oklch(0.2 0.01 260);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.01 260);
+  --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.01 260);
-
-  /* Rich blue primary */
-  --primary: oklch(0.55 0.18 240);
-  --primary-foreground: oklch(1 0 0);
-
-  /* Subtle gray with slight blue undertone */
-  --secondary: oklch(0.93 0.02 240);
-  --secondary-foreground: oklch(0.3 0.02 250);
-
-  /* Muted gray */
-  --muted: oklch(0.95 0.01 240);
-  --muted-foreground: oklch(0.5 0.02 250);
-
-  /* Subtle accent - slightly warmer blue */
-  --accent: oklch(0.85 0.05 230);
-  --accent-foreground: oklch(0.2 0.02 250);
-
-  /* Clear red for destructive actions */
-  --destructive: oklch(0.65 0.25 25);
-  --destructive-foreground: oklch(1 0 0);
-
-  /* Refined borders and input elements */
-  --border: oklch(0.85 0.01 240);
-  --input: oklch(0.85 0.01 240);
-  --ring: oklch(0.55 0.18 240 / 0.5);
-
-  /* Harmonious chart colors */
-  --chart-1: oklch(0.55 0.18 240); /* Primary blue */
-  --chart-2: oklch(0.6 0.15 200);  /* Teal */
-  --chart-3: oklch(0.65 0.15 270); /* Purple */
-  --chart-4: oklch(0.7 0.15 180);  /* Green */
-  --chart-5: oklch(0.6 0.15 30);   /* Orange */
-
-  /* Moderate radius for elegant UI */
-  --radius: 0.5rem;
-
-  /* Sidebar with subtle background */
-  --sidebar: oklch(0.97 0.01 245);
-  --sidebar-foreground: oklch(0.25 0.02 250);
-  --sidebar-primary: oklch(0.55 0.18 240);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.85 0.05 230);
-  --sidebar-accent-foreground: oklch(0.2 0.02 250);
-  --sidebar-border: oklch(0.85 0.01 240);
-  --sidebar-ring: oklch(0.55 0.18 240 / 0.5);
-
-  /* Subtle shadows for depth */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-  --shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07);
-  --shadow-lg: 0 8px 10px -3px rgb(0 0 0 / 0.07);
-  --shadow-xl: 0 12px 16px -4px rgb(0 0 0 / 0.08);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.585 0.233 277.117);
+  --primary-to: oklch(0.511 0.262 276.966);
+  --primary-foreground: oklch(0.962 0.018 272.314);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.183 0.006 285.79);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.183 0.006 285.79);
+  --destructive: oklch(0.637 0.237 25.331);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.871 0.006 286.286);
+  --ring: oklch(0.871 0.006 286.286);
+  --chart-1: oklch(0.585 0.233 277.117);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.3rem;
+  --sidebar: oklch(0.956 0.002 286.35);
+  --sidebar-foreground: oklch(0.37 0.013 285.805);
+  --sidebar-primary: oklch(0.673 0.182 276.935);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.871 0.006 286.286);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
 }
-
 .dark {
-  /* Sophisticated dark theme */
-  --background: oklch(0.15 0.01 250);
-  --foreground: oklch(0.95 0.01 250);
-  --card: oklch(0.18 0.01 250);
-  --card-foreground: oklch(0.95 0.01 250);
-  --popover: oklch(0.18 0.01 250);
-  --popover-foreground: oklch(0.95 0.01 250);
-
-  /* Vibrant but not overwhelming blue */
-  --primary: oklch(0.65 0.15 240);
-  --primary-foreground: oklch(0.1 0.01 250);
-
-  /* Deep subtle secondary */
-  --secondary: oklch(0.25 0.02 250);
-  --secondary-foreground: oklch(0.95 0.01 250);
-
-  /* Dark muted with slight color */
-  --muted: oklch(0.22 0.01 250);
-  --muted-foreground: oklch(0.75 0.02 250);
-
-  /* Subtle accent */
-  --accent: oklch(0.3 0.03 240);
-  --accent-foreground: oklch(0.95 0.01 250);
-
-  /* Clear red for destructive actions */
-  --destructive: oklch(0.65 0.25 25);
-  --destructive-foreground: oklch(0.95 0.01 250);
-
-  /* Refined dark borders */
-  --border: oklch(0.3 0.02 250);
-  --input: oklch(0.3 0.02 250);
-  --ring: oklch(0.65 0.15 240 / 0.5);
-
-  /* Harmonious chart colors for dark mode */
-  --chart-1: oklch(0.65 0.15 240); /* Blue */
-  --chart-2: oklch(0.7 0.15 200);  /* Teal */
-  --chart-3: oklch(0.65 0.15 270); /* Purple */
-  --chart-4: oklch(0.7 0.15 180);  /* Green */
-  --chart-5: oklch(0.7 0.15 30);   /* Orange */
-
-  /* Sidebar with subtle darker background */
-  --sidebar: oklch(0.13 0.01 250);
-  --sidebar-foreground: oklch(0.9 0.01 250);
-  --sidebar-primary: oklch(0.65 0.15 240);
-  --sidebar-primary-foreground: oklch(0.1 0.01 250);
-  --sidebar-accent: oklch(0.3 0.03 240);
-  --sidebar-accent-foreground: oklch(0.95 0.01 250);
-  --sidebar-border: oklch(0.25 0.02 250);
-  --sidebar-ring: oklch(0.65 0.15 240 / 0.5);
-
-  /* Dark mode shadows with subtle glow */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
-  --shadow: 0 2px 4px 0 rgb(0 0 0 / 0.25);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
-  --shadow-lg: 0 8px 10px -3px rgb(0 0 0 / 0.3);
-  --shadow-xl: 0 12px 16px -4px rgb(0 0 0 / 0.3);
+  --background: oklch(0.183 0.006 285.79);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.37 0.013 285.805);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.274 0.006 286.033);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.585 0.233 277.117);
+  --primary-to: oklch(0.511 0.262 276.966);
+  --primary-foreground: oklch(0.962 0.018 272.314);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.21 0.006 285.885);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.21 0.006 285.885); /* Custom */
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.637 0.237 25.331);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.246 0.009 285.69); /* Custom */
+  --input: oklch(0.246 0.009 285.69); /* Custom */
+  --ring: oklch(0.442 0.017 285.786);
+  --chart-1: oklch(0.585 0.233 277.117);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.967 0.001 286.375);
+  --sidebar-primary: oklch(0.673 0.182 276.935);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.967 0.001 286.375);
+  --sidebar-border: oklch(0.274 0.006 286.033);
+  --sidebar-ring: oklch(0.442 0.017 285.786);
 }
 
 @theme inline {
   --font-sans:
     var(--font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono:
+    var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 
   --color-border: var(--border);
   --color-input: var(--input);
@@ -137,6 +91,7 @@
   --color-foreground: var(--foreground);
 
   --color-primary: var(--primary);
+  --color-primary-to: var(--primary-to);
   --color-primary-foreground: var(--primary-foreground);
 
   --color-secondary: var(--secondary);
@@ -167,20 +122,36 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 0.125rem);
-  --radius-sm: calc(var(--radius) - 0.25rem);
-
-  --shadow-sm: var(--shadow-sm);
-  --shadow: var(--shadow);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-xl: var(--shadow-xl);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --color-chart-6: var(--chart-6);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm:
+    0 1px 1px rgba(0, 0, 0, 0.03), 0 2px 2px rgba(0, 0, 0, 0.03),
+    0 2px 4px rgba(0, 0, 0, 0.03);
+  --shadow-md:
+    0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02),
+    0 4px 4px rgba(0, 0, 0, 0.02), 0 8px 8px rgba(0, 0, 0, 0.02);
+  --shadow-lg:
+    0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02),
+    0 4px 4px rgba(0, 0, 0, 0.02), 0 8px 8px rgba(0, 0, 0, 0.02),
+    0 16px 16px rgba(0, 0, 0, 0.02);
+  --shadow-xl:
+    0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02),
+    0 4px 4px rgba(0, 0, 0, 0.02), 0 8px 8px rgba(0, 0, 0, 0.02),
+    0 16px 16px rgba(0, 0, 0, 0.02), 0 32px 32px rgba(0, 0, 0, 0.02);
+  --shadow-2xl:
+    0 1px 1px rgba(0, 0, 0, 0.02), 0 2px 2px rgba(0, 0, 0, 0.02),
+    0 4px 4px rgba(0, 0, 0, 0.02), 0 8px 8px rgba(0, 0, 0, 0.02),
+    0 16px 16px rgba(0, 0, 0, 0.02), 0 32px 32px rgba(0, 0, 0, 0.02),
+    0 64px 64px rgba(0, 0, 0, 0.02);
 }
 
 /*
@@ -203,39 +174,9 @@
 
 @layer base {
   * {
-    border-color: var(--border);
-    outline-color: oklch(var(--ring) / 0.5);
-  }
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-  }
-  /* Add subtle card styling with shadows */
-  .card {
-    box-shadow: var(--shadow);
-    transition-property: box-shadow;
-    transition-duration: 200ms;
-  }
-  .card:hover {
-    box-shadow: var(--shadow-md);
-  }
-  /* Add subtle hover effects to buttons */
-  button, 
-  [role="button"] {
-    transition-property: all;
-    transition-duration: 200ms;
-  }
-  button:hover,
-  [role="button"]:hover {
-    transform: translateY(-1px);
-  }
-}
-
-@layer base {
-  * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-sidebar text-foreground;
   }
 }

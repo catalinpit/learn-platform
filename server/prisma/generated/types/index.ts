@@ -14,7 +14,7 @@ export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCo
 
 export const UserScalarFieldEnumSchema = z.enum(['id','email','name','createdAt','updatedAt','emailVerified','image','roles','role','banned','banReason','banExpires']);
 
-export const CourseScalarFieldEnumSchema = z.enum(['id','title','description','tags','coverImage','price','isPublished','createdAt','updatedAt','ownerId']);
+export const CourseScalarFieldEnumSchema = z.enum(['id','title','description','tags','coverImage','price','isPublished','createdAt','updatedAt','productId','ownerId']);
 
 export const ChapterScalarFieldEnumSchema = z.enum(['id','title','description','courseId','createdAt','updatedAt','isPublished','isFree']);
 
@@ -81,6 +81,7 @@ export const CourseSchema = z.object({
   isPublished: z.boolean(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
+  productId: z.string().nullable(),
   ownerId: z.string(),
 })
 
@@ -279,6 +280,7 @@ export const CourseSelectSchema: z.ZodType<Prisma.CourseSelect> = z.object({
   isPublished: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
+  productId: z.boolean().optional(),
   ownerId: z.boolean().optional(),
   owner: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   students: z.union([z.boolean(),z.lazy(() => UserFindManyArgsSchema)]).optional(),
@@ -580,6 +582,7 @@ export const CourseWhereInputSchema: z.ZodType<Prisma.CourseWhereInput> = z.obje
   isPublished: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  productId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   ownerId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   owner: z.union([ z.lazy(() => UserScalarRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   students: z.lazy(() => UserListRelationFilterSchema).optional(),
@@ -597,6 +600,7 @@ export const CourseOrderByWithRelationInputSchema: z.ZodType<Prisma.CourseOrderB
   isPublished: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
+  productId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   ownerId: z.lazy(() => SortOrderSchema).optional(),
   owner: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
   students: z.lazy(() => UserOrderByRelationAggregateInputSchema).optional(),
@@ -620,6 +624,7 @@ export const CourseWhereUniqueInputSchema: z.ZodType<Prisma.CourseWhereUniqueInp
   isPublished: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  productId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   ownerId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   owner: z.union([ z.lazy(() => UserScalarRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   students: z.lazy(() => UserListRelationFilterSchema).optional(),
@@ -637,6 +642,7 @@ export const CourseOrderByWithAggregationInputSchema: z.ZodType<Prisma.CourseOrd
   isPublished: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
+  productId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   ownerId: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => CourseCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => CourseAvgOrderByAggregateInputSchema).optional(),
@@ -658,6 +664,7 @@ export const CourseScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Course
   isPublished: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+  productId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   ownerId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
@@ -1277,6 +1284,7 @@ export const CourseCreateInputSchema: z.ZodType<Prisma.CourseCreateInput> = z.ob
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   owner: z.lazy(() => UserCreateNestedOneWithoutOwnedCoursesInputSchema),
   students: z.lazy(() => UserCreateNestedManyWithoutEnrolledCoursesInputSchema).optional(),
   chapters: z.lazy(() => ChapterCreateNestedManyWithoutCourseInputSchema).optional(),
@@ -1293,6 +1301,7 @@ export const CourseUncheckedCreateInputSchema: z.ZodType<Prisma.CourseUncheckedC
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   ownerId: z.string(),
   students: z.lazy(() => UserUncheckedCreateNestedManyWithoutEnrolledCoursesInputSchema).optional(),
   chapters: z.lazy(() => ChapterUncheckedCreateNestedManyWithoutCourseInputSchema).optional(),
@@ -1309,6 +1318,7 @@ export const CourseUpdateInputSchema: z.ZodType<Prisma.CourseUpdateInput> = z.ob
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   owner: z.lazy(() => UserUpdateOneRequiredWithoutOwnedCoursesNestedInputSchema).optional(),
   students: z.lazy(() => UserUpdateManyWithoutEnrolledCoursesNestedInputSchema).optional(),
   chapters: z.lazy(() => ChapterUpdateManyWithoutCourseNestedInputSchema).optional(),
@@ -1325,6 +1335,7 @@ export const CourseUncheckedUpdateInputSchema: z.ZodType<Prisma.CourseUncheckedU
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   ownerId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   students: z.lazy(() => UserUncheckedUpdateManyWithoutEnrolledCoursesNestedInputSchema).optional(),
   chapters: z.lazy(() => ChapterUncheckedUpdateManyWithoutCourseNestedInputSchema).optional(),
@@ -1341,6 +1352,7 @@ export const CourseCreateManyInputSchema: z.ZodType<Prisma.CourseCreateManyInput
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   ownerId: z.string()
 }).strict();
 
@@ -1354,6 +1366,7 @@ export const CourseUpdateManyMutationInputSchema: z.ZodType<Prisma.CourseUpdateM
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const CourseUncheckedUpdateManyInputSchema: z.ZodType<Prisma.CourseUncheckedUpdateManyInput> = z.object({
@@ -1366,6 +1379,7 @@ export const CourseUncheckedUpdateManyInputSchema: z.ZodType<Prisma.CourseUnchec
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   ownerId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -2153,6 +2167,7 @@ export const CourseCountOrderByAggregateInputSchema: z.ZodType<Prisma.CourseCoun
   isPublished: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
+  productId: z.lazy(() => SortOrderSchema).optional(),
   ownerId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -2169,6 +2184,7 @@ export const CourseMaxOrderByAggregateInputSchema: z.ZodType<Prisma.CourseMaxOrd
   isPublished: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
+  productId: z.lazy(() => SortOrderSchema).optional(),
   ownerId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -2181,6 +2197,7 @@ export const CourseMinOrderByAggregateInputSchema: z.ZodType<Prisma.CourseMinOrd
   isPublished: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
+  productId: z.lazy(() => SortOrderSchema).optional(),
   ownerId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -3218,6 +3235,7 @@ export const CourseCreateWithoutOwnerInputSchema: z.ZodType<Prisma.CourseCreateW
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   students: z.lazy(() => UserCreateNestedManyWithoutEnrolledCoursesInputSchema).optional(),
   chapters: z.lazy(() => ChapterCreateNestedManyWithoutCourseInputSchema).optional(),
   progress: z.lazy(() => ProgressCreateNestedManyWithoutCourseInputSchema).optional()
@@ -3233,6 +3251,7 @@ export const CourseUncheckedCreateWithoutOwnerInputSchema: z.ZodType<Prisma.Cour
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   students: z.lazy(() => UserUncheckedCreateNestedManyWithoutEnrolledCoursesInputSchema).optional(),
   chapters: z.lazy(() => ChapterUncheckedCreateNestedManyWithoutCourseInputSchema).optional(),
   progress: z.lazy(() => ProgressUncheckedCreateNestedManyWithoutCourseInputSchema).optional()
@@ -3258,6 +3277,7 @@ export const CourseCreateWithoutStudentsInputSchema: z.ZodType<Prisma.CourseCrea
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   owner: z.lazy(() => UserCreateNestedOneWithoutOwnedCoursesInputSchema),
   chapters: z.lazy(() => ChapterCreateNestedManyWithoutCourseInputSchema).optional(),
   progress: z.lazy(() => ProgressCreateNestedManyWithoutCourseInputSchema).optional()
@@ -3273,6 +3293,7 @@ export const CourseUncheckedCreateWithoutStudentsInputSchema: z.ZodType<Prisma.C
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   ownerId: z.string(),
   chapters: z.lazy(() => ChapterUncheckedCreateNestedManyWithoutCourseInputSchema).optional(),
   progress: z.lazy(() => ProgressUncheckedCreateNestedManyWithoutCourseInputSchema).optional()
@@ -3384,6 +3405,7 @@ export const CourseScalarWhereInputSchema: z.ZodType<Prisma.CourseScalarWhereInp
   isPublished: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  productId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   ownerId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
@@ -3761,6 +3783,7 @@ export const CourseCreateWithoutChaptersInputSchema: z.ZodType<Prisma.CourseCrea
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   owner: z.lazy(() => UserCreateNestedOneWithoutOwnedCoursesInputSchema),
   students: z.lazy(() => UserCreateNestedManyWithoutEnrolledCoursesInputSchema).optional(),
   progress: z.lazy(() => ProgressCreateNestedManyWithoutCourseInputSchema).optional()
@@ -3776,6 +3799,7 @@ export const CourseUncheckedCreateWithoutChaptersInputSchema: z.ZodType<Prisma.C
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   ownerId: z.string(),
   students: z.lazy(() => UserUncheckedCreateNestedManyWithoutEnrolledCoursesInputSchema).optional(),
   progress: z.lazy(() => ProgressUncheckedCreateNestedManyWithoutCourseInputSchema).optional()
@@ -3841,6 +3865,7 @@ export const CourseUpdateWithoutChaptersInputSchema: z.ZodType<Prisma.CourseUpda
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   owner: z.lazy(() => UserUpdateOneRequiredWithoutOwnedCoursesNestedInputSchema).optional(),
   students: z.lazy(() => UserUpdateManyWithoutEnrolledCoursesNestedInputSchema).optional(),
   progress: z.lazy(() => ProgressUpdateManyWithoutCourseNestedInputSchema).optional()
@@ -3856,6 +3881,7 @@ export const CourseUncheckedUpdateWithoutChaptersInputSchema: z.ZodType<Prisma.C
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   ownerId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   students: z.lazy(() => UserUncheckedUpdateManyWithoutEnrolledCoursesNestedInputSchema).optional(),
   progress: z.lazy(() => ProgressUncheckedUpdateManyWithoutCourseNestedInputSchema).optional()
@@ -4035,6 +4061,7 @@ export const CourseCreateWithoutProgressInputSchema: z.ZodType<Prisma.CourseCrea
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   owner: z.lazy(() => UserCreateNestedOneWithoutOwnedCoursesInputSchema),
   students: z.lazy(() => UserCreateNestedManyWithoutEnrolledCoursesInputSchema).optional(),
   chapters: z.lazy(() => ChapterCreateNestedManyWithoutCourseInputSchema).optional()
@@ -4050,6 +4077,7 @@ export const CourseUncheckedCreateWithoutProgressInputSchema: z.ZodType<Prisma.C
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable(),
   ownerId: z.string(),
   students: z.lazy(() => UserUncheckedCreateNestedManyWithoutEnrolledCoursesInputSchema).optional(),
   chapters: z.lazy(() => ChapterUncheckedCreateNestedManyWithoutCourseInputSchema).optional()
@@ -4116,6 +4144,7 @@ export const CourseUpdateWithoutProgressInputSchema: z.ZodType<Prisma.CourseUpda
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   owner: z.lazy(() => UserUpdateOneRequiredWithoutOwnedCoursesNestedInputSchema).optional(),
   students: z.lazy(() => UserUpdateManyWithoutEnrolledCoursesNestedInputSchema).optional(),
   chapters: z.lazy(() => ChapterUpdateManyWithoutCourseNestedInputSchema).optional()
@@ -4131,6 +4160,7 @@ export const CourseUncheckedUpdateWithoutProgressInputSchema: z.ZodType<Prisma.C
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   ownerId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   students: z.lazy(() => UserUncheckedUpdateManyWithoutEnrolledCoursesNestedInputSchema).optional(),
   chapters: z.lazy(() => ChapterUncheckedUpdateManyWithoutCourseNestedInputSchema).optional()
@@ -4321,7 +4351,8 @@ export const CourseCreateManyOwnerInputSchema: z.ZodType<Prisma.CourseCreateMany
   price: z.number().optional(),
   isPublished: z.boolean().optional(),
   createdAt: z.coerce.date().optional(),
-  updatedAt: z.coerce.date().optional()
+  updatedAt: z.coerce.date().optional(),
+  productId: z.string().optional().nullable()
 }).strict();
 
 export const SessionCreateManyUserInputSchema: z.ZodType<Prisma.SessionCreateManyUserInput> = z.object({
@@ -4360,6 +4391,7 @@ export const CourseUpdateWithoutOwnerInputSchema: z.ZodType<Prisma.CourseUpdateW
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   students: z.lazy(() => UserUpdateManyWithoutEnrolledCoursesNestedInputSchema).optional(),
   chapters: z.lazy(() => ChapterUpdateManyWithoutCourseNestedInputSchema).optional(),
   progress: z.lazy(() => ProgressUpdateManyWithoutCourseNestedInputSchema).optional()
@@ -4375,6 +4407,7 @@ export const CourseUncheckedUpdateWithoutOwnerInputSchema: z.ZodType<Prisma.Cour
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   students: z.lazy(() => UserUncheckedUpdateManyWithoutEnrolledCoursesNestedInputSchema).optional(),
   chapters: z.lazy(() => ChapterUncheckedUpdateManyWithoutCourseNestedInputSchema).optional(),
   progress: z.lazy(() => ProgressUncheckedUpdateManyWithoutCourseNestedInputSchema).optional()
@@ -4390,6 +4423,7 @@ export const CourseUncheckedUpdateManyWithoutOwnerInputSchema: z.ZodType<Prisma.
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const CourseUpdateWithoutStudentsInputSchema: z.ZodType<Prisma.CourseUpdateWithoutStudentsInput> = z.object({
@@ -4402,6 +4436,7 @@ export const CourseUpdateWithoutStudentsInputSchema: z.ZodType<Prisma.CourseUpda
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   owner: z.lazy(() => UserUpdateOneRequiredWithoutOwnedCoursesNestedInputSchema).optional(),
   chapters: z.lazy(() => ChapterUpdateManyWithoutCourseNestedInputSchema).optional(),
   progress: z.lazy(() => ProgressUpdateManyWithoutCourseNestedInputSchema).optional()
@@ -4417,6 +4452,7 @@ export const CourseUncheckedUpdateWithoutStudentsInputSchema: z.ZodType<Prisma.C
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   ownerId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   chapters: z.lazy(() => ChapterUncheckedUpdateManyWithoutCourseNestedInputSchema).optional(),
   progress: z.lazy(() => ProgressUncheckedUpdateManyWithoutCourseNestedInputSchema).optional()
@@ -4432,6 +4468,7 @@ export const CourseUncheckedUpdateManyWithoutStudentsInputSchema: z.ZodType<Pris
   isPublished: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  productId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   ownerId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 

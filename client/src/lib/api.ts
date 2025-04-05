@@ -147,10 +147,6 @@ export const createCourse = async (data: TCreateCourseType) => {
 };
 
 export const updateCourse = async (id: string, data: TUpdateCourseType) => {
-  if (data.isPublished) {
-    throw new Error("Cannot update this field");
-  }
-
   const res = await client.creator.courses[":id"].$patch({
     param: {
       id,

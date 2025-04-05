@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
 import { courseTagToString } from "@/lib/utils";
-
+import { stripHTMLTags } from "@server/utils/utilities";
 export type IndexRouteParams = {
   search: string;
   page: number;
@@ -108,7 +108,9 @@ function Index() {
                   {course.title}
                 </Link>
               </CardTitle>
-              <CardDescription>{course.description}</CardDescription>
+              <CardDescription>
+                {stripHTMLTags(course.description)}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">

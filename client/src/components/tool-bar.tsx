@@ -23,7 +23,7 @@ function ToolBar({ editor }: ToolBarProps) {
   }
 
   return (
-    <div className="flex flex-wrap gap-3 border border-input rounded-lg p-1 my-2">
+    <div className="flex flex-wrap gap-3 border border-input bg-background rounded-lg p-1 my-2">
       <Toggle
         size="sm"
         pressed={editor.isActive("heading", { level: 1 })}
