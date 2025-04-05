@@ -37,6 +37,7 @@ import { ConfirmUnpublishCourseDialog } from "@/components/confirmation-dialogs/
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { InfoCard } from "@/components/ui/info-card";
 import { courseTagToString } from "@/lib/utils";
+import { useSession } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/_authenticated/creator/$courseId/edit")({
   component: RouteComponent,
@@ -53,6 +54,7 @@ function RouteComponent() {
     getCreatorCourseByIdOptions(courseId)
   );
   const { queryClient } = Route.useRouteContext();
+  const { data: session } = useSession();
 
   const [showChapterForm, setShowChapterForm] = useState(false);
   const [showLessonForm, setShowLessonForm] = useState(false);
@@ -442,6 +444,7 @@ function RouteComponent() {
           chapters={transformedChapters}
           isEditing={true}
           courseId={courseId}
+          isOwner={course.ownerId === session?.user.id}
           expandedLessonId={expandedLessonId}
           onLessonClick={handleLessonClick}
           onAddLesson={(chapterId: string) => {

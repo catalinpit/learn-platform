@@ -9,11 +9,12 @@ import {
 import { cn } from "@/lib/utils";
 import { ConfirmDeleteLessonDialog } from "@/components/confirmation-dialogs/confirm-delete-lesson-dialog";
 import { ConfirmDeleteChapterDialog } from "@/components/confirmation-dialogs/confirm-delete-chapter-dialog";
-import { Chapter, Lesson } from "@server/shared/types";
+import { Chapter, Lesson } from "@server/prisma/generated/types";
 
 type CourseChapterListProps = {
   chapters: (Chapter & { lessons: Lesson[] })[];
   isEditing?: boolean;
+  isOwner?: boolean;
   expandedLessonId: string | null;
   courseId: string;
   onLessonClick?: (lessonId: string, isFree: boolean) => void;
@@ -25,6 +26,7 @@ type CourseChapterListProps = {
 export function CourseChapterList({
   chapters,
   isEditing = false,
+  isOwner = false,
   expandedLessonId,
   courseId,
   onLessonClick,
@@ -82,10 +84,12 @@ export function CourseChapterList({
               {chapter.lessons.map((lesson) => (
                 <div
                   key={lesson.id}
-                  onClick={() => onLessonClick?.(lesson.id, lesson.isFree)}
+                  onClick={() =>
+                    onLessonClick?.(lesson.id, isOwner || lesson.isFree)
+                  }
                   className={cn(
                     "flex flex-col p-4 rounded-lg border bg-card transition-colors",
-                    lesson.isFree
+                    isOwner || lesson.isFree
                       ? "cursor-pointer hover:bg-accent"
                       : "cursor-not-allowed opacity-75"
                   )}
@@ -119,13 +123,14 @@ export function CourseChapterList({
                       </div>
                     )}
                   </div>
-                  {lesson.isFree && expandedLessonId === lesson.id && (
-                    <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-                      <div
-                        dangerouslySetInnerHTML={{ __html: lesson.content }}
-                      />
-                    </div>
-                  )}
+                  {(isOwner || lesson.isFree) &&
+                    expandedLessonId === lesson.id && (
+                      <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                        <div
+                          dangerouslySetInnerHTML={{ __html: lesson.content }}
+                        />
+                      </div>
+                    )}
                 </div>
               ))}
             </div>
