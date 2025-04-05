@@ -22,16 +22,23 @@ spec:
         - name: wait-for-db
           image: "postgres:15"
           command: ['sh', '-c', '
-            for i in $(seq 1 60); do
-              echo "Attempt $i: Checking PostgreSQL readiness..."
-              if pg_isready -h {{ .Values.postgresql.cluster.name }}-rw -U {{ .Values.postgresql.cluster.bootstrap.initdb.owner }} -d {{ .Values.postgresql.cluster.bootstrap.initdb.database }}; then
-                echo "PostgreSQL is ready!"
-                exit 0
+            echo "Waiting for secret and database to be ready..."
+            for i in $(seq 1 120); do
+              echo "Attempt $i: Checking if secret exists..."
+              if kubectl get secret {{ .Values.postgresql.cluster.name }}-app -n {{ .Release.Namespace }} >/dev/null 2>&1; then
+                echo "Secret found. Checking PostgreSQL readiness..."
+                if pg_isready -h {{ .Values.postgresql.cluster.name }}-rw -U {{ .Values.postgresql.cluster.bootstrap.initdb.owner }} -d {{ .Values.postgresql.cluster.bootstrap.initdb.database }}; then
+                  echo "PostgreSQL is ready!"
+                  exit 0
+                else
+                  echo "pg_isready failed with code $?. Retrying..."
+                fi
+              else
+                echo "Secret {{ .Values.postgresql.cluster.name }}-app not found yet. Retrying..."
               fi
-              echo "Waiting for PostgreSQL... (attempt $i/60)"
               sleep 5
             done
-            echo "PostgreSQL not ready after 5 minutes"
+            echo "Failed: Secret or PostgreSQL not ready after 10 minutes"
             exit 1
           ']
           env:
@@ -40,13 +47,21 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.postgresql.cluster.name }}-app
                   key: password
+          volumeMounts:
+            - name: db-secrets
+              mountPath: /secrets
+              readOnly: true
         - name: init-permissions
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command: ["sh", "-c"]
           args:
             - |
-              mkdir -p /usr/src/app/node_modules/.prisma /usr/src/app/prisma/generated
-              chmod -R 777 /usr/src/app/node_modules/.prisma /usr/src/app/prisma/generated
+              echo "Setting up Prisma directories..."
+              mkdir -p /usr/src/app/node_modules/.prisma
+              mkdir -p /usr/src/app/prisma/generated
+              chmod -R 777 /usr/src/app/node_modules/.prisma
+              chmod -R 777 /usr/src/app/prisma/generated
+              echo "Directory setup complete"
           volumeMounts:
             - name: prisma-data
               mountPath: /usr/src/app/node_modules/.prisma
@@ -58,12 +73,27 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
+              echo "Starting database migrations..."
               cd /usr/src/app/server
+
+              # Ensure prisma directories exist and are writable
               mkdir -p /usr/src/app/node_modules/.prisma /usr/src/app/prisma/generated
               chmod -R 777 /usr/src/app/node_modules/.prisma /usr/src/app/prisma/generated
+
+              # Generate Prisma client
+              echo "Generating Prisma client..."
               bunx prisma generate
+
+              # Run migrations
+              echo "Running database migrations..."
               export DATABASE_URL="postgresql://$(cat /secrets/username):$(cat /secrets/password)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/{{ .Values.postgresql.cluster.bootstrap.initdb.database }}"
+              echo "Using connection string: $DATABASE_URL"
               bunx prisma migrate deploy
+
+              echo "Migrations completed successfully"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
           envFrom:
             - secretRef:
                 name: {{ .Values.server.existingSecret }}
@@ -82,7 +112,10 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
+              # Construct the DATABASE_URL with the correct database name
               export DATABASE_URL="postgresql://$(cat /secrets/username):$(cat /secrets/password)@{{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/{{ .Values.postgresql.cluster.bootstrap.initdb.database }}"
+              
+              # Start the application
               cd /usr/src/app/server && bun start
           ports:
             - name: http
@@ -104,7 +137,7 @@ spec:
             initialDelaySeconds: 20
             periodSeconds: 10
           resources:
-            {{ toYaml .Values.server.resources | nindent 12 }}
+            {{- toYaml .Values.server.resources | nindent 12 }}
           volumeMounts:
             - name: prisma-data
               mountPath: /usr/src/app/node_modules/.prisma
