@@ -34,6 +34,10 @@ postgresql:
         memory: "512Mi"
       limits:
         memory: "1Gi"
+    superuserSecret:
+      name: "learn-platform-db-superuser"
+      password: "" # Leave empty to generate a random password
+    enableSuperuserAccess: false
 
 server:
   port: 9999

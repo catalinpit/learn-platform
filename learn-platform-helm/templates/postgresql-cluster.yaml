@@ -27,4 +27,7 @@ spec:
       memory: {{ .Values.postgresql.cluster.resources.requests.memory }}
     limits:
       memory: {{ .Values.postgresql.cluster.resources.limits.memory }}
+  superuserSecret:
+    name: {{ .Values.postgresql.cluster.superuserSecret.name }}
+  enableSuperuserAccess: {{ .Values.postgresql.cluster.enableSuperuserAccess }}
 {{- end }}

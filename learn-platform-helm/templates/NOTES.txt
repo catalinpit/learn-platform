@@ -2,10 +2,36 @@ Thank you for installing {{ .Chart.Name }}.
 
 Your release is named {{ .Release.Name }}.
 
-To learn more about the release, try:
+To get started with your CloudNativePG database:
 
-  $ helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
-  $ helm get all {{ .Release.Name }} -n {{ .Release.Namespace }}
+1. Connect to the database using the application credentials:
+   ```bash
+   # Get the database credentials
+   kubectl get secret {{ .Values.postgresql.cluster.name }}-app -n {{ .Values.postgresql.cluster.namespace }} -o jsonpath='{.data.password}' | base64 -d
+   
+   # Connect to the database
+   kubectl run -it --rm --restart=Never postgresql-client --image=postgres:15 --namespace={{ .Values.postgresql.cluster.namespace }} --env="PGPASSWORD=$(kubectl get secret {{ .Values.postgresql.cluster.name }}-app -n {{ .Values.postgresql.cluster.namespace }} -o jsonpath='{.data.password}' | base64 -d)" -- psql -h {{ .Values.postgresql.cluster.name }}-rw -U $(kubectl get secret {{ .Values.postgresql.cluster.name }}-app -n {{ .Values.postgresql.cluster.namespace }} -o jsonpath='{.data.username}' | base64 -d) -d $(kubectl get secret {{ .Values.postgresql.cluster.name }}-app -n {{ .Values.postgresql.cluster.namespace }} -o jsonpath='{.data.dbname}' | base64 -d)
+   ```
+
+2. Access the application:
+   {{- if .Values.ingress.enabled }}
+   The application is accessible at: https://{{ .Values.ingress.hosts[0].host }}
+   {{- else }}
+   To access the application, run:
+   ```bash
+   kubectl port-forward svc/{{ .Release.Name }}-server {{ .Values.server.service.port }}:{{ .Values.server.service.targetPort }} -n {{ .Release.Namespace }}
+   ```
+   Then open http://localhost:{{ .Values.server.service.port }} in your browser.
+   {{- end }}
+
+3. Database connection information:
+   - Host: {{ .Values.postgresql.cluster.name }}-rw.{{ .Release.Namespace }}.svc.cluster.local
+   - Port: 5432
+   - Database: {{ .Values.postgresql.cluster.bootstrap.initdb.database }}
+   - Username: {{ .Values.postgresql.cluster.bootstrap.initdb.owner }}
+   - Password: (retrieved from the secret)
+
+For more information about CloudNativePG, visit: https://cloudnative-pg.io/documentation/1.25/
 
 {{- if .Values.ingress.enabled }}
 The application should be available at:

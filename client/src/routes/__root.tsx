@@ -19,13 +19,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function Root() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="learn-course-ui-theme">
-      <NavBar />
-      <div className="mx-auto max-w-6xl pt-12">
-        <Outlet />
+      <div className="flex flex-col min-h-screen">
+        <NavBar />
+        <main className="flex-grow mx-auto max-w-6xl pt-12 w-full">
+          <Outlet />
+        </main>
+        <Footer />
+        <Toaster richColors={true} toastOptions={{}} />
+        <TanStackRouterDevtools />
       </div>
-      <Footer />
-      <Toaster richColors={true} toastOptions={{}} />
-      <TanStackRouterDevtools />
     </ThemeProvider>
   );
 }
