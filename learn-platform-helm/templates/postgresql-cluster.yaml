@@ -15,6 +15,7 @@ spec:
       max_connections: {{ .Values.postgresql.cluster.postgresGUC.max_connections | quote }}
   storage:
     size: {{ .Values.postgresql.cluster.storage.size }}
+    storageClass: local-path
   bootstrap:
     initdb:
       database: {{ .Values.postgresql.cluster.bootstrap.initdb.database }}
