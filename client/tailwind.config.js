@@ -104,8 +104,5 @@ export default {
       },
     },
   },
-  plugins: [
-    "@tailwindcss/typography",
-    "tailwindcss-animate"
-  ],
+  plugins: ["@tailwindcss/typography", "tailwindcss-animate"],
 };

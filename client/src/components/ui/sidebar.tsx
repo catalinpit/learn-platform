@@ -242,7 +242,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          className="bg-background group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm group-data-[side=left]:shadow-[inset_-1px_0_0_0_rgb(0_0_0/0.05)] dark:group-data-[side=left]:shadow-[inset_-1px_0_0_0_rgb(255_255_255/0.1)] group-data-[side=right]:shadow-[inset_1px_0_0_0_rgb(0_0_0/0.05)] dark:group-data-[side=right]:shadow-[inset_1px_0_0_0_rgb(255_255_255/0.1)]"
         >
           {children}
         </div>

@@ -7,12 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { getCourseByIdQueryOptions } from "@/lib/api";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { CourseChapterList } from "@/components/course-chapters/course-chapter-list";
 import { courseTagToString } from "@/lib/utils";
 import NotFound from "@/components/not-found";
+import { useSession } from "@/lib/auth-client";
+import { useNavigate } from "@tanstack/react-router";
 import { Tag } from "@/components/ui/card-tag";
 
 export const Route = createFileRoute("/courses/$courseId")({
@@ -31,6 +34,9 @@ export function CoursePage() {
   const { data: course } = useSuspenseQuery(
     getCourseByIdQueryOptions(courseId)
   );
+
+  const session = useSession();
+  const navigate = useNavigate();
 
   if ("message" in course) {
     return <NotFound />;
@@ -56,7 +62,7 @@ export function CoursePage() {
         />
 
         <CardHeader>
-          <CardTitle className="text-5xl py-4 font-base">
+          <CardTitle className="text-xl sm:text-2xl md:text-4xl md:py-4 font-base">
             {course.title}
           </CardTitle>
           <CardDescription>
@@ -75,16 +81,43 @@ export function CoursePage() {
           </div>
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="flex justify-between items-center">
           <p className="font-semibold">
             {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
           </p>
+          {course.price > 0 && (
+            <Button
+              onClick={() => {
+                if (!session.data) {
+                  navigate({
+                    to: "/login",
+                  });
+                  return;
+                }
+
+                window.location.href = "/api/auth/checkout/pro";
+              }}
+            >
+              Enroll Now
+            </Button>
+          )}
+          {course.price === 0 && (
+            <Button
+              onClick={() => {
+                // For free courses, we can directly grant access or show content
+                setExpandedLessonId(course.chapters[0]?.lessons[0]?.id || null);
+              }}
+            >
+              Start Learning
+            </Button>
+          )}
         </CardFooter>
       </Card>
 
       <div className="my-8 mx-8 space-y-6">
         <CourseChapterList
           chapters={course.chapters}
+          courseId={courseId}
           isEditing={false}
           expandedLessonId={expandedLessonId}
           onLessonClick={handleLessonClick}
