@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
 import { courseTagToString } from "@/lib/utils";
+import { stripHTMLTags } from "@server/utils/utilities";
 import { Tag } from "@/components/ui/card-tag";
 import { CourseHeader } from "@/components/course-header";
 

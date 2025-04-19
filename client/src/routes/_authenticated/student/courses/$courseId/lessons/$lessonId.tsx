@@ -212,7 +212,7 @@ function RouteComponent() {
             </CardContent>
           </Card>
 
-          <Card className="bg-muted/15 shadow-md border-border border">
+          <Card>
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

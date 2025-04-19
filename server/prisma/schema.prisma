@@ -78,6 +78,7 @@ model Course {
   isPublished Boolean     @default(false)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  productId   String?
 
   owner    User       @relation("CourseOwner", fields: [ownerId], references: [id])
   ownerId  String
