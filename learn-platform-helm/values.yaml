@@ -34,6 +34,10 @@ postgresql:
         memory: "512Mi"
       limits:
         memory: "1Gi"
+    superuserSecret:
+      name: "learn-platform-db-superuser"
+      password: "" # Leave empty to generate a random password
+    enableSuperuserAccess: false
 
 server:
   port: 9999
@@ -55,7 +59,7 @@ ingress:
   className: "nginx"
   annotations:
     kubernetes.io/ingress.class: nginx
-    # Uncomment the following line if you have cert-manager installed
+    # Uncomment if cert-manager is installed
     # cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
     - host: sf.catalins.tech

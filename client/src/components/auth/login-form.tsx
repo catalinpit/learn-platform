@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn } from "@/lib/auth-client";
@@ -20,21 +21,49 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false);
+  const [isCredentialsLoading, setIsCredentialsLoading] = useState(false);
 
   const handleSignInWithGitHub = async () => {
-    await signIn.social({
-      provider: "github",
-    });
+    setIsGitHubLoading(true);
+
+    await signIn.social(
+      {
+        provider: "github",
+      },
+      {
+        onSuccess: () => {
+          setIsGitHubLoading(false);
+        },
+        onError: () => {
+          setIsGitHubLoading(false);
+        },
+      }
+    );
   };
 
   const handleSignInWithGoogle = async () => {
-    await signIn.social({
-      provider: "google",
-    });
+    setIsGoogleLoading(true);
+
+    await signIn.social(
+      {
+        provider: "google",
+      },
+      {
+        onSuccess: () => {
+          setIsGoogleLoading(false);
+        },
+        onError: () => {
+          setIsGoogleLoading(false);
+        },
+      }
+    );
   };
 
   const handleSignInWithCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsCredentialsLoading(true);
 
     await signIn.email(
       {
@@ -44,6 +73,8 @@ export function LoginForm({
       {
         onSuccess: () => {
           toast.success("Logged in successfully");
+
+          setIsCredentialsLoading(false);
         },
         onError: (ctx) => {
           if (ctx.error.status === 403) {
@@ -51,10 +82,16 @@ export function LoginForm({
           } else {
             toast.error("Something went wrong");
           }
+
+          setIsCredentialsLoading(false);
         },
       }
     );
   };
+
+  if (isGitHubLoading || isGoogleLoading || isCredentialsLoading) {
+    return <LoadingSpinner fullScreen />;
+  }
 
   return (
     <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>

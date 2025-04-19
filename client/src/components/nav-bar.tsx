@@ -11,7 +11,7 @@ export function NavBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="w-full px-4 py-4 mb-10">
+    <div className="w-full px-4 py-4 mb-4">
       <nav className="max-w-4xl mx-auto rounded-lg bg-neutral-50 border border-neutral-200 dark:bg-[#121212] dark:border-neutral-800">
         <div className="px-4 py-3 flex items-center justify-between">
           <Link

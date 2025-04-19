@@ -11,10 +11,11 @@ spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:{{ .Values.postgresql.cluster.postgresql.version }}
   postgresql:
     parameters:
-      shared_buffers: "{{ .Values.postgresql.cluster.postgresGUC.shared_buffers }}"
-      max_connections: "{{ .Values.postgresql.cluster.postgresGUC.max_connections }}"
+      shared_buffers: {{ .Values.postgresql.cluster.postgresGUC.shared_buffers | quote }}
+      max_connections: {{ .Values.postgresql.cluster.postgresGUC.max_connections | quote }}
   storage:
     size: {{ .Values.postgresql.cluster.storage.size }}
+    storageClass: local-path
   bootstrap:
     initdb:
       database: {{ .Values.postgresql.cluster.bootstrap.initdb.database }}
@@ -23,8 +24,11 @@ spec:
     enablePodMonitor: {{ .Values.postgresql.cluster.monitoring.enablePodMonitor }}
   resources:
     requests:
-      cpu: {{ .Values.postgresql.cluster.resources.requests.cpu }}
-      memory: {{ .Values.postgresql.cluster.resources.requests.memory }}
+      cpu: {{ .Values.postgresql.cluster.resources.requests.cpu | quote }}
+      memory: {{ .Values.postgresql.cluster.resources.requests.memory | quote }}
     limits:
-      memory: {{ .Values.postgresql.cluster.resources.limits.memory }}
+      memory: {{ .Values.postgresql.cluster.resources.limits.memory | quote }}
+  superuserSecret:
+    name: {{ .Values.postgresql.cluster.superuserSecret.name }}
+  enableSuperuserAccess: {{ .Values.postgresql.cluster.enableSuperuserAccess }}
 {{- end }}

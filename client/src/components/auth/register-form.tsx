@@ -7,6 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signUp, signIn } from "@/lib/auth-client";
@@ -25,21 +27,49 @@ export function RegisterForm({
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isCredentialsLoading, setIsCredentialsLoading] = useState(false);
 
   const handleSignUpWithGitHub = async () => {
-    await signIn.social({
-      provider: "github",
-    });
+    setIsGitHubLoading(true);
+
+    await signIn.social(
+      {
+        provider: "github",
+      },
+      {
+        onSuccess: () => {
+          setIsGitHubLoading(false);
+        },
+        onError: () => {
+          setIsGitHubLoading(false);
+        },
+      }
+    );
   };
 
   const handleSignUpWithGoogle = async () => {
-    await signIn.social({
-      provider: "google",
-    });
+    setIsGoogleLoading(true);
+
+    await signIn.social(
+      {
+        provider: "google",
+      },
+      {
+        onSuccess: () => {
+          setIsGoogleLoading(false);
+        },
+        onError: () => {
+          setIsGoogleLoading(false);
+        },
+      }
+    );
   };
 
   const handleSignUpWithCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsCredentialsLoading(true);
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
@@ -60,13 +90,21 @@ export function RegisterForm({
           });
 
           toast.success("Account created successfully");
+
+          setIsCredentialsLoading(false);
         },
-        onError: (ctx) => {
-          toast.error(ctx.error.message);
+        onError: () => {
+          toast.error("Something went wrong");
+
+          setIsCredentialsLoading(false);
         },
       }
     );
   };
+
+  if (isGitHubLoading || isGoogleLoading || isCredentialsLoading) {
+    return <LoadingSpinner fullScreen />;
+  }
 
   return (
     <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
