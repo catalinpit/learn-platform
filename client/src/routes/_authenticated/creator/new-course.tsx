@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -67,11 +67,11 @@ function RouteComponent() {
 
   const completedFields = Object.entries(formValues).filter(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ([_, value]) => !isFieldEmpty(value)
+    ([_, value]) => !isFieldEmpty(value),
   );
 
   const completionPercentage = Math.round(
-    (completedFields.length / totalFields) * 100
+    (completedFields.length / totalFields) * 100,
   );
   const completedFieldsProgress = `${completedFields.length} fields out of ${totalFields} completed`;
 
@@ -97,7 +97,7 @@ function RouteComponent() {
             "max-w-3xl mx-auto",
             completionPercentage === 100
               ? "border-green-400 bg-green-50/10"
-              : "border-yellow-400 bg-yellow-50/10"
+              : "border-yellow-400 bg-yellow-50/10",
           )}
           title={`Course Creation Progress: ${completionPercentage}%`}
           description={completedFieldsProgress}

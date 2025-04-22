@@ -3,6 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import db from "@/db";
 import { createRouter } from "@/lib/create-app";
 import { ZGetAllCoursesSchema, ZGetCourseByIdSchema } from "@/shared/types";
+import { stripHTMLTags } from "@/utils/utilities";
 
 const router = createRouter()
   .get(
@@ -38,7 +39,10 @@ const router = createRouter()
       ]);
 
       return c.json({
-        courses,
+        courses: courses.map(course => ({
+          ...course,
+          description: stripHTMLTags(course.description),
+        })),
         totalPages: Math.ceil(count / perPage),
       });
     },

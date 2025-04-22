@@ -17,12 +17,14 @@ import NotFound from "@/components/not-found";
 import { useSession } from "@/lib/auth-client";
 import { useNavigate } from "@tanstack/react-router";
 import { Tag } from "@/components/ui/card-tag";
+import { useMutation } from "@tanstack/react-query";
+import { createCheckout } from "@/lib/api";
 
 export const Route = createFileRoute("/courses/$courseId")({
   component: CoursePage,
   loader: async ({ params, context }) => {
     return await context.queryClient.ensureQueryData(
-      getCourseByIdQueryOptions(params.courseId)
+      getCourseByIdQueryOptions(params.courseId),
     );
   },
 });
@@ -32,8 +34,41 @@ export function CoursePage() {
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
 
   const { data: course } = useSuspenseQuery(
-    getCourseByIdQueryOptions(courseId)
+    getCourseByIdQueryOptions(courseId),
   );
+
+  const { mutateAsync: checkout } = useMutation({
+    mutationFn: (productId: string) => {
+      return createCheckout({ productId });
+    },
+  });
+
+  const handleCheckout = async () => {
+    if (!session.data) {
+      navigate({
+        to: "/login",
+      });
+      return;
+    }
+
+    if ("message" in course) {
+      return;
+    }
+
+    try {
+      if (!course.productId) {
+        console.error('No product ID found for course');
+        
+        return;
+      }
+
+      const res = await checkout(course.productId);
+      
+      window.location.href = res.url;
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+    }
+  };
 
   const session = useSession();
   const navigate = useNavigate();
@@ -87,16 +122,7 @@ export function CoursePage() {
           </p>
           {course.price > 0 && (
             <Button
-              onClick={() => {
-                if (!session.data) {
-                  navigate({
-                    to: "/login",
-                  });
-                  return;
-                }
-
-                window.location.href = "/api/auth/checkout/pro";
-              }}
+              onClick={handleCheckout}
             >
               Enroll Now
             </Button>

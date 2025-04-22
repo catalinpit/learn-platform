@@ -22,6 +22,7 @@ import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
 import { Route as CoursesCourseIdImport } from './routes/courses/$courseId'
+import { Route as AuthenticatedCreatorRouteImport } from './routes/_authenticated/creator/route'
 import { Route as AuthenticatedSettingsIndexImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedCreatorNewCourseImport } from './routes/_authenticated/creator/new-course'
 import { Route as AuthenticatedCreatorDashboardImport } from './routes/_authenticated/creator/dashboard'
@@ -98,6 +99,12 @@ const CoursesCourseIdRoute = CoursesCourseIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AuthenticatedCreatorRouteRoute = AuthenticatedCreatorRouteImport.update({
+  id: '/creator',
+  path: '/creator',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
 const AuthenticatedSettingsIndexRoute = AuthenticatedSettingsIndexImport.update(
   {
     id: '/settings/',
@@ -108,23 +115,23 @@ const AuthenticatedSettingsIndexRoute = AuthenticatedSettingsIndexImport.update(
 
 const AuthenticatedCreatorNewCourseRoute =
   AuthenticatedCreatorNewCourseImport.update({
-    id: '/creator/new-course',
-    path: '/creator/new-course',
-    getParentRoute: () => AuthenticatedRoute,
+    id: '/new-course',
+    path: '/new-course',
+    getParentRoute: () => AuthenticatedCreatorRouteRoute,
   } as any)
 
 const AuthenticatedCreatorDashboardRoute =
   AuthenticatedCreatorDashboardImport.update({
-    id: '/creator/dashboard',
-    path: '/creator/dashboard',
-    getParentRoute: () => AuthenticatedRoute,
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedCreatorRouteRoute,
   } as any)
 
 const AuthenticatedCreatorCoursesRoute =
   AuthenticatedCreatorCoursesImport.update({
-    id: '/creator/courses',
-    path: '/creator/courses',
-    getParentRoute: () => AuthenticatedRoute,
+    id: '/courses',
+    path: '/courses',
+    getParentRoute: () => AuthenticatedCreatorRouteRoute,
   } as any)
 
 const AuthenticatedStudentCoursesIndexRoute =
@@ -136,9 +143,9 @@ const AuthenticatedStudentCoursesIndexRoute =
 
 const AuthenticatedCreatorCourseIdEditRoute =
   AuthenticatedCreatorCourseIdEditImport.update({
-    id: '/creator/$courseId/edit',
-    path: '/creator/$courseId/edit',
-    getParentRoute: () => AuthenticatedRoute,
+    id: '/$courseId/edit',
+    path: '/$courseId/edit',
+    getParentRoute: () => AuthenticatedCreatorRouteRoute,
   } as any)
 
 const AuthenticatedStudentCoursesCourseIdIndexRoute =
@@ -229,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnverifiedImport
       parentRoute: typeof rootRoute
     }
+    '/_authenticated/creator': {
+      id: '/_authenticated/creator'
+      path: '/creator'
+      fullPath: '/creator'
+      preLoaderRoute: typeof AuthenticatedCreatorRouteImport
+      parentRoute: typeof AuthenticatedImport
+    }
     '/courses/$courseId': {
       id: '/courses/$courseId'
       path: '/courses/$courseId'
@@ -238,24 +252,24 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/creator/courses': {
       id: '/_authenticated/creator/courses'
-      path: '/creator/courses'
+      path: '/courses'
       fullPath: '/creator/courses'
       preLoaderRoute: typeof AuthenticatedCreatorCoursesImport
-      parentRoute: typeof AuthenticatedImport
+      parentRoute: typeof AuthenticatedCreatorRouteImport
     }
     '/_authenticated/creator/dashboard': {
       id: '/_authenticated/creator/dashboard'
-      path: '/creator/dashboard'
+      path: '/dashboard'
       fullPath: '/creator/dashboard'
       preLoaderRoute: typeof AuthenticatedCreatorDashboardImport
-      parentRoute: typeof AuthenticatedImport
+      parentRoute: typeof AuthenticatedCreatorRouteImport
     }
     '/_authenticated/creator/new-course': {
       id: '/_authenticated/creator/new-course'
-      path: '/creator/new-course'
+      path: '/new-course'
       fullPath: '/creator/new-course'
       preLoaderRoute: typeof AuthenticatedCreatorNewCourseImport
-      parentRoute: typeof AuthenticatedImport
+      parentRoute: typeof AuthenticatedCreatorRouteImport
     }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
@@ -266,10 +280,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/creator/$courseId/edit': {
       id: '/_authenticated/creator/$courseId/edit'
-      path: '/creator/$courseId/edit'
+      path: '/$courseId/edit'
       fullPath: '/creator/$courseId/edit'
       preLoaderRoute: typeof AuthenticatedCreatorCourseIdEditImport
-      parentRoute: typeof AuthenticatedImport
+      parentRoute: typeof AuthenticatedCreatorRouteImport
     }
     '/_authenticated/student/courses/': {
       id: '/_authenticated/student/courses/'
@@ -297,23 +311,38 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-interface AuthenticatedRouteChildren {
+interface AuthenticatedCreatorRouteRouteChildren {
   AuthenticatedCreatorCoursesRoute: typeof AuthenticatedCreatorCoursesRoute
   AuthenticatedCreatorDashboardRoute: typeof AuthenticatedCreatorDashboardRoute
   AuthenticatedCreatorNewCourseRoute: typeof AuthenticatedCreatorNewCourseRoute
-  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
   AuthenticatedCreatorCourseIdEditRoute: typeof AuthenticatedCreatorCourseIdEditRoute
+}
+
+const AuthenticatedCreatorRouteRouteChildren: AuthenticatedCreatorRouteRouteChildren =
+  {
+    AuthenticatedCreatorCoursesRoute: AuthenticatedCreatorCoursesRoute,
+    AuthenticatedCreatorDashboardRoute: AuthenticatedCreatorDashboardRoute,
+    AuthenticatedCreatorNewCourseRoute: AuthenticatedCreatorNewCourseRoute,
+    AuthenticatedCreatorCourseIdEditRoute:
+      AuthenticatedCreatorCourseIdEditRoute,
+  }
+
+const AuthenticatedCreatorRouteRouteWithChildren =
+  AuthenticatedCreatorRouteRoute._addFileChildren(
+    AuthenticatedCreatorRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedCreatorRouteRoute: typeof AuthenticatedCreatorRouteRouteWithChildren
+  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
   AuthenticatedStudentCoursesIndexRoute: typeof AuthenticatedStudentCoursesIndexRoute
   AuthenticatedStudentCoursesCourseIdIndexRoute: typeof AuthenticatedStudentCoursesCourseIdIndexRoute
   AuthenticatedStudentCoursesCourseIdLessonsLessonIdRoute: typeof AuthenticatedStudentCoursesCourseIdLessonsLessonIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedCreatorCoursesRoute: AuthenticatedCreatorCoursesRoute,
-  AuthenticatedCreatorDashboardRoute: AuthenticatedCreatorDashboardRoute,
-  AuthenticatedCreatorNewCourseRoute: AuthenticatedCreatorNewCourseRoute,
+  AuthenticatedCreatorRouteRoute: AuthenticatedCreatorRouteRouteWithChildren,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
-  AuthenticatedCreatorCourseIdEditRoute: AuthenticatedCreatorCourseIdEditRoute,
   AuthenticatedStudentCoursesIndexRoute: AuthenticatedStudentCoursesIndexRoute,
   AuthenticatedStudentCoursesCourseIdIndexRoute:
     AuthenticatedStudentCoursesCourseIdIndexRoute,
@@ -336,6 +365,7 @@ export interface FileRoutesByFullPath {
   '/signout': typeof SignoutRoute
   '/success': typeof SuccessRoute
   '/unverified': typeof UnverifiedRoute
+  '/creator': typeof AuthenticatedCreatorRouteRouteWithChildren
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
   '/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
@@ -358,6 +388,7 @@ export interface FileRoutesByTo {
   '/signout': typeof SignoutRoute
   '/success': typeof SuccessRoute
   '/unverified': typeof UnverifiedRoute
+  '/creator': typeof AuthenticatedCreatorRouteRouteWithChildren
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
   '/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
@@ -381,6 +412,7 @@ export interface FileRoutesById {
   '/signout': typeof SignoutRoute
   '/success': typeof SuccessRoute
   '/unverified': typeof UnverifiedRoute
+  '/_authenticated/creator': typeof AuthenticatedCreatorRouteRouteWithChildren
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/_authenticated/creator/courses': typeof AuthenticatedCreatorCoursesRoute
   '/_authenticated/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
@@ -405,6 +437,7 @@ export interface FileRouteTypes {
     | '/signout'
     | '/success'
     | '/unverified'
+    | '/creator'
     | '/courses/$courseId'
     | '/creator/courses'
     | '/creator/dashboard'
@@ -426,6 +459,7 @@ export interface FileRouteTypes {
     | '/signout'
     | '/success'
     | '/unverified'
+    | '/creator'
     | '/courses/$courseId'
     | '/creator/courses'
     | '/creator/dashboard'
@@ -447,6 +481,7 @@ export interface FileRouteTypes {
     | '/signout'
     | '/success'
     | '/unverified'
+    | '/_authenticated/creator'
     | '/courses/$courseId'
     | '/_authenticated/creator/courses'
     | '/_authenticated/creator/dashboard'
@@ -516,11 +551,8 @@ export const routeTree = rootRoute
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
-        "/_authenticated/creator/courses",
-        "/_authenticated/creator/dashboard",
-        "/_authenticated/creator/new-course",
+        "/_authenticated/creator",
         "/_authenticated/settings/",
-        "/_authenticated/creator/$courseId/edit",
         "/_authenticated/student/courses/",
         "/_authenticated/student/courses/$courseId/",
         "/_authenticated/student/courses/$courseId/lessons/$lessonId"
@@ -550,20 +582,30 @@ export const routeTree = rootRoute
     "/unverified": {
       "filePath": "unverified.tsx"
     },
+    "/_authenticated/creator": {
+      "filePath": "_authenticated/creator/route.tsx",
+      "parent": "/_authenticated",
+      "children": [
+        "/_authenticated/creator/courses",
+        "/_authenticated/creator/dashboard",
+        "/_authenticated/creator/new-course",
+        "/_authenticated/creator/$courseId/edit"
+      ]
+    },
     "/courses/$courseId": {
       "filePath": "courses/$courseId.tsx"
     },
     "/_authenticated/creator/courses": {
       "filePath": "_authenticated/creator/courses.tsx",
-      "parent": "/_authenticated"
+      "parent": "/_authenticated/creator"
     },
     "/_authenticated/creator/dashboard": {
       "filePath": "_authenticated/creator/dashboard.tsx",
-      "parent": "/_authenticated"
+      "parent": "/_authenticated/creator"
     },
     "/_authenticated/creator/new-course": {
       "filePath": "_authenticated/creator/new-course.tsx",
-      "parent": "/_authenticated"
+      "parent": "/_authenticated/creator"
     },
     "/_authenticated/settings/": {
       "filePath": "_authenticated/settings/index.tsx",
@@ -571,7 +613,7 @@ export const routeTree = rootRoute
     },
     "/_authenticated/creator/$courseId/edit": {
       "filePath": "_authenticated/creator/$courseId.edit.tsx",
-      "parent": "/_authenticated"
+      "parent": "/_authenticated/creator"
     },
     "/_authenticated/student/courses/": {
       "filePath": "_authenticated/student/courses/index.tsx",

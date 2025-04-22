@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PaginationWithPerPage } from "@/components/pagination-with-per-page";
 import { courseTagToString } from "@/lib/utils";
-import { stripHTMLTags } from "@server/utils/utilities";
 import { Tag } from "@/components/ui/card-tag";
 import { CourseHeader } from "@/components/course-header";
 
@@ -63,7 +62,7 @@ function Index() {
       query: debouncedSearch,
       page,
       perPage,
-    })
+    }),
   );
 
   const courses = data?.courses;
@@ -112,7 +111,9 @@ function Index() {
                     {course.title}
                   </Link>
                 </CardTitle>
-                <CardDescription>{course.description}</CardDescription>
+                <CardDescription>
+                  {course.description.substring(0, 150)}...
+                </CardDescription>
               </CardHeader>
               <div className="flex-1"></div>
               <CardContent className="pt-0">

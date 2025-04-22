@@ -1,6 +1,7 @@
 import { hc } from "hono/client";
 import type {
   AppType,
+  TCreateCheckoutType,
   TCreateLessonType,
   TGetAllCreatorCoursesType,
   TGetAllStudentCoursesType,
@@ -166,7 +167,7 @@ export const updateCourse = async (id: string, data: TUpdateCourseType) => {
 
 export const createCourseChapter = async (
   id: string,
-  data: TCreateChapterType
+  data: TCreateChapterType,
 ) => {
   const res = await client.creator.courses[":id"].chapters.$post({
     param: {
@@ -188,7 +189,7 @@ export const createCourseChapter = async (
 export const createChapterLesson = async (
   id: string,
   chapterId: string,
-  data: TCreateLessonType
+  data: TCreateLessonType,
 ) => {
   const res = await client.creator.courses[":id"].chapters[
     ":chapterId"
@@ -213,7 +214,7 @@ export const createChapterLesson = async (
 export const updateCourseChapter = async (
   id: string,
   chapterId: string,
-  data: TUpdateChapterType
+  data: TUpdateChapterType,
 ) => {
   const res = await client.creator.courses[":id"].chapters[":chapterId"].$patch(
     {
@@ -224,7 +225,7 @@ export const updateCourseChapter = async (
       json: {
         ...data,
       },
-    }
+    },
   );
 
   if (!res.ok) {
@@ -257,7 +258,7 @@ export const updateCourseLesson = async (
   id: string,
   chapterId: string,
   lessonId: string,
-  data: TUpdateLessonType
+  data: TUpdateLessonType,
 ) => {
   const res = await client.creator.courses[":id"].chapters[
     ":chapterId"
@@ -283,7 +284,7 @@ export const updateCourseLesson = async (
 export const deleteCourseLesson = async (
   id: string,
   chapterId: string,
-  lessonId: string
+  lessonId: string,
 ) => {
   const res = await client.creator.courses[":id"].chapters[
     ":chapterId"
@@ -425,4 +426,24 @@ export const completeLesson = async (id: string, lessonId: string) => {
 
   const progress = await res.json();
   return progress;
+};
+
+////////////////////////////
+// Payments API Endpoints //
+////////////////////////////
+
+export const createCheckout = async (data: TCreateCheckoutType) => {
+  const res = await client.checkout.$post({
+    json: {
+      ...data,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to create checkout");
+  }
+
+  const checkout = await res.json();
+  
+  return checkout;
 };

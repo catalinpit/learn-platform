@@ -1,13 +1,11 @@
 import {
   Body,
   Button,
-  Column,
   Container,
   Head,
   Heading,
   Hr,
   Html,
-  Img,
   Link,
   Preview,
   Section,
@@ -24,14 +22,14 @@ interface EmailTemplateProps {
   emailText?: string;
 }
 
-export const EmailTemplate = ({
+export function EmailTemplate({
   username,
   actionLink,
   previewText = "Learn Course Platform",
   header = "Learn Course Platform",
   buttonText = "Button Text",
   emailText = "Email Text",
-}: EmailTemplateProps) => {
+}: EmailTemplateProps) {
   return (
     <Html>
       <Head />
@@ -43,7 +41,13 @@ export const EmailTemplate = ({
               {header}
             </Heading>
             <Text className="text-black text-[14px] leading-[24px]">
-              Hello {username}, {emailText}.
+              Hello
+              {" "}
+              {username}
+              ,
+              {" "}
+              {emailText}
+              .
             </Text>
             <Section className="text-center mt-[32px] mb-[32px]">
               <Button
@@ -54,22 +58,25 @@ export const EmailTemplate = ({
               </Button>
             </Section>
             <Text className="text-black text-[14px] leading-[24px]">
-              Or copy and paste this URL into your browser:{" "}
+              Or copy and paste this URL into your browser:
+              {" "}
               <Link href={actionLink} className="text-blue-600 no-underline">
                 {actionLink}
               </Link>
             </Text>
             <Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
             <Text className="text-[#666666] text-[12px] leading-[24px]">
-              This invitation was intended for{" "}
-              <span className="text-black">{username}</span>.
+              This invitation was intended for
+              {" "}
+              <span className="text-black">{username}</span>
+              .
             </Text>
           </Container>
         </Body>
       </Tailwind>
     </Html>
   );
-};
+}
 
 EmailTemplate.PreviewProps = {
   username: "Example User",
