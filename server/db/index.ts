@@ -7,7 +7,10 @@ declare global {
   var prisma: PrismaClient;
 }
 
-const prisma = globalThis.prisma || new PrismaClient();
+const prisma = globalThis.prisma || new PrismaClient({
+  log: ['query', 'error', 'warn'],
+  enableTracing: true
+});
 
 if (env.NODE_ENV !== "production") {
   globalThis.prisma = prisma;
