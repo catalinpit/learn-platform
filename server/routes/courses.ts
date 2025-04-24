@@ -1,9 +1,10 @@
-import { zValidator } from "@hono/zod-validator";
+import type { Course } from "@/prisma/generated/types";
 
 import db from "@/db";
 import { createRouter } from "@/lib/create-app";
 import { ZGetAllCoursesSchema, ZGetCourseByIdSchema } from "@/shared/types";
 import { stripHTMLTags } from "@/utils/utilities";
+import { zValidator } from "@hono/zod-validator";
 
 const router = createRouter()
   .get(
@@ -39,7 +40,7 @@ const router = createRouter()
       ]);
 
       return c.json({
-        courses: courses.map(course => ({
+        courses: courses.map((course: Course) => ({
           ...course,
           description: stripHTMLTags(course.description),
         })),

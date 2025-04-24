@@ -9,6 +9,7 @@ expand(config());
 export const EnvSchema = z.object({
   NODE_ENV: z.enum(["production", "development"]).default("development"),
   PORT: z.coerce.number().default(3000),
+  APP_URL: z.string().url().default("http://localhost:5173"),
   LOG_LEVEL: z
     .enum(["fatal", "error", "warn", "info", "debug", "trace"])
     .default("info"),
@@ -43,8 +44,10 @@ try {
   env = EnvSchema.parse(process.env);
 } catch (err) {
   const error = err as ZodError;
-  console.error("Invalid env:");
+
+  console.error("Invalid environment variables:");
   console.error(error.flatten().fieldErrors);
+
   process.exit(1);
 }
 

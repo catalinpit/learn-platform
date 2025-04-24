@@ -1,5 +1,3 @@
-import { zValidator } from "@hono/zod-validator";
-
 import db from "@/db";
 import { createRouter } from "@/lib/create-app";
 import { client as polarClient } from "@/lib/polar-client";
@@ -17,6 +15,7 @@ import {
   ZUpdateLessonSchema,
 } from "@/shared/types";
 import { stripHTMLTags, toUSD } from "@/utils/utilities";
+import { zValidator } from "@hono/zod-validator";
 
 const router = createRouter()
   .get(
@@ -68,10 +67,9 @@ const router = createRouter()
           total: count,
         });
       } catch (error) {
-        console.error("Failed to get courses:", error);
         return c.json("Failed to get courses", 500);
       }
-    }
+    },
   )
   .get(
     "/creator/courses/:id",
@@ -106,10 +104,9 @@ const router = createRouter()
 
         return c.json(course);
       } catch (error) {
-        console.error("Failed to get course:", error);
         return c.json("Failed to get course", 500);
       }
-    }
+    },
   )
   .patch(
     "/creator/courses/:id",
@@ -180,10 +177,9 @@ const router = createRouter()
 
         return c.json(updatedCourse);
       } catch (error) {
-        console.error("Failed to update course:", error);
-        return c.json("Failed to update course", 500);
+        return c.json({ error: "Failed to update course" }, 500);
       }
-    }
+    },
   )
   .delete(
     "/creator/courses/:id",
@@ -231,10 +227,9 @@ const router = createRouter()
 
         return c.json(deletedCourse);
       } catch (error) {
-        console.error("Failed to delete course:", error);
-        return c.json("Failed to delete course", 500);
+        return c.json({ error: "Failed to delete course" }, 500);
       }
-    }
+    },
   )
   .post(
     "/creator/courses",
@@ -263,10 +258,9 @@ const router = createRouter()
 
         return c.json(course);
       } catch (error) {
-        console.error("Failed to create course:", error);
         return c.json("Failed to create course", 500);
       }
-    }
+    },
   )
   .post(
     "/creator/courses/:id/chapters",
@@ -311,10 +305,9 @@ const router = createRouter()
 
         return c.json(chapter);
       } catch (error) {
-        console.error("Failed to create chapter:", error);
         return c.json("Failed to create chapter", 500);
       }
-    }
+    },
   )
   .patch(
     "/creator/courses/:id/chapters/:chapterId",
@@ -352,10 +345,9 @@ const router = createRouter()
 
         return c.json(updatedChapter);
       } catch (error) {
-        console.error("Failed to update chapter:", error);
         return c.json("Failed to update chapter", 500);
       }
-    }
+    },
   )
   .delete(
     "/creator/courses/:id/chapters/:chapterId",
@@ -386,10 +378,9 @@ const router = createRouter()
 
         return c.json(deletedChapter);
       } catch (error) {
-        console.error("Failed to delete chapter:", error);
         return c.json("Failed to delete chapter", 500);
       }
-    }
+    },
   )
   .post(
     "/creator/courses/:id/chapters/:chapterId/lessons",
@@ -453,10 +444,9 @@ const router = createRouter()
 
         return c.json(lesson);
       } catch (error) {
-        console.error("Failed to create lesson:", error);
         return c.json("Failed to create lesson", 500);
       }
-    }
+    },
   )
   .patch(
     "/creator/courses/:id/chapters/:chapterId/lessons/:lessonId",
@@ -514,10 +504,9 @@ const router = createRouter()
 
         return c.json(updatedLesson);
       } catch (error) {
-        console.error("Failed to update lesson:", error);
         return c.json("Failed to update lesson", 500);
       }
-    }
+    },
   )
   .delete(
     "/creator/courses/:id/chapters/:chapterId/lessons/:lessonId",
@@ -551,10 +540,9 @@ const router = createRouter()
 
         return c.json(lesson);
       } catch (error) {
-        console.error("Failed to delete lesson:", error);
         return c.json("Failed to delete lesson", 500);
       }
-    }
+    },
   )
   .post(
     "/creator/courses/:id/publish",
@@ -619,10 +607,9 @@ const router = createRouter()
 
         return c.json(course);
       } catch (error) {
-        console.error("Failed to publish course:", error);
         return c.json("Failed to publish course", 500);
       }
-    }
+    },
   )
   .post(
     "/creator/courses/:id/unpublish",
@@ -661,10 +648,9 @@ const router = createRouter()
         }
         return c.json(course);
       } catch (error) {
-        console.error("Failed to unpublish course:", error);
         return c.json("Failed to unpublish course", 500);
       }
-    }
+    },
   );
 
 export default router;

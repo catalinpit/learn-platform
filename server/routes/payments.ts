@@ -1,9 +1,10 @@
-import { zValidator } from "@hono/zod-validator";
-
 import { createRouter } from "@/lib/create-app";
 import { client as polarClient } from "@/lib/polar-client";
 import { loggedIn } from "@/middleware/auth";
 import { ZCreateCheckoutSchema } from "@/shared/types";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+import { env } from "@/server/env";
 
 const router = createRouter().post(
   "/checkout",
@@ -25,12 +26,19 @@ const router = createRouter().post(
       const checkout = await polarClient.checkouts.create({
         productId: String(productId),
         customerExternalId: user.id,
-        successUrl: "http://localhost:5173/success?checkout_id={CHECKOUT_ID}",
+        successUrl: `${env.APP_URL}/success?checkout_id={CHECKOUT_ID}`,
       });
 
       return c.json({ url: checkout.url });
     } catch (error) {
-      return c.json("Failed to create checkout session", 500);
+      if (error instanceof z.ZodError) {
+        return c.json(
+          { error: error.issues.map((issue) => issue.message).join("\n") },
+          500,
+        );
+      }
+
+      return c.json({ error: "Failed to create checkout session" }, 500);
     }
   },
 );
