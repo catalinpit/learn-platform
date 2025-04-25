@@ -447,3 +447,25 @@ export const createCheckout = async (data: TCreateCheckoutType) => {
   
   return checkout;
 };
+
+export const getCheckout = async (id: string) => {
+  const res = await client.checkout[":checkoutId"].$get({
+    param: {
+      checkoutId: id,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch checkout");
+  }
+
+  const checkout = await res.json();
+  return checkout;
+};
+
+export const getCheckoutOptions = (id: string) =>
+  queryOptions({
+    queryKey: ["get-checkout", id],
+    queryFn: () => getCheckout(id),
+    staleTime: 1000 * 60 * 5,
+  });
