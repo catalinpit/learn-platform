@@ -15,12 +15,12 @@ import { toast } from "sonner";
 import { TCompleteLessonType } from "@server/shared/types";
 
 export const Route = createFileRoute(
-  "/_authenticated/student/courses/$courseId/lessons/$lessonId"
+  "/_authenticated/student/courses/$courseId/lessons/$lessonId",
 )({
   component: RouteComponent,
   loader: ({ params, context }) => {
     return context.queryClient.ensureQueryData(
-      getStudentCourseByIdOptions(params.courseId)
+      getStudentCourseByIdOptions(params.courseId),
     );
   },
 });
@@ -28,7 +28,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { courseId, lessonId } = Route.useParams();
   const { data: course } = useSuspenseQuery(
-    getStudentCourseByIdOptions(courseId)
+    getStudentCourseByIdOptions(courseId),
   );
   const { queryClient } = Route.useRouteContext();
   const isMobile = useIsMobile();
@@ -53,7 +53,7 @@ function RouteComponent() {
     .find((lesson) => lesson?.id === lessonId);
 
   const isCompleted = currentLesson?.progress?.some(
-    (progress) => progress.completed
+    (progress) => progress.completed,
   );
 
   // hono rpc causes this issue because the date cannot be passed via json
@@ -77,12 +77,12 @@ function RouteComponent() {
           toast.error("Failed to complete lesson");
           console.error(error);
         },
-      }
+      },
     );
   };
 
   const currentChapterIndex = course.chapters.findIndex((chapter) =>
-    chapter.lessons.some((lesson) => lesson.id === lessonId)
+    chapter.lessons.some((lesson) => lesson.id === lessonId),
   );
 
   const currentLessonIndex = course.chapters[
@@ -101,7 +101,7 @@ function RouteComponent() {
       course.chapters?.flatMap((chapter) => chapter.lessons) ?? [];
 
     const currentIndex = allLessons.findIndex(
-      (lesson) => lesson?.id === lessonId
+      (lesson) => lesson?.id === lessonId,
     );
 
     const nextLesson = allLessons[currentIndex + 1];
@@ -121,7 +121,7 @@ function RouteComponent() {
       course.chapters?.flatMap((chapter) => chapter.lessons) ?? [];
 
     const currentIndex = allLessons.findIndex(
-      (lesson) => lesson?.id === lessonId
+      (lesson) => lesson?.id === lessonId,
     );
 
     const previousLesson = allLessons[currentIndex - 1];
@@ -162,7 +162,7 @@ function RouteComponent() {
                 <span className="truncate max-w-[100px] sm:max-w-[150px]">
                   {
                     course.chapters?.find((chapter) =>
-                      chapter.lessons?.some((lesson) => lesson.id === lessonId)
+                      chapter.lessons?.some((lesson) => lesson.id === lessonId),
                     )?.title
                   }
                 </span>

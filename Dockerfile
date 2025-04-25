@@ -3,6 +3,9 @@ FROM oven/bun:latest as base
 
 WORKDIR /usr/src/app
 
+# Install OpenSSL in the base image
+RUN apt-get update -y && apt-get install -y openssl
+
 FROM base AS install
 # Server dependencies
 WORKDIR /temp/prod/server
@@ -16,13 +19,19 @@ RUN bun install --frozen-lockfile
 
 FROM base as build
 WORKDIR /usr/src/app
-COPY . .
 COPY --from=install /temp/prod/server/node_modules server/node_modules/
 COPY --from=install /temp/prod/client/node_modules client/node_modules/
+
+# Copy the rest of your application code
+COPY . .
+
 ENV NODE_ENV=production
-# Generate Prisma client
+
+# Generate Prisma client in the server directory
 WORKDIR /usr/src/app/server
 RUN bunx prisma generate
+
+# Build the client
 WORKDIR /usr/src/app/client
 RUN bun run build
 
@@ -34,5 +43,7 @@ COPY --from=build /usr/src/app/client/dist ./client/dist/
 
 USER bun
 EXPOSE 9999/tcp
+
+# Set the entrypoint to run the server
 WORKDIR /usr/src/app/server
 ENTRYPOINT [ "bun", "run", "start" ]
