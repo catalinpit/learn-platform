@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { z } from "zod";
@@ -81,7 +79,7 @@ export function TagsCombobox({ value, onChange }: MultiSelectProps) {
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        value.includes(tag.value) ? "opacity-100" : "opacity-0"
+                        value.includes(tag.value) ? "opacity-100" : "opacity-0",
                       )}
                     />
 
