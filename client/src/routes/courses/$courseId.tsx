@@ -48,6 +48,7 @@ export function CoursePage() {
       navigate({
         to: "/login",
       });
+
       return;
     }
 
@@ -58,12 +59,12 @@ export function CoursePage() {
     try {
       if (!course.productId) {
         console.error("No product ID found for course");
-        
+
         return;
       }
 
       const res = await checkout(course.productId);
-      
+
       window.location.href = res.url;
     } catch (error) {
       console.error("Error creating checkout session:", error);
@@ -121,11 +122,7 @@ export function CoursePage() {
             {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
           </p>
           {course.price > 0 && (
-            <Button
-              onClick={handleCheckout}
-            >
-              Enroll Now
-            </Button>
+            <Button onClick={handleCheckout}>Enroll Now</Button>
           )}
           {course.price === 0 && (
             <Button

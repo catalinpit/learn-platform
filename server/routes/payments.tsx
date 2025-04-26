@@ -1,11 +1,13 @@
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
-
 import env from "@/env";
 import { createRouter } from "@/lib/create-app";
+import { client as mailClient } from "@/lib/mail-client";
 import { client as polarClient } from "@/lib/polar-client";
 import { loggedIn } from "@/middleware/auth";
 import { ZCreateCheckoutSchema, ZGetCheckoutSchema } from "@/shared/types";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+
+import { EmailTemplate } from "../react-email-starter/emails/email-template";
 
 const router = createRouter()
   .post(
@@ -31,12 +33,32 @@ const router = createRouter()
           successUrl: `${env.APP_URL}/success?checkout_id={CHECKOUT_ID}`,
         });
 
+        const { metadata } = await polarClient.products.get({
+          id: checkout.product.id,
+        });
+
+        await mailClient.emails.send({
+          from: "Acme <onboarding@resend.dev>",
+          to: user.email,
+          subject: `Course enrollment confirmation`,
+          react: (
+            <EmailTemplate
+              username={user.name}
+              previewText="Enrollment confirmation"
+              header="Course enrollment confirmation 🎊"
+              emailText="you have successfully enrolled in the course"
+              buttonText="Access course"
+              // eslint-disable-next-line dot-notation
+              actionLink={`${env.APP_URL}/student/courses/${metadata["courseId"]}`}
+            />
+          ),
+        });
+
         return c.json({ url: checkout.url });
-      }
-      catch (error) {
+      } catch (error) {
         if (error instanceof z.ZodError) {
           return c.json(
-            { error: error.issues.map(issue => issue.message).join("\n") },
+            { error: error.issues.map((issue) => issue.message).join("\n") },
             500,
           );
         }
@@ -67,13 +89,16 @@ const router = createRouter()
         return c.json("Unauthorized", 401);
       }
 
-      const { metadata } = await polarClient.products.get({ id: checkout.product.id });
+      const { metadata } = await polarClient.products.get({
+        id: checkout.product.id,
+      });
 
       const checkoutDetails = {
         product: {
           id: checkout.product.id,
           name: checkout.product.name,
-          courseId: metadata.courseId,
+          // eslint-disable-next-line dot-notation
+          courseId: metadata["courseId"],
         },
         status: checkout.status,
       };

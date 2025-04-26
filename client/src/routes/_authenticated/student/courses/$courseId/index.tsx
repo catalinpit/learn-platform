@@ -5,14 +5,15 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
+import NotFound from "@/components/not-found";
 
 export const Route = createFileRoute(
-  "/_authenticated/student/courses/$courseId/"
+  "/_authenticated/student/courses/$courseId/",
 )({
   component: RouteComponent,
   loader: async ({ params, context }) => {
     return await context.queryClient.ensureQueryData(
-      getStudentCourseByIdOptions(params.courseId)
+      getStudentCourseByIdOptions(params.courseId),
     );
   },
 });
@@ -23,7 +24,7 @@ function RouteComponent() {
   const isMobile = useIsMobile();
 
   if (!course) {
-    return <LoadingSpinner fullScreen />;
+    return <NotFound />;
   }
 
   return (

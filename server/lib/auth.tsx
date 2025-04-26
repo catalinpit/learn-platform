@@ -1,14 +1,13 @@
 /** @jsxImportSource react */
 
-import { polar } from "@polar-sh/better-auth";
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin } from "better-auth/plugins";
-
 import prisma from "@/db/index";
 import env from "@/env";
 import { client as mailClient } from "@/lib/mail-client";
 import { client as polarClient } from "@/lib/polar-client";
+import { polar } from "@polar-sh/better-auth";
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { admin } from "better-auth/plugins";
 
 import { Role } from "../prisma/generated/client";
 import { EmailTemplate } from "../react-email-starter/emails/email-template";
@@ -18,11 +17,7 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   // couldn't make requests from the frontend to the backend without this trustedOrigins property
-  trustedOrigins: [
-    "http://localhost:5173",
-    "https://sf.catalins.tech",
-    "https://vast-python-reliably.ngrok-free.app",
-  ],
+  trustedOrigins: ["http://localhost:5173"],
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
@@ -123,9 +118,10 @@ export const auth = betterAuth({
               });
 
               if (!course) {
-                throw new Error(`Course with product ID ${data.product.id} not found`);
+                throw new Error(
+                  `Course with product ID ${data.product.id} not found`,
+                );
               }
-
               await prisma.user.update({
                 where: { id: user.id },
                 data: {
@@ -137,9 +133,7 @@ export const auth = betterAuth({
                 },
               });
             }
-          }
-          catch (error) {
-            console.error("Error processing checkout update feghedem", error);
+          } catch (error) {
             throw new Error("Error processing checkout update");
           }
         },
