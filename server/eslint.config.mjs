@@ -18,6 +18,8 @@ export default antfu(
       "antfu/no-top-level-await": ["off"],
       "node/prefer-global/process": ["off"],
       "node/no-process-env": ["error"],
+      "style/arrow-parens": ["error", "always"],
+      "style/brace-style": ["error", "1tbs", { allowSingleLine: false }],
       "perfectionist/sort-imports": [
         "error",
         {

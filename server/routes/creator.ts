@@ -2,6 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 
 import db from "@/db";
 import { createRouter } from "@/lib/create-app";
+import { client as polarClient } from "@/lib/polar-client";
 import { loggedIn } from "@/middleware/auth";
 import {
   ZCreateChapterSchema,
@@ -15,6 +16,7 @@ import {
   ZUpdateCourseSchema,
   ZUpdateLessonSchema,
 } from "@/shared/types";
+import { stripHTMLTags, toUSD } from "@/utils/utilities";
 
 const router = createRouter()
   .get(
@@ -65,9 +67,7 @@ const router = createRouter()
           totalPages: Math.ceil(count / Number(perPage)),
           total: count,
         });
-      }
-      catch (error) {
-        console.error("Failed to get courses:", error);
+      } catch (error) {
         return c.json("Failed to get courses", 500);
       }
     },
@@ -104,9 +104,7 @@ const router = createRouter()
         });
 
         return c.json(course);
-      }
-      catch (error) {
-        console.error("Failed to get course:", error);
+      } catch (error) {
         return c.json("Failed to get course", 500);
       }
     },
@@ -133,7 +131,7 @@ const router = createRouter()
         return c.json("Something went wrong", 500);
       }
 
-      const course = await db.course.findUnique({
+      const course = await db.course.findFirst({
         where: {
           id,
           ownerId: courseCreator.id,
@@ -144,8 +142,14 @@ const router = createRouter()
         return c.json("Course not found", 404);
       }
 
+      if (course.isPublished !== courseData.isPublished) {
+        return c.json({ error: "Cannot update this field" }, 400);
+      }
+
+      let updatedCourse;
+
       try {
-        const updatedCourse = await db.course.update({
+        updatedCourse = await db.course.update({
           where: {
             id,
             ownerId: courseCreator.id,
@@ -153,11 +157,28 @@ const router = createRouter()
           data: courseData,
         });
 
+        if (course.productId) {
+          await polarClient.products.update({
+            id: course.productId,
+            productUpdate: {
+              name: courseData.title,
+              description: stripHTMLTags(courseData.description),
+              recurringInterval: null,
+              medias: [],
+              prices: [
+                {
+                  priceCurrency: "usd",
+                  priceAmount: toUSD(courseData.price),
+                  amountType: "fixed",
+                },
+              ],
+            },
+          });
+        }
+
         return c.json(updatedCourse);
-      }
-      catch (error) {
-        console.error("Failed to update course:", error);
-        return c.json("Failed to update course", 500);
+      } catch (error) {
+        return c.json({ error: "Failed to update course" }, 500);
       }
     },
   )
@@ -177,7 +198,7 @@ const router = createRouter()
         return c.json("Something went wrong", 500);
       }
 
-      const course = await db.course.findUnique({
+      const course = await db.course.findFirst({
         where: {
           id,
           ownerId: courseCreator.id,
@@ -196,11 +217,18 @@ const router = createRouter()
           },
         });
 
+        if (course.productId) {
+          await polarClient.products.update({
+            id: course.productId,
+            productUpdate: {
+              isArchived: true,
+            },
+          });
+        }
+
         return c.json(deletedCourse);
-      }
-      catch (error) {
-        console.error("Failed to delete course:", error);
-        return c.json("Failed to delete course", 500);
+      } catch (error) {
+        return c.json({ error: "Failed to delete course" }, 500);
       }
     },
   )
@@ -230,9 +258,7 @@ const router = createRouter()
         });
 
         return c.json(course);
-      }
-      catch (error) {
-        console.error("Failed to create course:", error);
+      } catch (error) {
         return c.json("Failed to create course", 500);
       }
     },
@@ -279,9 +305,7 @@ const router = createRouter()
         });
 
         return c.json(chapter);
-      }
-      catch (error) {
-        console.error("Failed to create chapter:", error);
+      } catch (error) {
         return c.json("Failed to create chapter", 500);
       }
     },
@@ -321,9 +345,7 @@ const router = createRouter()
         });
 
         return c.json(updatedChapter);
-      }
-      catch (error) {
-        console.error("Failed to update chapter:", error);
+      } catch (error) {
         return c.json("Failed to update chapter", 500);
       }
     },
@@ -356,9 +378,7 @@ const router = createRouter()
         });
 
         return c.json(deletedChapter);
-      }
-      catch (error) {
-        console.error("Failed to delete chapter:", error);
+      } catch (error) {
         return c.json("Failed to delete chapter", 500);
       }
     },
@@ -424,9 +444,7 @@ const router = createRouter()
         });
 
         return c.json(lesson);
-      }
-      catch (error) {
-        console.error("Failed to create lesson:", error);
+      } catch (error) {
         return c.json("Failed to create lesson", 500);
       }
     },
@@ -486,9 +504,7 @@ const router = createRouter()
         });
 
         return c.json(updatedLesson);
-      }
-      catch (error) {
-        console.error("Failed to update lesson:", error);
+      } catch (error) {
         return c.json("Failed to update lesson", 500);
       }
     },
@@ -524,9 +540,7 @@ const router = createRouter()
         });
 
         return c.json(lesson);
-      }
-      catch (error) {
-        console.error("Failed to delete lesson:", error);
+      } catch (error) {
         return c.json("Failed to delete lesson", 500);
       }
     },
@@ -548,21 +562,53 @@ const router = createRouter()
       }
 
       try {
-        const course = await db.course.update({
+        const course = await db.course.findFirstOrThrow({
           where: {
             id,
             ownerId: user.id,
           },
+        });
+
+        let polarProduct;
+
+        if (!course.productId) {
+          polarProduct = await polarClient.products.create({
+            name: course.title,
+            description: stripHTMLTags(course.description),
+            recurringInterval: null,
+            prices: [
+              {
+                priceCurrency: "usd",
+                priceAmount: toUSD(course.price),
+                amountType: "fixed",
+              },
+            ],
+            medias: [],
+            metadata: {
+              courseId: course.id,
+              creatorId: user.id,
+            },
+          });
+        } else {
+          await polarClient.products.update({
+            id: course.productId,
+            productUpdate: {
+              isArchived: false,
+            },
+          });
+        }
+
+        await db.course.update({
+          where: { id: course.id },
           data: {
+            productId: course.productId || polarProduct?.id,
             isPublished: true,
           },
         });
 
         return c.json(course);
-      }
-      catch (error) {
-        console.error("Failed to publish course:", error);
-        return c.json("Failed to publish course", 500);
+      } catch (error) {
+        return c.json({ error: "Failed to publish course" }, 500);
       }
     },
   )
@@ -593,10 +639,16 @@ const router = createRouter()
           },
         });
 
+        if (course.productId) {
+          await polarClient.products.update({
+            id: course.productId,
+            productUpdate: {
+              isArchived: true,
+            },
+          });
+        }
         return c.json(course);
-      }
-      catch (error) {
-        console.error("Failed to unpublish course:", error);
+      } catch (error) {
         return c.json("Failed to unpublish course", 500);
       }
     },

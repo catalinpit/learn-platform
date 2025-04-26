@@ -1,14 +1,15 @@
 /** @jsxImportSource react */
 
-import { Role } from "@prisma/client";
+import prisma from "@/db/index";
+import env from "@/env";
+import { client as mailClient } from "@/lib/mail-client";
+import { client as polarClient } from "@/lib/polar-client";
+import { polar } from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins";
 
-import prisma from "@/db/index";
-import env from "@/env";
-import { client } from "@/lib/mail-client";
-
+import { Role } from "../prisma/generated/client";
 import { EmailTemplate } from "../react-email-starter/emails/email-template";
 
 export const auth = betterAuth({
@@ -16,12 +17,12 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   // couldn't make requests from the frontend to the backend without this trustedOrigins property
-  trustedOrigins: ["http://localhost:5173", "https://sf.catalins.tech"],
+  trustedOrigins: ["http://localhost:5173"],
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
-      await client.emails.send({
+      await mailClient.emails.send({
         from: "Acme <onboarding@resend.dev>",
         to: user.email,
         subject: "Reset your password",
@@ -42,7 +43,7 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
-      await client.emails.send({
+      await mailClient.emails.send({
         from: "Acme <onboarding@resend.dev>",
         to: user.email,
         subject: "Email Verification",
@@ -79,5 +80,64 @@ export const auth = betterAuth({
       },
     },
   },
-  plugins: [admin()],
+  plugins: [
+    admin(),
+    polar({
+      client: polarClient,
+      createCustomerOnSignUp: true,
+      enableCustomerPortal: true,
+      checkout: {
+        enabled: true,
+        products: [],
+        successUrl: "/success?checkout_id={CHECKOUT_ID}",
+      },
+      webhooks: {
+        secret:
+          env.NODE_ENV === "production"
+            ? env.POLAR_WEBHOOK_SECRET
+            : (env.POLAR_SANDBOX_WEBHOOK_SECRET ?? ""),
+        onCheckoutUpdated: async (payload) => {
+          try {
+            const data = payload.data;
+
+            if (!data?.customerExternalId) {
+              throw new Error("No customer ID found in payload");
+            }
+
+            const user = await prisma.user.findUnique({
+              where: { id: data.customerExternalId },
+            });
+
+            if (!user) {
+              throw new Error("No user found");
+            }
+
+            if (data.status === "succeeded") {
+              const course = await prisma.course.findFirst({
+                where: { productId: data.product.id },
+              });
+
+              if (!course) {
+                throw new Error(
+                  `Course with product ID ${data.product.id} not found`,
+                );
+              }
+              await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                  enrolledCourses: {
+                    connect: {
+                      id: course.id,
+                    },
+                  },
+                },
+              });
+            }
+          } catch (error) {
+            throw new Error("Error processing checkout update");
+          }
+        },
+      },
+    }),
+  ],
 });

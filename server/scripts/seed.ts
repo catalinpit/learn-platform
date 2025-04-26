@@ -1,4 +1,4 @@
-import { CourseTag, PrismaClient } from "@prisma/client";
+import { CourseTag, PrismaClient } from "../prisma/generated/client";
 
 const prisma = new PrismaClient();
 

@@ -62,7 +62,7 @@ function Index() {
       query: debouncedSearch,
       page,
       perPage,
-    })
+    }),
   );
 
   const courses = data?.courses;
@@ -111,7 +111,9 @@ function Index() {
                     {course.title}
                   </Link>
                 </CardTitle>
-                <CardDescription>{course.description}</CardDescription>
+                <CardDescription>
+                  {course.description.substring(0, 150)}...
+                </CardDescription>
               </CardHeader>
               <div className="flex-1"></div>
               <CardContent className="pt-0">

@@ -1,10 +1,11 @@
 import type { PinoLogger } from "hono-pino";
 
-import { CourseTag } from "@prisma/client";
 import { z } from "zod";
 
 import type { AppType } from "../app";
 import type { auth } from "../lib/auth";
+
+import { CourseTagSchema } from "../prisma/generated/types";
 
 export interface AppBindings {
   Variables: {
@@ -57,7 +58,7 @@ export const ZGetAllCreatorCoursesSchema = ZGetAllCoursesSchema;
 export const ZCreateCourseSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  tags: z.nativeEnum(CourseTag).array(),
+  tags: z.array(CourseTagSchema),
   coverImage: z.string().url("Invalid image URL").optional(),
   price: z.number().min(0, "Price must be non-negative"),
   isPublished: z.boolean().default(false),
@@ -116,3 +117,19 @@ export type TGetAllStudentCoursesType = z.infer<
 >;
 export type TGetStudentCourseType = z.infer<typeof ZGetStudentCourseSchema>;
 export type TCompleteLessonType = z.infer<typeof ZCompleteLessonSchema>;
+
+////////////////////////////
+// Payments Router Schemas //
+////////////////////////////
+
+export const ZCreateCheckoutSchema = z.object({
+  productId: z.string(),
+});
+
+export type TCreateCheckoutType = z.infer<typeof ZCreateCheckoutSchema>;
+
+export const ZGetCheckoutSchema = z.object({
+  checkoutId: z.string(),
+});
+
+export type TGetCheckoutType = z.infer<typeof ZGetCheckoutSchema>;
