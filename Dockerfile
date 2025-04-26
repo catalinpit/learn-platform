@@ -38,7 +38,7 @@ RUN bun run build
 FROM base as release
 WORKDIR /usr/src/app
 COPY --from=install /temp/prod/server/node_modules server/node_modules/
-COPY --exclude=client --from=build /usr/src/app/ .
+COPY --from=build /usr/src/app/server ./server
 COPY --from=build /usr/src/app/client/dist ./client/dist/
 
 USER bun
