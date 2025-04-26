@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import confetti from "canvas-confetti";
-import { CheckCircle, ArrowRight, ShoppingBag } from "lucide-react";
+import { CheckCircle, ArrowRight } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCheckout } from "@/lib/api";
-import { getCheckoutOptions } from "@/lib/api";
 
 export const Route = createFileRoute("/success")({
   component: RouteComponent,
@@ -65,8 +64,12 @@ function RouteComponent() {
         <CardContent>
           <div className="bg-muted rounded-lg p-4 text-left">
             <div className="mb-3">
-              <p className="text-sm text-muted-foreground mb-1">Order Reference:</p>
-              <p className="font-mono text-sm break-all text-foreground">{checkout_id}</p>
+              <p className="text-sm text-muted-foreground mb-1">
+                Order Reference:
+              </p>
+              <p className="font-mono text-sm break-all text-foreground">
+                {checkout_id}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Course Name:</p>
@@ -82,7 +85,7 @@ function RouteComponent() {
             <Link
               to="/student/courses/$courseId"
               params={{
-                courseId: String(checkout.product.courseId)
+                courseId: String(checkout.product.courseId),
               }}
             >
               Access Course

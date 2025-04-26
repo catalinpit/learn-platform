@@ -1,3 +1,5 @@
+import { zValidator } from "@hono/zod-validator";
+
 import db from "@/db";
 import { createRouter } from "@/lib/create-app";
 import { client as polarClient } from "@/lib/polar-client";
@@ -15,7 +17,6 @@ import {
   ZUpdateLessonSchema,
 } from "@/shared/types";
 import { stripHTMLTags, toUSD } from "@/utils/utilities";
-import { zValidator } from "@hono/zod-validator";
 
 const router = createRouter()
   .get(
@@ -66,7 +67,8 @@ const router = createRouter()
           totalPages: Math.ceil(count / Number(perPage)),
           total: count,
         });
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to get courses", 500);
       }
     },
@@ -103,7 +105,8 @@ const router = createRouter()
         });
 
         return c.json(course);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to get course", 500);
       }
     },
@@ -176,7 +179,8 @@ const router = createRouter()
         }
 
         return c.json(updatedCourse);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json({ error: "Failed to update course" }, 500);
       }
     },
@@ -226,7 +230,8 @@ const router = createRouter()
         }
 
         return c.json(deletedCourse);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json({ error: "Failed to delete course" }, 500);
       }
     },
@@ -257,7 +262,8 @@ const router = createRouter()
         });
 
         return c.json(course);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to create course", 500);
       }
     },
@@ -304,7 +310,8 @@ const router = createRouter()
         });
 
         return c.json(chapter);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to create chapter", 500);
       }
     },
@@ -344,7 +351,8 @@ const router = createRouter()
         });
 
         return c.json(updatedChapter);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to update chapter", 500);
       }
     },
@@ -377,7 +385,8 @@ const router = createRouter()
         });
 
         return c.json(deletedChapter);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to delete chapter", 500);
       }
     },
@@ -443,7 +452,8 @@ const router = createRouter()
         });
 
         return c.json(lesson);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to create lesson", 500);
       }
     },
@@ -503,7 +513,8 @@ const router = createRouter()
         });
 
         return c.json(updatedLesson);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to update lesson", 500);
       }
     },
@@ -539,7 +550,8 @@ const router = createRouter()
         });
 
         return c.json(lesson);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to delete lesson", 500);
       }
     },
@@ -588,7 +600,8 @@ const router = createRouter()
               creatorId: user.id,
             },
           });
-        } else {
+        }
+        else {
           await polarClient.products.update({
             id: course.productId,
             productUpdate: {
@@ -606,7 +619,8 @@ const router = createRouter()
         });
 
         return c.json(course);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to publish course", 500);
       }
     },
@@ -647,7 +661,8 @@ const router = createRouter()
           });
         }
         return c.json(course);
-      } catch (error) {
+      }
+      catch (error) {
         return c.json("Failed to unpublish course", 500);
       }
     },

@@ -127,3 +127,9 @@ export const ZCreateCheckoutSchema = z.object({
 });
 
 export type TCreateCheckoutType = z.infer<typeof ZCreateCheckoutSchema>;
+
+export const ZGetCheckoutSchema = z.object({
+  checkoutId: z.string(),
+});
+
+export type TGetCheckoutType = z.infer<typeof ZGetCheckoutSchema>;

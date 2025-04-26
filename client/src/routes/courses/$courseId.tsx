@@ -57,7 +57,7 @@ export function CoursePage() {
 
     try {
       if (!course.productId) {
-        console.error('No product ID found for course');
+        console.error("No product ID found for course");
         
         return;
       }
@@ -66,7 +66,7 @@ export function CoursePage() {
       
       window.location.href = res.url;
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      console.error("Error creating checkout session:", error);
     }
   };
 

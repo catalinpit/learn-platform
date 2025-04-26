@@ -125,12 +125,12 @@ export function CourseChapterList({
                   </div>
                   {(isOwner || lesson.isFree) &&
                     expandedLessonId === lesson.id && (
-                      <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-                        <div
-                          dangerouslySetInnerHTML={{ __html: lesson.content }}
-                        />
-                      </div>
-                    )}
+                    <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                      <div
+                        dangerouslySetInnerHTML={{ __html: lesson.content }}
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
