@@ -8,8 +8,8 @@ declare global {
 }
 
 const prisma = globalThis.prisma || new PrismaClient({
-  log: ['query', 'error', 'warn'],
-  enableTracing: true
+  log: ["query", "error", "warn"],
+  enableTracing: true,
 });
 
 if (env.NODE_ENV !== "production") {
