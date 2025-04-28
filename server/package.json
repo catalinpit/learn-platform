@@ -10,7 +10,10 @@
     "prisma:studio": "bun run prisma studio",
     "prisma:seed": "bun run scripts/seed.ts",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "dokku": {
+      "postdeploy": "bunx prisma generate"
+    }
   },
   "dependencies": {
     "@hono/zod-openapi": "^0.18.4",
