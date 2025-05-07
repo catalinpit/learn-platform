@@ -1,7 +1,0 @@
-{
-  "scripts": {
-    "dokku": {
-      "predeploy": "cd /usr/src/app/server && echo 'Running prisma generate...' && bun run prisma generate && echo 'Running prisma migrate deploy...' && bun run prisma migrate deploy"
-    }
-  }
-}

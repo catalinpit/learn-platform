@@ -40,8 +40,10 @@ WORKDIR /usr/src/app
 COPY --from=install /temp/prod/server/node_modules server/node_modules/
 COPY --from=build /usr/src/app/server ./server
 COPY --from=build /usr/src/app/client/dist ./client/dist/
+COPY --from=build /usr/src/app/server/prisma ./server/prisma
+COPY --from=build /usr/src/app/server/node_modules/.prisma ./server/node_modules/.prisma
 
-# Note: USER bun is moved to after the predeploy script would run
+USER bun
 EXPOSE 9999/tcp
 
 # Set the entrypoint to run the server
