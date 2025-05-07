@@ -27,9 +27,10 @@ COPY . .
 
 ENV NODE_ENV=production
 
-# Generate Prisma client in the server directory
+# Generate Prisma client and run migrations in the server directory
 WORKDIR /usr/src/app/server
 RUN bunx prisma generate
+RUN bunx prisma migrate deploy
 
 # Build the client
 WORKDIR /usr/src/app/client
@@ -40,8 +41,6 @@ WORKDIR /usr/src/app
 COPY --from=install /temp/prod/server/node_modules server/node_modules/
 COPY --from=build /usr/src/app/server ./server
 COPY --from=build /usr/src/app/client/dist ./client/dist/
-COPY --from=build /usr/src/app/server/prisma ./server/prisma
-COPY --from=build /usr/src/app/server/node_modules/.prisma ./server/node_modules/.prisma
 
 USER bun
 EXPOSE 9999/tcp
