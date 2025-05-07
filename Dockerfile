@@ -41,7 +41,7 @@ COPY --from=install /temp/prod/server/node_modules server/node_modules/
 COPY --from=build /usr/src/app/server ./server
 COPY --from=build /usr/src/app/client/dist ./client/dist/
 
-USER bun
+# Note: USER bun is moved to after the predeploy script would run
 EXPOSE 9999/tcp
 
 # Set the entrypoint to run the server
