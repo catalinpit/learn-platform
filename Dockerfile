@@ -27,10 +27,9 @@ COPY . .
 
 ENV NODE_ENV=production
 
-# Generate Prisma client and run migrations in the server directory
+# Generate Prisma client in the server directory
 WORKDIR /usr/src/app/server
 RUN bunx prisma generate
-RUN bunx prisma migrate deploy
 
 # Build the client
 WORKDIR /usr/src/app/client
@@ -41,10 +40,16 @@ WORKDIR /usr/src/app
 COPY --from=install /temp/prod/server/node_modules server/node_modules/
 COPY --from=build /usr/src/app/server ./server
 COPY --from=build /usr/src/app/client/dist ./client/dist/
+COPY --from=build /usr/src/app/server/prisma ./server/prisma
+COPY --from=build /usr/src/app/server/node_modules/.prisma ./server/node_modules/.prisma
+
+# Create startup script
+RUN echo '#!/bin/sh\nbunx prisma migrate deploy\nbun run start' > /usr/src/app/server/start.sh && \
+    chmod +x /usr/src/app/server/start.sh
 
 USER bun
 EXPOSE 9999/tcp
 
-# Set the entrypoint to run the server
+# Set the entrypoint to run the startup script
 WORKDIR /usr/src/app/server
-ENTRYPOINT [ "bun", "run", "start" ]
+ENTRYPOINT [ "./start.sh" ]
