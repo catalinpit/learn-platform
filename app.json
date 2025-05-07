@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dokku": {
-      "predeploy": "cd /app && echo 'Running prisma generate...' && bun run prisma generate || exit 1 && echo 'Running prisma migrate deploy...' && bun run prisma migrate deploy || exit 1"
+      "predeploy": "echo '=== DEBUG INFO ===' && echo 'Current directory:' && pwd && echo 'Directory contents:' && ls -la && echo 'Bun version:' && bun --version && echo 'Node version:' && node --version && echo '=== STARTING PRISMA COMMANDS ===' && cd /app && echo 'Changed to /app directory. Contents:' && ls -la && echo 'Running prisma generate...' && bun run prisma generate || (echo 'Prisma generate failed!' && exit 1) && echo 'Running prisma migrate deploy...' && bun run prisma migrate deploy || (echo 'Prisma migrate deploy failed!' && exit 1) && echo '=== DEPLOYMENT TASKS COMPLETED ==='"
     }
   }
 }
