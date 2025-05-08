@@ -80,7 +80,7 @@ function Index() {
     <div className="p-6">
       <div className="pb-12 flex-1">
         <CourseHeader
-          title="All courses test"
+          title="All courses auto-deploy"
           description="Browse all the available courses and learn something new"
         />
         <Input
