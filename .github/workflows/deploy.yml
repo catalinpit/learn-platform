@@ -18,4 +18,4 @@ jobs:
         uses: dokku/github-action@master
         with:
           git_remote_url: "ssh://dokku@${{ secrets.DOKKU_SERVER_IP }}:22/${{ secrets.DOKKU_APP_NAME }}"
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh_private_key: ${{ secrets.SSH_DOKKU_PRIVATE_KEY }}
