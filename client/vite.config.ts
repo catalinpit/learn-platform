@@ -30,7 +30,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:9999",
+        target: "https://learn.self-host.tech",
         changeOrigin: true,
       },
     },
