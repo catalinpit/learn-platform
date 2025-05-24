@@ -77,62 +77,66 @@ function Index() {
   }
 
   return (
-    <div className="p-6">
-      <div className="pb-12 flex-1">
-        <CourseHeader
-          title="All courses"
-          description="Browse all the available courses and learn something new"
-        />
-        <Input
-          type="search"
-          placeholder="Search courses..."
-          className="mx-auto w-3/4 sm:w-1/2"
-          value={search}
-          onChange={(e) => {
-            navigate({
-              search: (prev) => ({ ...prev, page: 1, search: e.target.value }),
-            });
-          }}
-        />
+    <div className="flex flex-col">
+      <div className="flex-1 p-6">
+        <div className="pb-12 flex-1">
+          <CourseHeader
+            title="All courses"
+            description="Browse all the available courses and learn something new"
+          />
+          <Input
+            type="search"
+            placeholder="Search courses..."
+            className="mx-auto w-3/4 sm:w-1/2"
+            value={search}
+            onChange={(e) => {
+              navigate({
+                search: (prev) => ({ ...prev, page: 1, search: e.target.value }),
+              });
+            }}
+          />
+        </div>
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          {courses?.map((course) => (
+            <Card key={course.id} className="flex flex-col h-full">
+              {course.coverImage && (
+                <CardImage src={course.coverImage} alt={course.title} />
+              )}
+              <div className="flex flex-col flex-1">
+                <CardHeader>
+                  <CardTitle>
+                    <Link
+                      to="/courses/$courseId"
+                      params={{ courseId: course.id }}
+                    >
+                      {course.title}
+                    </Link>
+                  </CardTitle>
+                  <CardDescription>
+                    {course.description.substring(0, 150)}...
+                  </CardDescription>
+                </CardHeader>
+                <div className="flex-1"></div>
+                <CardContent className="pt-0">
+                  <div className="flex flex-wrap gap-2 pt-5">
+                    {course.tags.map((tag) => (
+                      <Tag key={tag}>{courseTagToString(tag)}</Tag>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter className="mt-auto">
+                  <p className="font-semibold">
+                    {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
+                  </p>
+                </CardFooter>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-        {courses?.map((course) => (
-          <Card key={course.id} className="flex flex-col h-full">
-            {course.coverImage && (
-              <CardImage src={course.coverImage} alt={course.title} />
-            )}
-            <div className="flex flex-col flex-1">
-              <CardHeader>
-                <CardTitle>
-                  <Link
-                    to="/courses/$courseId"
-                    params={{ courseId: course.id }}
-                  >
-                    {course.title}
-                  </Link>
-                </CardTitle>
-                <CardDescription>
-                  {course.description.substring(0, 150)}...
-                </CardDescription>
-              </CardHeader>
-              <div className="flex-1"></div>
-              <CardContent className="pt-0">
-                <div className="flex flex-wrap gap-2 pt-5">
-                  {course.tags.map((tag) => (
-                    <Tag key={tag}>{courseTagToString(tag)}</Tag>
-                  ))}
-                </div>
-              </CardContent>
-              <CardFooter className="mt-auto">
-                <p className="font-semibold">
-                  {course.price > 0 ? `$${course.price.toFixed(2)}` : "Free"}
-                </p>
-              </CardFooter>
-            </div>
-          </Card>
-        ))}
-      </div>
-      <PaginationWithPerPage page={page} count={count} perPage={perPage} />
+      {courses && courses.length > 0 && (
+        <PaginationWithPerPage page={page} count={count} perPage={perPage} />
+      )}
     </div>
   );
 }

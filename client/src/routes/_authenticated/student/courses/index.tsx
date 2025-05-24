@@ -86,69 +86,70 @@ function RouteComponent() {
   }
 
   return (
-    <div className="p-6">
-      <div className="pb-12 flex-1">
-        <CourseHeader
-          title="My Courses"
-          description="Browse all your enrolled courses"
-        />
-        <Input
-          type="search"
-          placeholder="Search courses..."
-          className="mx-auto w-3/4 sm:w-1/2"
-          value={search}
-          onChange={(e) => {
-            navigate({
-              search: (prev) => ({ ...prev, page: 1, search: e.target.value }),
-            });
-          }}
-        />
-      </div>
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-        {courses?.map((course) => (
-          <Card key={course.id} className="flex flex-col h-full">
-            {course.coverImage && (
-              <CardImage src={course.coverImage} alt={course.title} />
-            )}
-            <div className="flex flex-col flex-1">
-              <CardHeader className="flex-none">
-                <CardTitle>{course.title}</CardTitle>
-                <CardDescription className="pt-1">
-                  {course.description}
-                </CardDescription>
-              </CardHeader>
-              <div className="flex-1"></div>
-              <CardContent className="pt-0">
-                <div className="mt-2">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-sm font-medium">
-                      {Math.round(calculateCourseProgress(course))}%
-                    </span>
+    <div className="flex flex-col">
+      <div className="flex-1 p-6">
+        <div className="pb-12 flex-1">
+          <CourseHeader
+            title="My Courses"
+            description="Browse all your enrolled courses"
+          />
+          <Input
+            type="search"
+            placeholder="Search courses..."
+            className="mx-auto w-3/4 sm:w-1/2"
+            value={search}
+            onChange={(e) => {
+              navigate({
+                search: (prev) => ({ ...prev, page: 1, search: e.target.value }),
+              });
+            }}
+          />
+        </div>
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          {courses?.map((course) => (
+            <Card key={course.id} className="flex flex-col h-full">
+              {course.coverImage && (
+                <CardImage src={course.coverImage} alt={course.title} />
+              )}
+              <div className="flex flex-col flex-1">
+                <CardHeader className="flex-none">
+                  <CardTitle>{course.title}</CardTitle>
+                  <CardDescription className="pt-1">
+                    {course.description}
+                  </CardDescription>
+                </CardHeader>
+                <div className="flex-1"></div>
+                <CardContent className="pt-0">
+                  <div className="mt-2">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-sm font-medium">
+                        {Math.round(calculateCourseProgress(course))}%
+                      </span>
+                    </div>
+                    <Progress
+                      value={calculateCourseProgress(course)}
+                      completed={calculateCourseProgress(course) === 100}
+                      className="w-full"
+                    />
                   </div>
-                  <Progress
-                    value={calculateCourseProgress(course)}
-                    completed={calculateCourseProgress(course) === 100}
-                    className="w-full"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Link
-                  to="/student/courses/$courseId"
-                  params={{ courseId: course.id }}
-                  className="text-primary hover:underline"
-                >
-                  Continue Learning →
-                </Link>
-              </CardFooter>
-            </div>
-          </Card>
-        ))}
+                </CardContent>
+                <CardFooter>
+                  <Link
+                    to="/student/courses/$courseId"
+                    params={{ courseId: course.id }}
+                    className="text-primary hover:underline"
+                  >
+                    Continue Learning →
+                  </Link>
+                </CardFooter>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
-
-      <div>
+      {courses && courses.length > 0 && (
         <PaginationWithPerPage page={page} perPage={perPage} count={count} />
-      </div>
+      )}
     </div>
   );
 }

@@ -30,7 +30,7 @@ export function PaginationWithPerPage({
   const navigate = useNavigate({ from: Route.fullPath });
 
   return (
-    <div className="sticky bottom-0 left-0 right-0 flex min-h-[80px] flex-col sm:flex-row items-center justify-between p-4 mt-6">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-8 sm:mt-12">
       <Pagination className="pt-0 pb-0">
         <PaginationContent>
           <PaginationItem>
@@ -66,7 +66,7 @@ export function PaginationWithPerPage({
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-      <div className="flex flex-row items-center gap-4">
+      <div className="flex flex-row items-center gap-4 sm:mr-7">
         <span className="whitespace-nowrap text-sm">Courses per page</span>
 
         <Select
