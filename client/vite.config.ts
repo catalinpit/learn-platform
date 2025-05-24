@@ -30,7 +30,10 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://learn.self-host.tech",
+        target:
+          process.env.NODE_ENV === "development"
+            ? "http://localhost:9999"
+            : "https://learn.self-host.tech",
         changeOrigin: true,
       },
     },

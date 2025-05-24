@@ -1,6 +1,14 @@
 import { createFileRoute, useRouteContext } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 const UserProfileForm = lazy(() =>
   import("@/components/user-profile-form").then((module) => ({
@@ -25,15 +33,19 @@ const SkeletonLoader = () => {
 };
 
 function Settings() {
-  const user = useRouteContext({ from: "/_authenticated" });
-
   return (
-    <>
-      <div>Hello settings! {user.name}</div>
-
-      <Suspense fallback={<SkeletonLoader />}>
-        <UserProfileForm />
-      </Suspense>
-    </>
+    <div className="max-w-3xl mx-auto p-6 sm:p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Profile Settings</CardTitle>
+          <CardDescription>
+            Manage your account settings and preferences
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <UserProfileForm />
+        </CardContent>
+      </Card>
+    </div>
   );
 }

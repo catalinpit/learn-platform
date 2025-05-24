@@ -30,8 +30,8 @@ export function PaginationWithPerPage({
   const navigate = useNavigate({ from: Route.fullPath });
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between">
-      <Pagination className="pt-10 pb-4 sm:py-10">
+    <div className="sticky bottom-0 left-0 right-0 flex min-h-[80px] flex-col sm:flex-row items-center justify-between p-4 mt-6">
+      <Pagination className="pt-0 pb-0">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
