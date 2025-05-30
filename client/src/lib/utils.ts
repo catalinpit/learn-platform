@@ -74,3 +74,11 @@ export const calculateCourseProgress = (
     ? 0
     : Math.round((completedLessons / totalLessons) * 100);
 };
+
+export const isValidYouTubeUrl = (url: string): boolean => {
+    if (!url.trim()) return false;
+
+    const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+
+    return youtubeRegex.test(url);
+  };

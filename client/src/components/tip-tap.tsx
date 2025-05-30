@@ -1,6 +1,7 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import YouTube from "@tiptap/extension-youtube";
 import { all, createLowlight } from "lowlight";
 
 import ToolBar from "./tool-bar";
@@ -16,6 +17,10 @@ const extensions = [
   }),
   CodeBlockLowlight.configure({
     lowlight,
+  }),
+  YouTube.configure({
+    width: 640,
+    height: 360,
   }),
 ];
 

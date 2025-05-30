@@ -63,10 +63,36 @@ const router = createRouter()
         where: {
           id: String(id),
         },
-        include: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          isPublished: true,
+          price: true,
+          coverImage: true,
+          tags: true,
+          productId: true,
+          ownerId: true,
           chapters: {
-            include: {
-              lessons: true,
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              isPublished: true,
+              isFree: true,
+              lessons: {
+                select: {
+                  id: true,
+                  title: true,
+                  content: true,
+                  position: true,
+                  isPublished: true,
+                  isFree: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  chapterId: true,
+                },
+              },
             },
           },
         },
@@ -76,7 +102,18 @@ const router = createRouter()
         return c.json({ message: "Course not found" });
       }
 
-      return c.json(course);
+      const processedCourse = {
+        ...course,
+        chapters: course.chapters.map((chapter) => ({
+          ...chapter,
+          lessons: chapter.lessons.map((lesson) => ({
+            ...lesson,
+            content: lesson.isFree ? lesson.content : undefined,
+          })),
+        })),
+      };
+
+      return c.json(processedCourse);
     },
   );
 

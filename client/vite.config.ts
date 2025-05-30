@@ -22,6 +22,11 @@ export default defineConfig({
       "@server": path.resolve(__dirname, "../server"),
     },
   },
+  // build: {
+  //   rollupOptions: {
+  //     external: (id) => id.startsWith("@server"),
+  //   },
+  // },
   server: {
     proxy: {
       "/api": {
