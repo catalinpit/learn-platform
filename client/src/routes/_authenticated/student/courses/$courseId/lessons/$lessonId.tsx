@@ -207,7 +207,7 @@ function RouteComponent() {
                 )}
               </div>
             </CardHeader>
-            <CardContent className="prose prose-slate dark:prose-invert max-w-none pb-8">
+            <CardContent className="prose dark:prose-invert max-w-none pb-8">
               <div
                 dangerouslySetInnerHTML={{ __html: currentLesson?.content ?? "" }}
               />

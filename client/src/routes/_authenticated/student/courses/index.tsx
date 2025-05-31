@@ -114,8 +114,10 @@ function RouteComponent() {
               <div className="flex flex-col flex-1">
                 <CardHeader className="flex-none">
                   <CardTitle>{course.title}</CardTitle>
-                  <CardDescription className="pt-1">
-                    {course.description}
+                  <CardDescription className="py-2">
+                    <div
+                      dangerouslySetInnerHTML={{ __html: course.description }}
+                    />
                   </CardDescription>
                 </CardHeader>
                 <div className="flex-1"></div>

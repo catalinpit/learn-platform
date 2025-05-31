@@ -96,7 +96,7 @@ export function CourseChapterList({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="font-medium">{lesson.title}</span>
+                      <span className="font-bold">{lesson.title}</span>
                       {lesson.isFree && (
                         <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">
                           Free
@@ -125,7 +125,7 @@ export function CourseChapterList({
                   </div>
                   {(isOwner || lesson.isFree) &&
                     expandedLessonId === lesson.id && (
-                    <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                    <div className="mt-4 text-sm prose dark:prose-invert dark:text-gray-300">
                       <div
                         dangerouslySetInnerHTML={{ __html: lesson.content }}
                       />

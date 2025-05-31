@@ -42,7 +42,11 @@ function RouteComponent() {
       <main className="flex-1 overflow-y-auto p-4">
         <div className="container max-w-3xl space-y-6 py-8">
           <h1 className="text-3xl font-bold">{course.title}</h1>
-          <p className="mt-2 text-muted-foreground">{course.description}</p>
+          <p className="mt-2 text-muted-foreground">
+            <div
+              dangerouslySetInnerHTML={{ __html: course.description }}
+            />
+          </p>
         </div>
         <Button asChild>
           <Link
