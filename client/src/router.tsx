@@ -35,7 +35,6 @@ export function RouterWithAuthContext() {
     return <RouterProvider router={router} context={{ auth }} />;
   }
 }
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

@@ -1,20 +1,20 @@
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
-import react from "@vitejs/plugin-react";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import path from "path";
 import { defineConfig } from "vite";
 import { visualizer } from "rollup-plugin-visualizer";
 import tailwindcss from "@tailwindcss/vite";
+import tsConfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    TanStackRouterVite(),
     visualizer({
       emitFile: true,
       filename: "stats.html",
     }),
-    react(),
+    tsConfigPaths(),
     tailwindcss(),
+    tanstackStart(),
   ],
   resolve: {
     alias: {
