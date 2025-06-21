@@ -14,6 +14,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/footer";
 import "@/index.css";
+import { fetchUser } from "@/lib/functions/fetchUser"
 
 export interface MyRouterContext {
   auth: Session | null | undefined;
@@ -36,6 +37,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
   }),
+  beforeLoad: async ({ context }) => {
+    const data = await context.queryClient.fetchQuery({
+      queryKey: ['user'],
+      queryFn: fetchUser,
+    });
+
+    return {
+      auth: data,
+    }
+  },
   component: RootComponent,
 });
 
