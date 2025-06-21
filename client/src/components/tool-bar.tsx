@@ -47,7 +47,7 @@ function ToolBar({ editor }: ToolBarProps) {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       addYoutubeVideo();
     }
   };

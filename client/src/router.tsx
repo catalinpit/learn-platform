@@ -7,7 +7,6 @@ import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import { LoadingSpinner } from "./components/ui/loading-spinner";
 
-
 export function createRouter() {
   const queryClient = new QueryClient();
 
@@ -15,6 +14,7 @@ export function createRouter() {
     createTanStackRouter({
       routeTree,
       context: { auth: undefined, queryClient },
+      scrollRestoration: true,
       defaultPendingComponent: () => {
         return <LoadingSpinner fullScreen />;
       },
