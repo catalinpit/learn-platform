@@ -3,7 +3,6 @@ import { getWebRequest } from "@tanstack/react-start/server";
 import { authClient } from "../auth-client";
 
 export const fetchUser = createServerFn({ method: "GET" }).handler(async () => {
-  console.log("fetching user");
   const request = getWebRequest();
 
   const { data } = await authClient.getSession({
