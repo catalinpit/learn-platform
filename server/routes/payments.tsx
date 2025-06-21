@@ -1,11 +1,12 @@
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+
 import env from "@/env";
 import { createRouter } from "@/lib/create-app";
 import { client as mailClient } from "@/lib/mail-client";
 import { client as polarClient } from "@/lib/polar-client";
 import { loggedIn } from "@/middleware/auth";
 import { ZCreateCheckoutSchema, ZGetCheckoutSchema } from "@/shared/types";
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
 
 import { EmailTemplate } from "../react-email-starter/emails/email-template";
 

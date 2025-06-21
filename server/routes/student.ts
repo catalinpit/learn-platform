@@ -83,8 +83,7 @@ const router = createRouter()
           totalPages: Math.ceil(count / Number(perPage)),
           total: count,
         });
-      }
-      catch (error) {
+      } catch (error) {
         console.error("Failed to get courses:", error);
         return c.json("Failed to get courses", 500);
       }
@@ -137,8 +136,7 @@ const router = createRouter()
         });
 
         return c.json(course);
-      }
-      catch (error) {
+      } catch (error) {
         console.error("Failed to get course:", error);
         return c.json("Failed to get course", 500);
       }
@@ -215,8 +213,7 @@ const router = createRouter()
         });
 
         return c.json(course);
-      }
-      catch (error) {
+      } catch (error) {
         console.error("Failed to get course:", error);
         return c.json("Failed to get course", 500);
       }
