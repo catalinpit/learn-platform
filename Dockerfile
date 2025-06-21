@@ -31,7 +31,7 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app/server
 RUN bunx prisma generate
 
-# Build the client
+# Build the client with TanStack Start
 WORKDIR /usr/src/app/client
 RUN bun run build
 
@@ -39,7 +39,7 @@ FROM base as release
 WORKDIR /usr/src/app
 COPY --from=install /temp/prod/server/node_modules server/node_modules/
 COPY --from=build /usr/src/app/server ./server
-COPY --from=build /usr/src/app/client/dist ./client/dist/
+COPY --from=build /usr/src/app/client/.output ./client/.output/
 COPY --from=build /usr/src/app/server/prisma ./server/prisma
 COPY --from=build /usr/src/app/server/node_modules/.prisma ./server/node_modules/.prisma
 
