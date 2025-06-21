@@ -33,7 +33,6 @@ const Tiptap = ({ initialValue, onChange }: TiptapProps) => {
   const editor = useEditor({
     extensions,
     content: initialValue,
-    immediatelyRender: false,
     editorProps: {
       attributes: {
         class:
