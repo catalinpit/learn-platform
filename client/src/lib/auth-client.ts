@@ -2,10 +2,6 @@ import { createAuthClient } from "better-auth/react";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
-  baseURL:
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:5173"
-      : "https://learn.self-host.tech",
   plugins: [
     inferAdditionalFields({
       user: {
@@ -24,7 +20,6 @@ export const {
   signOut,
   forgetPassword,
   resetPassword,
-  getSession,
 } = authClient;
 
 export type Session = typeof authClient.$Infer.Session;
