@@ -1,13 +1,14 @@
 /** @jsxImportSource react */
 
-import prisma from "@/db/index";
-import env from "@/env";
-import { client as mailClient } from "@/lib/mail-client";
-import { client as polarClient } from "@/lib/polar-client";
 import { polar } from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins";
+
+import prisma from "@/db/index";
+import env from "@/env";
+import { client as mailClient } from "@/lib/mail-client";
+import { client as polarClient } from "@/lib/polar-client";
 
 import { Role } from "../prisma/generated/client";
 import { EmailTemplate } from "../react-email-starter/emails/email-template";
