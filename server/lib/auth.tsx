@@ -99,30 +99,65 @@ export const auth = betterAuth({
             : (env.POLAR_SANDBOX_WEBHOOK_SECRET ?? ""),
         onCheckoutUpdated: async (payload) => {
           try {
+            console.log("Processing checkout update:", JSON.stringify(payload, null, 2));
+
             const data = payload.data;
 
             if (!data?.customerExternalId) {
+              console.error("No customer ID found in payload:", data);
               throw new Error("No customer ID found in payload");
             }
 
+            console.log("Looking for user with ID:", data.customerExternalId);
             const user = await prisma.user.findUnique({
               where: { id: data.customerExternalId },
             });
 
             if (!user) {
-              throw new Error("No user found");
+              console.error("No user found with ID:", data.customerExternalId);
+              throw new Error(`No user found with ID: ${data.customerExternalId}`);
             }
 
+            console.log("Found user:", user.email);
+
             if (data.status === "succeeded") {
+              console.log("Checkout succeeded, looking for course with product ID:", data.product.id);
+
+              // First, let's see all courses to debug
+              const allCourses = await prisma.course.findMany({
+                select: { id: true, title: true, productId: true }
+              });
+              console.log("All courses in database:", allCourses);
+
               const course = await prisma.course.findFirst({
                 where: { productId: data.product.id },
               });
 
               if (!course) {
+                console.error("Course not found with product ID:", data.product.id);
+                console.error("Available courses with productIds:", allCourses.filter(c => c.productId));
                 throw new Error(
-                  `Course with product ID ${data.product.id} not found`,
+                  `Course with product ID ${data.product.id} not found. Available courses: ${allCourses.map(c => `${c.title} (productId: ${c.productId})`).join(', ')}`,
                 );
               }
+
+              console.log("Found course:", course.title, "- enrolling user");
+
+              // Check if user is already enrolled
+              const existingEnrollment = await prisma.user.findFirst({
+                where: {
+                  id: user.id,
+                  enrolledCourses: {
+                    some: { id: course.id }
+                  }
+                }
+              });
+
+              if (existingEnrollment) {
+                console.log("User is already enrolled in this course");
+                return;
+              }
+
               await prisma.user.update({
                 where: { id: user.id },
                 data: {
@@ -133,9 +168,21 @@ export const auth = betterAuth({
                   },
                 },
               });
+
+              console.log("Successfully enrolled user in course");
+            } else {
+              console.log("Checkout status is not succeeded:", data.status);
             }
           } catch (error) {
-            throw new Error("Error processing checkout update");
+            console.error("Error processing checkout update:", error);
+            console.error("Original payload:", JSON.stringify(payload, null, 2));
+
+            // Preserve the original error message and stack trace
+            if (error instanceof Error) {
+              throw new Error(`Error processing checkout update: ${error.message}`);
+            } else {
+              throw new Error(`Error processing checkout update: ${String(error)}`);
+            }
           }
         },
       },
