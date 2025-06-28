@@ -113,16 +113,10 @@ export const auth = betterAuth({
             console.log("Customer External ID found:", customerExternalId);
 
             if (!customerExternalId) {
-              console.error("No customer ID found in payload. Full data object:", JSON.stringify(data, null, 2));
-              console.error("Possible customer fields:", {
-                customerExternalId: data?.customerExternalId,
-                customerExternalIdType: typeof data?.customerExternalId,
-                customer: data?.customer,
-                customerId: data?.customerId,
-                userId: data?.userId,
-                userExternalId: data?.userExternalId
-              });
-              throw new Error("No customer ID found in payload");
+              console.log("No customer external ID found in payload - likely from a different product/platform. Skipping processing.");
+              console.log("Product ID:", data?.product?.id);
+              console.log("Product name:", data?.product?.name);
+              return; // Gracefully exit without throwing an error
             }
 
             console.log("Looking for user with ID:", customerExternalId);
