@@ -103,19 +103,36 @@ export const auth = betterAuth({
 
             const data = payload.data;
 
-            if (!data?.customerExternalId) {
-              console.error("No customer ID found in payload:", data);
+            // Log the structure to understand what we're receiving
+            console.log("Payload type:", payload.type);
+            console.log("Data object:", data);
+            console.log("Data keys:", data ? Object.keys(data) : "data is null/undefined");
+
+            // Check for different possible customer ID fields
+            const customerExternalId = data?.customerExternalId || data?.customer?.externalId || data?.customer?.id;
+            console.log("Customer External ID found:", customerExternalId);
+
+            if (!customerExternalId) {
+              console.error("No customer ID found in payload. Full data object:", JSON.stringify(data, null, 2));
+              console.error("Possible customer fields:", {
+                customerExternalId: data?.customerExternalId,
+                customerExternalIdType: typeof data?.customerExternalId,
+                customer: data?.customer,
+                customerId: data?.customerId,
+                userId: data?.userId,
+                userExternalId: data?.userExternalId
+              });
               throw new Error("No customer ID found in payload");
             }
 
-            console.log("Looking for user with ID:", data.customerExternalId);
+            console.log("Looking for user with ID:", customerExternalId);
             const user = await prisma.user.findUnique({
-              where: { id: data.customerExternalId },
+              where: { id: customerExternalId },
             });
 
             if (!user) {
-              console.error("No user found with ID:", data.customerExternalId);
-              throw new Error(`No user found with ID: ${data.customerExternalId}`);
+              console.error("No user found with ID:", customerExternalId);
+              throw new Error(`No user found with ID: ${customerExternalId}`);
             }
 
             console.log("Found user:", user.email);
