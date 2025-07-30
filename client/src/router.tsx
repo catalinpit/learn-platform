@@ -4,7 +4,6 @@ import NotFound from "./components/not-found";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
 
 import { routeTree } from "./routeTree.gen";
-import "./index.css";
 import { LoadingSpinner } from "./components/ui/loading-spinner";
 
 export function createRouter() {
