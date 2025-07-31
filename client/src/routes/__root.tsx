@@ -39,9 +39,7 @@ const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
     return null;
   }
 
-  return {
-    auth: session.data,
-  };
+  return session.data;
 });
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
