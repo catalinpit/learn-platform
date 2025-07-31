@@ -16,6 +16,7 @@ export const authClient = createAuthClient({
 
 export const {
   useSession,
+  getSession,
   signIn,
   signUp,
   signOut,

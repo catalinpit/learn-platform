@@ -12,19 +12,44 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import appCss from "@/index.css?url";
+import { getWebRequest } from "@tanstack/react-start/server";
 
 import { NavBar } from "@/components/nav-bar";
-import { useSession, type Session } from "@/lib/auth-client";
+import { getSession, type Session } from "@/lib/auth-client";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/footer";
+import { createServerFn } from "@tanstack/react-start";
 
 export interface MyRouterContext {
   auth: Session | null | undefined;
   queryClient: QueryClient;
 }
 
+const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
+  const session = await getSession({
+    fetchOptions: {
+      headers: {
+        cookie: getWebRequest().headers.get("cookie") || "",
+      },
+    },
+  });
+
+  if (!session.data) {
+    return null;
+  }
+
+  return {
+    auth: session.data,
+  };
+});
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  beforeLoad: async () => {
+    const auth = await fetchAuth();
+
+    return { auth };
+  },
   head: () => ({
     meta: [
       {
@@ -51,15 +76,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   }),
   component: RootComponent,
 });
-
-export function RouterWithAuthContext() {
-  const { data: auth, isPending, error } = useSession();
-  const router = useRouter();
-
-  if (!isPending && !error) {
-    return <RouterProvider router={router} context={{ auth }} />;
-  }
-}
 
 function Providers() {
   const queryClient = useQueryClient();
