@@ -1,4 +1,4 @@
-import { hc } from "hono/client";
+import { hcWithType } from "@server/lib/hc";
 import type {
   AppType,
   TCreateCheckoutType,
@@ -16,8 +16,13 @@ import {
   TUpdateChapterType,
 } from "@server/shared/types";
 
+// include credentials to send cookies to the server
 // replace hardcoded url
-const client = hc<AppType>("http://localhost:9999/api");
+const client = hcWithType("http://localhost:9999/api", {
+  init: {
+    credentials: "include",
+  },
+});
 
 export const getAllCourses = async ({
   query,
