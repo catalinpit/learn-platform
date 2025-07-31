@@ -16,7 +16,8 @@ import {
   TUpdateChapterType,
 } from "@server/shared/types";
 
-const client = hc<AppType>("http://localhost:9999");
+// replace hardcoded url
+const client = hc<AppType>("http://localhost:9999/api");
 
 export const getAllCourses = async ({
   query,
