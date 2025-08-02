@@ -1,19 +1,15 @@
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
-import react from "@vitejs/plugin-react";
+import viteReact from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
-import { visualizer } from "rollup-plugin-visualizer";
+import tsConfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    TanStackRouterVite(),
-    visualizer({
-      emitFile: true,
-      filename: "stats.html",
-    }),
-    react(),
+    tsConfigPaths(),
+    tanstackStart({ customViteReactPlugin: true }),
+    viteReact(),
     tailwindcss(),
   ],
   resolve: {
@@ -22,20 +18,7 @@ export default defineConfig({
       "@server": path.resolve(__dirname, "../server"),
     },
   },
-  // build: {
-  //   rollupOptions: {
-  //     external: (id) => id.startsWith("@server"),
-  //   },
-  // },
   server: {
-    proxy: {
-      "/api": {
-        target:
-          process.env.NODE_ENV === "development"
-            ? "http://localhost:9999"
-            : "https://learn.self-host.tech",
-        changeOrigin: true,
-      },
-    },
+    port: 5173,
   },
 });
