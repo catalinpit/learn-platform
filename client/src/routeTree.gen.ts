@@ -8,308 +8,427 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnverifiedRouteImport } from './routes/unverified'
+import { Route as SuccessRouteImport } from './routes/success'
+import { Route as SignoutRouteImport } from './routes/signout'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as CoursesCourseIdRouteImport } from './routes/courses/$courseId'
+import { Route as AuthenticatedCreatorRouteRouteImport } from './routes/_authenticated/creator/route'
+import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedCreatorNewCourseRouteImport } from './routes/_authenticated/creator/new-course'
+import { Route as AuthenticatedCreatorDashboardRouteImport } from './routes/_authenticated/creator/dashboard'
+import { Route as AuthenticatedCreatorCoursesRouteImport } from './routes/_authenticated/creator/courses'
+import { Route as AuthenticatedStudentCoursesIndexRouteImport } from './routes/_authenticated/student/courses/index'
+import { Route as AuthenticatedCreatorCourseIdEditRouteImport } from './routes/_authenticated/creator/$courseId.edit'
+import { Route as AuthenticatedStudentCoursesCourseIdIndexRouteImport } from './routes/_authenticated/student/courses/$courseId/index'
+import { Route as AuthenticatedStudentCoursesCourseIdLessonsLessonIdRouteImport } from './routes/_authenticated/student/courses/$courseId/lessons/$lessonId'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as UnverifiedImport } from './routes/unverified'
-import { Route as SuccessImport } from './routes/success'
-import { Route as SignoutImport } from './routes/signout'
-import { Route as ResetPasswordImport } from './routes/reset-password'
-import { Route as RegisterImport } from './routes/register'
-import { Route as LoginImport } from './routes/login'
-import { Route as ForgotPasswordImport } from './routes/forgot-password'
-import { Route as AboutImport } from './routes/about'
-import { Route as AuthenticatedImport } from './routes/_authenticated'
-import { Route as IndexImport } from './routes/index'
-import { Route as CoursesCourseIdImport } from './routes/courses/$courseId'
-import { Route as AuthenticatedCreatorRouteImport } from './routes/_authenticated/creator/route'
-import { Route as AuthenticatedSettingsIndexImport } from './routes/_authenticated/settings/index'
-import { Route as AuthenticatedCreatorNewCourseImport } from './routes/_authenticated/creator/new-course'
-import { Route as AuthenticatedCreatorDashboardImport } from './routes/_authenticated/creator/dashboard'
-import { Route as AuthenticatedCreatorCoursesImport } from './routes/_authenticated/creator/courses'
-import { Route as AuthenticatedStudentCoursesIndexImport } from './routes/_authenticated/student/courses/index'
-import { Route as AuthenticatedCreatorCourseIdEditImport } from './routes/_authenticated/creator/$courseId.edit'
-import { Route as AuthenticatedStudentCoursesCourseIdIndexImport } from './routes/_authenticated/student/courses/$courseId/index'
-import { Route as AuthenticatedStudentCoursesCourseIdLessonsLessonIdImport } from './routes/_authenticated/student/courses/$courseId/lessons/$lessonId'
-
-// Create/Update Routes
-
-const UnverifiedRoute = UnverifiedImport.update({
+const UnverifiedRoute = UnverifiedRouteImport.update({
   id: '/unverified',
   path: '/unverified',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const SuccessRoute = SuccessImport.update({
+const SuccessRoute = SuccessRouteImport.update({
   id: '/success',
   path: '/success',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const SignoutRoute = SignoutImport.update({
+const SignoutRoute = SignoutRouteImport.update({
   id: '/signout',
   path: '/signout',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ResetPasswordRoute = ResetPasswordImport.update({
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const RegisterRoute = RegisterImport.update({
+const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const LoginRoute = LoginImport.update({
+const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ForgotPasswordRoute = ForgotPasswordImport.update({
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AboutRoute = AboutImport.update({
+const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthenticatedRoute = AuthenticatedImport.update({
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const CoursesCourseIdRoute = CoursesCourseIdImport.update({
+const CoursesCourseIdRoute = CoursesCourseIdRouteImport.update({
   id: '/courses/$courseId',
   path: '/courses/$courseId',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthenticatedCreatorRouteRoute = AuthenticatedCreatorRouteImport.update({
-  id: '/creator',
-  path: '/creator',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-
-const AuthenticatedSettingsIndexRoute = AuthenticatedSettingsIndexImport.update(
-  {
+const AuthenticatedCreatorRouteRoute =
+  AuthenticatedCreatorRouteRouteImport.update({
+    id: '/creator',
+    path: '/creator',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSettingsIndexRoute =
+  AuthenticatedSettingsIndexRouteImport.update({
     id: '/settings/',
     path: '/settings/',
     getParentRoute: () => AuthenticatedRoute,
-  } as any,
-)
-
+  } as any)
 const AuthenticatedCreatorNewCourseRoute =
-  AuthenticatedCreatorNewCourseImport.update({
+  AuthenticatedCreatorNewCourseRouteImport.update({
     id: '/new-course',
     path: '/new-course',
     getParentRoute: () => AuthenticatedCreatorRouteRoute,
   } as any)
-
 const AuthenticatedCreatorDashboardRoute =
-  AuthenticatedCreatorDashboardImport.update({
+  AuthenticatedCreatorDashboardRouteImport.update({
     id: '/dashboard',
     path: '/dashboard',
     getParentRoute: () => AuthenticatedCreatorRouteRoute,
   } as any)
-
 const AuthenticatedCreatorCoursesRoute =
-  AuthenticatedCreatorCoursesImport.update({
+  AuthenticatedCreatorCoursesRouteImport.update({
     id: '/courses',
     path: '/courses',
     getParentRoute: () => AuthenticatedCreatorRouteRoute,
   } as any)
-
 const AuthenticatedStudentCoursesIndexRoute =
-  AuthenticatedStudentCoursesIndexImport.update({
+  AuthenticatedStudentCoursesIndexRouteImport.update({
     id: '/student/courses/',
     path: '/student/courses/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-
 const AuthenticatedCreatorCourseIdEditRoute =
-  AuthenticatedCreatorCourseIdEditImport.update({
+  AuthenticatedCreatorCourseIdEditRouteImport.update({
     id: '/$courseId/edit',
     path: '/$courseId/edit',
     getParentRoute: () => AuthenticatedCreatorRouteRoute,
   } as any)
-
 const AuthenticatedStudentCoursesCourseIdIndexRoute =
-  AuthenticatedStudentCoursesCourseIdIndexImport.update({
+  AuthenticatedStudentCoursesCourseIdIndexRouteImport.update({
     id: '/student/courses/$courseId/',
     path: '/student/courses/$courseId/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-
 const AuthenticatedStudentCoursesCourseIdLessonsLessonIdRoute =
-  AuthenticatedStudentCoursesCourseIdLessonsLessonIdImport.update({
+  AuthenticatedStudentCoursesCourseIdLessonsLessonIdRouteImport.update({
     id: '/student/courses/$courseId/lessons/$lessonId',
     path: '/student/courses/$courseId/lessons/$lessonId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signout': typeof SignoutRoute
+  '/success': typeof SuccessRoute
+  '/unverified': typeof UnverifiedRoute
+  '/creator': typeof AuthenticatedCreatorRouteRouteWithChildren
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
+  '/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
+  '/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/creator/$courseId/edit': typeof AuthenticatedCreatorCourseIdEditRoute
+  '/student/courses': typeof AuthenticatedStudentCoursesIndexRoute
+  '/student/courses/$courseId': typeof AuthenticatedStudentCoursesCourseIdIndexRoute
+  '/student/courses/$courseId/lessons/$lessonId': typeof AuthenticatedStudentCoursesCourseIdLessonsLessonIdRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signout': typeof SignoutRoute
+  '/success': typeof SuccessRoute
+  '/unverified': typeof UnverifiedRoute
+  '/creator': typeof AuthenticatedCreatorRouteRouteWithChildren
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
+  '/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
+  '/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/creator/$courseId/edit': typeof AuthenticatedCreatorCourseIdEditRoute
+  '/student/courses': typeof AuthenticatedStudentCoursesIndexRoute
+  '/student/courses/$courseId': typeof AuthenticatedStudentCoursesCourseIdIndexRoute
+  '/student/courses/$courseId/lessons/$lessonId': typeof AuthenticatedStudentCoursesCourseIdLessonsLessonIdRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/about': typeof AboutRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signout': typeof SignoutRoute
+  '/success': typeof SuccessRoute
+  '/unverified': typeof UnverifiedRoute
+  '/_authenticated/creator': typeof AuthenticatedCreatorRouteRouteWithChildren
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/_authenticated/creator/courses': typeof AuthenticatedCreatorCoursesRoute
+  '/_authenticated/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
+  '/_authenticated/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
+  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/_authenticated/creator/$courseId/edit': typeof AuthenticatedCreatorCourseIdEditRoute
+  '/_authenticated/student/courses/': typeof AuthenticatedStudentCoursesIndexRoute
+  '/_authenticated/student/courses/$courseId/': typeof AuthenticatedStudentCoursesCourseIdIndexRoute
+  '/_authenticated/student/courses/$courseId/lessons/$lessonId': typeof AuthenticatedStudentCoursesCourseIdLessonsLessonIdRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/signout'
+    | '/success'
+    | '/unverified'
+    | '/creator'
+    | '/courses/$courseId'
+    | '/creator/courses'
+    | '/creator/dashboard'
+    | '/creator/new-course'
+    | '/settings'
+    | '/creator/$courseId/edit'
+    | '/student/courses'
+    | '/student/courses/$courseId'
+    | '/student/courses/$courseId/lessons/$lessonId'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/about'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/signout'
+    | '/success'
+    | '/unverified'
+    | '/creator'
+    | '/courses/$courseId'
+    | '/creator/courses'
+    | '/creator/dashboard'
+    | '/creator/new-course'
+    | '/settings'
+    | '/creator/$courseId/edit'
+    | '/student/courses'
+    | '/student/courses/$courseId'
+    | '/student/courses/$courseId/lessons/$lessonId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/about'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/signout'
+    | '/success'
+    | '/unverified'
+    | '/_authenticated/creator'
+    | '/courses/$courseId'
+    | '/_authenticated/creator/courses'
+    | '/_authenticated/creator/dashboard'
+    | '/_authenticated/creator/new-course'
+    | '/_authenticated/settings/'
+    | '/_authenticated/creator/$courseId/edit'
+    | '/_authenticated/student/courses/'
+    | '/_authenticated/student/courses/$courseId/'
+    | '/_authenticated/student/courses/$courseId/lessons/$lessonId'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AboutRoute: typeof AboutRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  SignoutRoute: typeof SignoutRoute
+  SuccessRoute: typeof SuccessRoute
+  UnverifiedRoute: typeof UnverifiedRoute
+  CoursesCourseIdRoute: typeof CoursesCourseIdRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AuthenticatedImport
-      parentRoute: typeof rootRoute
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
-      parentRoute: typeof rootRoute
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordImport
-      parentRoute: typeof rootRoute
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
-    }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterImport
-      parentRoute: typeof rootRoute
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordImport
-      parentRoute: typeof rootRoute
-    }
-    '/signout': {
-      id: '/signout'
-      path: '/signout'
-      fullPath: '/signout'
-      preLoaderRoute: typeof SignoutImport
-      parentRoute: typeof rootRoute
+    '/unverified': {
+      id: '/unverified'
+      path: '/unverified'
+      fullPath: '/unverified'
+      preLoaderRoute: typeof UnverifiedRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/success': {
       id: '/success'
       path: '/success'
       fullPath: '/success'
-      preLoaderRoute: typeof SuccessImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof SuccessRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/unverified': {
-      id: '/unverified'
-      path: '/unverified'
-      fullPath: '/unverified'
-      preLoaderRoute: typeof UnverifiedImport
-      parentRoute: typeof rootRoute
+    '/signout': {
+      id: '/signout'
+      path: '/signout'
+      fullPath: '/signout'
+      preLoaderRoute: typeof SignoutRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/creator': {
-      id: '/_authenticated/creator'
-      path: '/creator'
-      fullPath: '/creator'
-      preLoaderRoute: typeof AuthenticatedCreatorRouteImport
-      parentRoute: typeof AuthenticatedImport
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/courses/$courseId': {
       id: '/courses/$courseId'
       path: '/courses/$courseId'
       fullPath: '/courses/$courseId'
-      preLoaderRoute: typeof CoursesCourseIdImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof CoursesCourseIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/creator/courses': {
-      id: '/_authenticated/creator/courses'
-      path: '/courses'
-      fullPath: '/creator/courses'
-      preLoaderRoute: typeof AuthenticatedCreatorCoursesImport
-      parentRoute: typeof AuthenticatedCreatorRouteImport
-    }
-    '/_authenticated/creator/dashboard': {
-      id: '/_authenticated/creator/dashboard'
-      path: '/dashboard'
-      fullPath: '/creator/dashboard'
-      preLoaderRoute: typeof AuthenticatedCreatorDashboardImport
-      parentRoute: typeof AuthenticatedCreatorRouteImport
-    }
-    '/_authenticated/creator/new-course': {
-      id: '/_authenticated/creator/new-course'
-      path: '/new-course'
-      fullPath: '/creator/new-course'
-      preLoaderRoute: typeof AuthenticatedCreatorNewCourseImport
-      parentRoute: typeof AuthenticatedCreatorRouteImport
+    '/_authenticated/creator': {
+      id: '/_authenticated/creator'
+      path: '/creator'
+      fullPath: '/creator'
+      preLoaderRoute: typeof AuthenticatedCreatorRouteRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsIndexImport
-      parentRoute: typeof AuthenticatedImport
+      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/creator/$courseId/edit': {
-      id: '/_authenticated/creator/$courseId/edit'
-      path: '/$courseId/edit'
-      fullPath: '/creator/$courseId/edit'
-      preLoaderRoute: typeof AuthenticatedCreatorCourseIdEditImport
-      parentRoute: typeof AuthenticatedCreatorRouteImport
+    '/_authenticated/creator/new-course': {
+      id: '/_authenticated/creator/new-course'
+      path: '/new-course'
+      fullPath: '/creator/new-course'
+      preLoaderRoute: typeof AuthenticatedCreatorNewCourseRouteImport
+      parentRoute: typeof AuthenticatedCreatorRouteRoute
+    }
+    '/_authenticated/creator/dashboard': {
+      id: '/_authenticated/creator/dashboard'
+      path: '/dashboard'
+      fullPath: '/creator/dashboard'
+      preLoaderRoute: typeof AuthenticatedCreatorDashboardRouteImport
+      parentRoute: typeof AuthenticatedCreatorRouteRoute
+    }
+    '/_authenticated/creator/courses': {
+      id: '/_authenticated/creator/courses'
+      path: '/courses'
+      fullPath: '/creator/courses'
+      preLoaderRoute: typeof AuthenticatedCreatorCoursesRouteImport
+      parentRoute: typeof AuthenticatedCreatorRouteRoute
     }
     '/_authenticated/student/courses/': {
       id: '/_authenticated/student/courses/'
       path: '/student/courses'
       fullPath: '/student/courses'
-      preLoaderRoute: typeof AuthenticatedStudentCoursesIndexImport
-      parentRoute: typeof AuthenticatedImport
+      preLoaderRoute: typeof AuthenticatedStudentCoursesIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/creator/$courseId/edit': {
+      id: '/_authenticated/creator/$courseId/edit'
+      path: '/$courseId/edit'
+      fullPath: '/creator/$courseId/edit'
+      preLoaderRoute: typeof AuthenticatedCreatorCourseIdEditRouteImport
+      parentRoute: typeof AuthenticatedCreatorRouteRoute
     }
     '/_authenticated/student/courses/$courseId/': {
       id: '/_authenticated/student/courses/$courseId/'
       path: '/student/courses/$courseId'
       fullPath: '/student/courses/$courseId'
-      preLoaderRoute: typeof AuthenticatedStudentCoursesCourseIdIndexImport
-      parentRoute: typeof AuthenticatedImport
+      preLoaderRoute: typeof AuthenticatedStudentCoursesCourseIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/student/courses/$courseId/lessons/$lessonId': {
       id: '/_authenticated/student/courses/$courseId/lessons/$lessonId'
       path: '/student/courses/$courseId/lessons/$lessonId'
       fullPath: '/student/courses/$courseId/lessons/$lessonId'
-      preLoaderRoute: typeof AuthenticatedStudentCoursesCourseIdLessonsLessonIdImport
-      parentRoute: typeof AuthenticatedImport
+      preLoaderRoute: typeof AuthenticatedStudentCoursesCourseIdLessonsLessonIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
-
-// Create and export the route tree
 
 interface AuthenticatedCreatorRouteRouteChildren {
   AuthenticatedCreatorCoursesRoute: typeof AuthenticatedCreatorCoursesRoute
@@ -354,160 +473,6 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
-export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '': typeof AuthenticatedRouteWithChildren
-  '/about': typeof AboutRoute
-  '/forgot-password': typeof ForgotPasswordRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
-  '/reset-password': typeof ResetPasswordRoute
-  '/signout': typeof SignoutRoute
-  '/success': typeof SuccessRoute
-  '/unverified': typeof UnverifiedRoute
-  '/creator': typeof AuthenticatedCreatorRouteRouteWithChildren
-  '/courses/$courseId': typeof CoursesCourseIdRoute
-  '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
-  '/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
-  '/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
-  '/settings': typeof AuthenticatedSettingsIndexRoute
-  '/creator/$courseId/edit': typeof AuthenticatedCreatorCourseIdEditRoute
-  '/student/courses': typeof AuthenticatedStudentCoursesIndexRoute
-  '/student/courses/$courseId': typeof AuthenticatedStudentCoursesCourseIdIndexRoute
-  '/student/courses/$courseId/lessons/$lessonId': typeof AuthenticatedStudentCoursesCourseIdLessonsLessonIdRoute
-}
-
-export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '': typeof AuthenticatedRouteWithChildren
-  '/about': typeof AboutRoute
-  '/forgot-password': typeof ForgotPasswordRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
-  '/reset-password': typeof ResetPasswordRoute
-  '/signout': typeof SignoutRoute
-  '/success': typeof SuccessRoute
-  '/unverified': typeof UnverifiedRoute
-  '/creator': typeof AuthenticatedCreatorRouteRouteWithChildren
-  '/courses/$courseId': typeof CoursesCourseIdRoute
-  '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
-  '/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
-  '/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
-  '/settings': typeof AuthenticatedSettingsIndexRoute
-  '/creator/$courseId/edit': typeof AuthenticatedCreatorCourseIdEditRoute
-  '/student/courses': typeof AuthenticatedStudentCoursesIndexRoute
-  '/student/courses/$courseId': typeof AuthenticatedStudentCoursesCourseIdIndexRoute
-  '/student/courses/$courseId/lessons/$lessonId': typeof AuthenticatedStudentCoursesCourseIdLessonsLessonIdRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/about': typeof AboutRoute
-  '/forgot-password': typeof ForgotPasswordRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
-  '/reset-password': typeof ResetPasswordRoute
-  '/signout': typeof SignoutRoute
-  '/success': typeof SuccessRoute
-  '/unverified': typeof UnverifiedRoute
-  '/_authenticated/creator': typeof AuthenticatedCreatorRouteRouteWithChildren
-  '/courses/$courseId': typeof CoursesCourseIdRoute
-  '/_authenticated/creator/courses': typeof AuthenticatedCreatorCoursesRoute
-  '/_authenticated/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
-  '/_authenticated/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
-  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
-  '/_authenticated/creator/$courseId/edit': typeof AuthenticatedCreatorCourseIdEditRoute
-  '/_authenticated/student/courses/': typeof AuthenticatedStudentCoursesIndexRoute
-  '/_authenticated/student/courses/$courseId/': typeof AuthenticatedStudentCoursesCourseIdIndexRoute
-  '/_authenticated/student/courses/$courseId/lessons/$lessonId': typeof AuthenticatedStudentCoursesCourseIdLessonsLessonIdRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | ''
-    | '/about'
-    | '/forgot-password'
-    | '/login'
-    | '/register'
-    | '/reset-password'
-    | '/signout'
-    | '/success'
-    | '/unverified'
-    | '/creator'
-    | '/courses/$courseId'
-    | '/creator/courses'
-    | '/creator/dashboard'
-    | '/creator/new-course'
-    | '/settings'
-    | '/creator/$courseId/edit'
-    | '/student/courses'
-    | '/student/courses/$courseId'
-    | '/student/courses/$courseId/lessons/$lessonId'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | ''
-    | '/about'
-    | '/forgot-password'
-    | '/login'
-    | '/register'
-    | '/reset-password'
-    | '/signout'
-    | '/success'
-    | '/unverified'
-    | '/creator'
-    | '/courses/$courseId'
-    | '/creator/courses'
-    | '/creator/dashboard'
-    | '/creator/new-course'
-    | '/settings'
-    | '/creator/$courseId/edit'
-    | '/student/courses'
-    | '/student/courses/$courseId'
-    | '/student/courses/$courseId/lessons/$lessonId'
-  id:
-    | '__root__'
-    | '/'
-    | '/_authenticated'
-    | '/about'
-    | '/forgot-password'
-    | '/login'
-    | '/register'
-    | '/reset-password'
-    | '/signout'
-    | '/success'
-    | '/unverified'
-    | '/_authenticated/creator'
-    | '/courses/$courseId'
-    | '/_authenticated/creator/courses'
-    | '/_authenticated/creator/dashboard'
-    | '/_authenticated/creator/new-course'
-    | '/_authenticated/settings/'
-    | '/_authenticated/creator/$courseId/edit'
-    | '/_authenticated/student/courses/'
-    | '/_authenticated/student/courses/$courseId/'
-    | '/_authenticated/student/courses/$courseId/lessons/$lessonId'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  AboutRoute: typeof AboutRoute
-  ForgotPasswordRoute: typeof ForgotPasswordRoute
-  LoginRoute: typeof LoginRoute
-  RegisterRoute: typeof RegisterRoute
-  ResetPasswordRoute: typeof ResetPasswordRoute
-  SignoutRoute: typeof SignoutRoute
-  SuccessRoute: typeof SuccessRoute
-  UnverifiedRoute: typeof UnverifiedRoute
-  CoursesCourseIdRoute: typeof CoursesCourseIdRoute
-}
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -521,112 +486,6 @@ const rootRouteChildren: RootRouteChildren = {
   UnverifiedRoute: UnverifiedRoute,
   CoursesCourseIdRoute: CoursesCourseIdRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/_authenticated",
-        "/about",
-        "/forgot-password",
-        "/login",
-        "/register",
-        "/reset-password",
-        "/signout",
-        "/success",
-        "/unverified",
-        "/courses/$courseId"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/_authenticated": {
-      "filePath": "_authenticated.tsx",
-      "children": [
-        "/_authenticated/creator",
-        "/_authenticated/settings/",
-        "/_authenticated/student/courses/",
-        "/_authenticated/student/courses/$courseId/",
-        "/_authenticated/student/courses/$courseId/lessons/$lessonId"
-      ]
-    },
-    "/about": {
-      "filePath": "about.tsx"
-    },
-    "/forgot-password": {
-      "filePath": "forgot-password.tsx"
-    },
-    "/login": {
-      "filePath": "login.tsx"
-    },
-    "/register": {
-      "filePath": "register.tsx"
-    },
-    "/reset-password": {
-      "filePath": "reset-password.tsx"
-    },
-    "/signout": {
-      "filePath": "signout.tsx"
-    },
-    "/success": {
-      "filePath": "success.tsx"
-    },
-    "/unverified": {
-      "filePath": "unverified.tsx"
-    },
-    "/_authenticated/creator": {
-      "filePath": "_authenticated/creator/route.tsx",
-      "parent": "/_authenticated",
-      "children": [
-        "/_authenticated/creator/courses",
-        "/_authenticated/creator/dashboard",
-        "/_authenticated/creator/new-course",
-        "/_authenticated/creator/$courseId/edit"
-      ]
-    },
-    "/courses/$courseId": {
-      "filePath": "courses/$courseId.tsx"
-    },
-    "/_authenticated/creator/courses": {
-      "filePath": "_authenticated/creator/courses.tsx",
-      "parent": "/_authenticated/creator"
-    },
-    "/_authenticated/creator/dashboard": {
-      "filePath": "_authenticated/creator/dashboard.tsx",
-      "parent": "/_authenticated/creator"
-    },
-    "/_authenticated/creator/new-course": {
-      "filePath": "_authenticated/creator/new-course.tsx",
-      "parent": "/_authenticated/creator"
-    },
-    "/_authenticated/settings/": {
-      "filePath": "_authenticated/settings/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/creator/$courseId/edit": {
-      "filePath": "_authenticated/creator/$courseId.edit.tsx",
-      "parent": "/_authenticated/creator"
-    },
-    "/_authenticated/student/courses/": {
-      "filePath": "_authenticated/student/courses/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/student/courses/$courseId/": {
-      "filePath": "_authenticated/student/courses/$courseId/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/student/courses/$courseId/lessons/$lessonId": {
-      "filePath": "_authenticated/student/courses/$courseId/lessons/$lessonId.tsx",
-      "parent": "/_authenticated"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
