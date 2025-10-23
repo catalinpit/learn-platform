@@ -3,4 +3,14 @@ node_modules
 .gitignore
 *.md
 .env*
+# Ignore client app since server doesn't need it
 ../client
+# Ignore other potential apps
+../packages
+# Ignore development files
+**/.next
+**/dist
+**/build
+**/.cache
+**/coverage
+**/*.log
