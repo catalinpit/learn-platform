@@ -1,5 +1,5 @@
 {
-  "name": "learn-platform-api",
+  "name": "server",
   "type": "module",
   "scripts": {
     "dev": "bun --watch index.ts",
