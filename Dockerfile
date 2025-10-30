@@ -7,19 +7,21 @@ RUN apt-get update -y && apt-get install -y openssl
 FROM base AS install
 # Copy root package.json and lockfile for workspace configuration
 COPY package.json bun.lock ./
-# Copy server package.json
+# Copy all workspace package.json files (required for lockfile validation)
 COPY apps/server/package.json ./apps/server/
+COPY apps/client/package.json ./apps/client/
 # Install dependencies from the root (monorepo workspace)
 WORKDIR /usr/src/app
-RUN bun install --production --filter=server
+RUN bun install --frozen-lockfile --production --filter=server
 
 FROM base AS build
 WORKDIR /usr/src/app
 # Copy the entire monorepo structure needed for the server
 COPY package.json bun.lock ./
 COPY apps/server/ ./apps/server/
-# Copy node_modules from install stage
-COPY --from=install /usr/src/app/node_modules ./node_modules/
+COPY apps/client/package.json ./apps/client/
+# Install all dependencies (including devDependencies) needed for Prisma generation
+RUN bun install --frozen-lockfile --filter=server
 
 WORKDIR /usr/src/app/apps/server
 ENV NODE_ENV=production

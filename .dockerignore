@@ -6,6 +6,7 @@ node_modules
 .idea
 .DS_Store
 apps/client
+!apps/client/package.json
 apps/server/node_modules
 .env
 .env.*
