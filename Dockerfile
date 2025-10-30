@@ -11,7 +11,7 @@ COPY package.json bun.lock ./
 COPY apps/server/package.json ./apps/server/
 # Install dependencies from the root (monorepo workspace)
 WORKDIR /usr/src/app
-RUN bun install --frozen-lockfile --production --filter=server
+RUN bun install --production --filter=server
 
 FROM base AS build
 WORKDIR /usr/src/app
