@@ -35,10 +35,8 @@ WORKDIR /usr/src/app
 # Copy root package.json and workspace node_modules
 COPY --from=build /usr/src/app/package.json ./package.json
 COPY --from=build /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/node_modules/.prisma /usr/src/app/node_modules/.prisma
 
-
-# Copy the entire server application (includes prisma/generated/client)
+# Copy the entire server application (includes prisma/generated/client and node_modules)
 COPY --from=build /usr/src/app/apps/server ./apps/server
 
 # Set working directory to server
