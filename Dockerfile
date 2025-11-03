@@ -31,19 +31,30 @@ RUN bunx prisma generate
 
 FROM base AS release
 WORKDIR /usr/src/app/apps/server
-# Copy node_modules and built application
+
+# Copy node_modules first (production dependencies including @prisma/client)
 COPY --from=install /usr/src/app/node_modules /usr/src/app/node_modules
+
+# Copy the entire server application
 COPY --from=build /usr/src/app/apps/server .
 COPY --from=build /usr/src/app/package.json /usr/src/app/package.json
 
-# Ensure Prisma CLI is available (needed for migrations and client generation)
-# Install prisma as dev dependency to regenerate client if needed
+# Install Prisma CLI as dev dependency (needed for generate and migrate commands)
 RUN bun add -d prisma
-# Regenerate Prisma client to ensure it's available with correct binaries
-RUN bunx prisma generate
 
-# Create startup script
-RUN echo '#!/bin/sh\nbunx prisma migrate deploy\nbun run start' > /usr/src/app/apps/server/start.sh && \
+# Ensure we're in the correct directory and regenerate Prisma client
+# This ensures the client is generated with the correct platform binaries for the runtime
+WORKDIR /usr/src/app/apps/server
+# Remove any existing generated client to avoid conflicts
+RUN rm -rf prisma/generated/client prisma/generated/types 2>/dev/null || true
+# Generate Prisma client with explicit schema path
+RUN bunx prisma generate --schema=./prisma/schema.prisma
+
+# Verify the generated client exists (fail build if it doesn't)
+RUN test -f prisma/generated/client/index.ts || (echo "ERROR: Prisma client not generated!" && ls -la prisma/generated/ 2>/dev/null || echo "prisma/generated directory missing" && exit 1)
+
+# Create startup script with explicit working directory
+RUN echo '#!/bin/sh\ncd /usr/src/app/apps/server\nbunx prisma migrate deploy\nbun run start' > /usr/src/app/apps/server/start.sh && \
     chmod +x /usr/src/app/apps/server/start.sh
 
 USER bun
