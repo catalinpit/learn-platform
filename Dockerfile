@@ -32,17 +32,19 @@ RUN bunx prisma generate
 FROM base AS release
 WORKDIR /usr/src/app
 
-# Copy node_modules from build stage (includes all dependencies + Prisma)
-COPY --from=build /usr/src/app/node_modules ./node_modules
+# Copy root package.json and workspace node_modules
 COPY --from=build /usr/src/app/package.json ./package.json
+COPY --from=build /usr/src/app/node_modules ./node_modules
 
-# Copy the server application
+# Copy the entire server application (includes prisma/generated/client)
+COPY --from=build /usr/src/app/apps/server ./apps/server
+
+# Set working directory to server
 WORKDIR /usr/src/app/apps/server
-COPY --from=build /usr/src/app/apps/server .
 
 # Create startup script with explicit working directory
-RUN echo '#!/bin/sh\ncd /usr/src/app/apps/server\nbunx prisma migrate deploy\nbun run start' > /usr/src/app/apps/server/start.sh && \
-    chmod +x /usr/src/app/apps/server/start.sh
+RUN echo '#!/bin/sh\ncd /usr/src/app/apps/server\nbunx prisma migrate deploy\nbun run start' > start.sh && \
+    chmod +x start.sh
 
 USER bun
 EXPOSE 9999/tcp
