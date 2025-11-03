@@ -36,6 +36,12 @@ COPY --from=install /usr/src/app/node_modules /usr/src/app/node_modules
 COPY --from=build /usr/src/app/apps/server .
 COPY --from=build /usr/src/app/package.json /usr/src/app/package.json
 
+# Ensure Prisma CLI is available (needed for migrations and client generation)
+# Install prisma as dev dependency to regenerate client if needed
+RUN bun add -d prisma
+# Regenerate Prisma client to ensure it's available with correct binaries
+RUN bunx prisma generate
+
 # Create startup script
 RUN echo '#!/bin/sh\nbunx prisma migrate deploy\nbun run start' > /usr/src/app/apps/server/start.sh && \
     chmod +x /usr/src/app/apps/server/start.sh
