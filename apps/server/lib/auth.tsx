@@ -10,7 +10,7 @@ import env from "@/env";
 import { client as mailClient } from "@/lib/mail-client";
 import { client as polarClient } from "@/lib/polar-client";
 
-import { Role } from "../prisma/generated/client";
+import { Role } from "../prisma/generated/client/client";
 import { EmailTemplate } from "../react-email-starter/emails/email-template";
 
 export const auth = betterAuth({
