@@ -16,22 +16,21 @@ RUN bun install --frozen-lockfile --production --filter=server
 
 FROM base AS build
 WORKDIR /usr/src/app
-# Copy the entire monorepo structure needed for the server
+# Copy the entire monorepo structure
 COPY package.json bun.lock ./
 COPY apps/server/ ./apps/server/
 COPY apps/client/ ./apps/client/
-# Install all dependencies (including devDependencies) needed for Prisma generation
-RUN bun install --frozen-lockfile --filter=server
-RUN bun install --frozen-lockfile --filter=client
+
+# Install all dependencies from root (for monorepo workspace)
+RUN bun install --frozen-lockfile
 
 # Build the client
 WORKDIR /usr/src/app/apps/client
 RUN bun run build
 
+# Generate Prisma client
 WORKDIR /usr/src/app/apps/server
 ENV NODE_ENV=production
-
-# Generate Prisma client
 RUN bunx prisma generate
 
 FROM base AS release
