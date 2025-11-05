@@ -1,6 +1,6 @@
 /** @jsxImportSource react */
 
-import { polar } from "@polar-sh/better-auth";
+import { checkout, polar, portal, webhooks } from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins";
@@ -86,83 +86,84 @@ export const auth = betterAuth({
     polar({
       client: polarClient,
       createCustomerOnSignUp: true,
-      enableCustomerPortal: true,
-      checkout: {
-        enabled: true,
-        products: [],
-        successUrl: "/success?checkout_id={CHECKOUT_ID}",
-      },
-      webhooks: {
-        secret:
-          env.NODE_ENV === "production"
-            ? env.POLAR_WEBHOOK_SECRET
-            : (env.POLAR_SANDBOX_WEBHOOK_SECRET ?? ""),
-        onCheckoutUpdated: async (payload) => {
-          try {
-            const data = payload.data;
+      use: [
+        checkout({
+          products: [],
+          successUrl: "/success?checkout_id={CHECKOUT_ID}",
+        }),
+        portal(),
+        webhooks({
+          secret:
+            env.NODE_ENV === "production"
+              ? env.POLAR_WEBHOOK_SECRET
+              : env.POLAR_SANDBOX_WEBHOOK_SECRET ?? "",
+          onCheckoutUpdated: async (payload) => {
+            try {
+              const data = payload.data;
 
-            if (!data?.customerExternalId) {
-              return;
-            }
-
-            const user = await prisma.user.findUnique({
-              where: { id: data.customerExternalId },
-            });
-
-            if (!user) {
-              throw new Error(
-                `No user found with ID: ${data.customerExternalId}`
-              );
-            }
-
-            if (data.status === "succeeded") {
-              const course = await prisma.course.findFirst({
-                where: { productId: data.product.id },
-              });
-
-              if (!course) {
-                throw new Error(
-                  `Course with product ID ${data.product.id} not found`
-                );
-              }
-
-              const existingEnrollment = await prisma.user.findFirst({
-                where: {
-                  id: user.id,
-                  enrolledCourses: {
-                    some: { id: course.id },
-                  },
-                },
-              });
-
-              if (existingEnrollment) {
+              if (!data?.customerExternalId) {
                 return;
               }
 
-              await prisma.user.update({
-                where: { id: user.id },
-                data: {
-                  enrolledCourses: {
-                    connect: {
-                      id: course.id,
+              const user = await prisma.user.findUnique({
+                where: { id: data.customerExternalId },
+              });
+
+              if (!user) {
+                throw new Error(
+                  `No user found with ID: ${data.customerExternalId}`
+                );
+              }
+
+              if (data.status === "succeeded") {
+                const course = await prisma.course.findFirst({
+                  where: { productId: data.product?.id },
+                });
+
+                if (!course) {
+                  throw new Error(
+                    `Course with product ID ${data.product?.id} not found`
+                  );
+                }
+
+                const existingEnrollment = await prisma.user.findFirst({
+                  where: {
+                    id: user.id,
+                    enrolledCourses: {
+                      some: { id: course.id },
                     },
                   },
-                },
-              });
+                });
+
+                if (existingEnrollment) {
+                  return;
+                }
+
+                await prisma.user.update({
+                  where: { id: user.id },
+                  data: {
+                    enrolledCourses: {
+                      connect: {
+                        id: course.id,
+                      },
+                    },
+                  },
+                });
+              }
+            } catch (error) {
+              if (error instanceof Error) {
+                throw new TypeError(
+                  `Error processing checkout update: ${error.message}`
+                );
+              } else {
+                throw new TypeError(
+                  `Error processing checkout update: ${String(error)}`
+                );
+              }
             }
-          } catch (error) {
-            if (error instanceof Error) {
-              throw new Error(
-                `Error processing checkout update: ${error.message}`
-              );
-            } else {
-              throw new Error(
-                `Error processing checkout update: ${String(error)}`
-              );
-            }
-          }
-        },
-      },
+          },
+        }),
+      ],
     }),
   ],
 });
