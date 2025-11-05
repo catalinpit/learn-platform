@@ -5,13 +5,11 @@ node_modules
 .vscode
 .idea
 .DS_Store
-apps/client
-!apps/client/package.json
+apps/client/node_modules
+apps/client/dist
 apps/server/node_modules
 .env
 .env.*
 !.env.example
-dist
-build
 *.log
 apps/client/.vite
