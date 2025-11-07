@@ -1,55 +1,60 @@
-# syntax=docker/dockerfile:1.7-labs
-FROM oven/bun:latest as base
-
+FROM oven/bun:latest AS base
 WORKDIR /usr/src/app
 
 # Install OpenSSL in the base image
 RUN apt-get update -y && apt-get install -y openssl
 
 FROM base AS install
-# Server dependencies
-WORKDIR /temp/prod/server
-COPY server/package.json server/bun.lock ./
-RUN bun install --frozen-lockfile --production
+# Copy root package.json and lockfile for workspace configuration
+COPY package.json bun.lock ./
+# Copy all workspace package.json files (required for lockfile validation)
+COPY apps/server/package.json ./apps/server/
+COPY apps/client/package.json ./apps/client/
+# Install dependencies from the root (monorepo workspace)
+WORKDIR /usr/src/app
+RUN bun install --frozen-lockfile --production --filter=server
 
-# Client dependencies
-WORKDIR /temp/prod/client
-COPY client/bun.lock client/package.json ./
+FROM base AS build
+WORKDIR /usr/src/app
+# Copy the entire monorepo structure
+COPY package.json bun.lock ./
+COPY apps/server/ ./apps/server/
+COPY apps/client/ ./apps/client/
+
+# Install all dependencies from root (for monorepo workspace)
 RUN bun install --frozen-lockfile
 
-FROM base as build
-WORKDIR /usr/src/app
-COPY --from=install /temp/prod/server/node_modules server/node_modules/
-COPY --from=install /temp/prod/client/node_modules client/node_modules/
-
-# Copy the rest of your application code
-COPY . .
-
-ENV NODE_ENV=production
-
-# Generate Prisma client in the server directory
-WORKDIR /usr/src/app/server
-RUN bunx prisma generate
-
 # Build the client
-WORKDIR /usr/src/app/client
+WORKDIR /usr/src/app/apps/client
 RUN bun run build
 
-FROM base as release
-WORKDIR /usr/src/app
-COPY --from=install /temp/prod/server/node_modules server/node_modules/
-COPY --from=build /usr/src/app/server ./server
-COPY --from=build /usr/src/app/client/dist ./client/dist/
-COPY --from=build /usr/src/app/server/prisma ./server/prisma
-COPY --from=build /usr/src/app/server/node_modules/.prisma ./server/node_modules/.prisma
+# Generate Prisma client
+WORKDIR /usr/src/app/apps/server
+ENV NODE_ENV=production
+RUN bunx prisma generate
 
-# Create startup script
-RUN echo '#!/bin/sh\nbunx prisma migrate deploy\nbun run start' > /usr/src/app/server/start.sh && \
-    chmod +x /usr/src/app/server/start.sh
+FROM base AS release
+WORKDIR /usr/src/app
+
+# Copy root package.json and workspace node_modules
+COPY --from=build /usr/src/app/package.json ./package.json
+COPY --from=build /usr/src/app/node_modules ./node_modules
+
+# Copy the entire server application (includes prisma/generated/client and node_modules)
+COPY --from=build /usr/src/app/apps/server ./apps/server
+
+# Copy the built client dist folder
+COPY --from=build /usr/src/app/apps/client/dist ./apps/client/dist
+
+# Set working directory to server
+WORKDIR /usr/src/app/apps/server
+
+# Create startup script with explicit working directory
+RUN echo '#!/bin/sh\ncd /usr/src/app/apps/server\nbunx prisma migrate deploy\nbun run start' > start.sh && \
+    chmod +x start.sh
 
 USER bun
 EXPOSE 9999/tcp
 
 # Set the entrypoint to run the startup script
-WORKDIR /usr/src/app/server
 ENTRYPOINT [ "./start.sh" ]
