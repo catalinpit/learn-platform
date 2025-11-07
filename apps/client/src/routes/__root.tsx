@@ -1,24 +1,83 @@
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import {
+  Outlet,
+  HeadContent,
+  Scripts,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
+import appCss from "@/index.css?url";
+import { getRequest } from "@tanstack/react-start/server";
 
 import { NavBar } from "@/components/nav-bar";
-import type { Session } from "@/lib/auth-client";
+import { getSession, type Session } from "@/lib/auth-client";
 import { ThemeProvider } from "@/components/theme-provider";
-import { QueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/footer";
+import { createServerFn } from "@tanstack/react-start";
+
 export interface MyRouterContext {
   auth: Session | null | undefined;
   queryClient: QueryClient;
 }
 
-export const Route = createRootRouteWithContext<MyRouterContext>()({
-  component: Root,
+const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
+  const session = await getSession({
+    fetchOptions: {
+      headers: {
+        cookie: getRequest().headers.get("cookie") || "",
+      },
+    },
+  });
+
+  if (!session.data) {
+    return null;
+  }
+
+  return session.data;
 });
 
-function Root() {
+export const Route = createRootRouteWithContext<MyRouterContext>()({
+  beforeLoad: async () => {
+    const auth = await fetchAuth();
+
+    return { auth };
+  },
+  head: () => ({
+    meta: [
+      {
+        charset: "utf-8",
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1.0",
+      },
+      {
+        title: "Learn Course",
+      },
+      {
+        name: "description",
+        content: "Learn Course is a platform for learning courses",
+      },
+    ],
+    links: [
+      {
+        rel: "stylesheet",
+        href: appCss,
+      },
+    ],
+  }),
+  component: RootComponent,
+});
+
+function Providers() {
+  const queryClient = useQueryClient();
+
   return (
-    <ThemeProvider defaultTheme="system" storageKey="learn-course-ui-theme">
+    <QueryClientProvider client={queryClient}>
       <div className="flex flex-col min-h-screen">
         <NavBar />
         <main className="flex-grow mx-auto max-w-6xl pt-12 w-full">
@@ -26,8 +85,29 @@ function Root() {
         </main>
         <Footer />
         <Toaster richColors={true} toastOptions={{}} />
-        <TanStackRouterDevtools />
       </div>
-    </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
+
+function RootComponent() {
+  return (
+    <RootDocument>
+      <Providers />
+    </RootDocument>
+  );
+}
+
+function RootDocument({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+        <Scripts />
+      </body>
+    </html>
   );
 }
