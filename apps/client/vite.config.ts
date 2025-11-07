@@ -6,12 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 
 export default defineConfig({
-  plugins: [
-    tsConfigPaths(),
-    tanstackStart({ customViteReactPlugin: true }),
-    viteReact(),
-    tailwindcss(),
-  ],
+  plugins: [tsConfigPaths(), tanstackStart(), viteReact(), tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

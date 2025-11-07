@@ -3,8 +3,6 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
-  RouterProvider,
-  useRouter,
 } from "@tanstack/react-router";
 import {
   QueryClient,
@@ -12,7 +10,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import appCss from "@/index.css?url";
-import { getWebRequest } from "@tanstack/react-start/server";
+import { getRequest } from "@tanstack/react-start/server";
 
 import { NavBar } from "@/components/nav-bar";
 import { getSession, type Session } from "@/lib/auth-client";
@@ -30,7 +28,7 @@ const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
   const session = await getSession({
     fetchOptions: {
       headers: {
-        cookie: getWebRequest().headers.get("cookie") || "",
+        cookie: getRequest().headers.get("cookie") || "",
       },
     },
   });
