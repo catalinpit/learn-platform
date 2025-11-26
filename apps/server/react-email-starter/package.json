@@ -1,0 +1,20 @@
+{
+  "name": "react-email-starter",
+  "version": "0.1.9",
+  "private": true,
+  "scripts": {
+    "build": "email build packageManager=bun",
+    "dev": "email dev packageManager=bun",
+    "export": "email export packageManager=bun"
+  },
+  "dependencies": {
+    "@react-email/components": "0.0.33",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.1",
+    "@types/react-dom": "19.0.1",
+    "react-email": "3.0.7"
+  }
+}
