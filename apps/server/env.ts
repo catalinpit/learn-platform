@@ -9,7 +9,7 @@ expand(config());
 export const EnvSchema = z.object({
   NODE_ENV: z.enum(["production", "development"]).default("development"),
   PORT: z.coerce.number().default(3000),
-  APP_URL: z.string().default("http://localhost:5173"),
+  APP_URL: z.string(),
   LOG_LEVEL: z
     .enum(["fatal", "error", "warn", "info", "debug", "trace"])
     .default("info"),
@@ -27,6 +27,7 @@ export const EnvSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   RESEND_KEY: z.string(),
+  API_URL: z.string(),
   // SMTP_HOST: z.string(),
   // SMTP_PORT: z.coerce.number(),
   // SMTP_USERNAME: z.string(),
