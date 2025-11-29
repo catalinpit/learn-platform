@@ -10,7 +10,7 @@ import type { AppBindings, AuthType } from "../shared/types";
 export const corsMiddleware = cors({
   origin: [env.APP_URL, "https://learn.self-host.tech"],
   allowHeaders: ["Origin", "Content-Type", "Authorization"],
-  allowMethods: ["POST", "GET", "OPTIONS"],
+  allowMethods: ["POST", "GET", "OPTIONS", "PUT", "DELETE", "PATCH"],
   exposeHeaders: ["Content-Length"],
   maxAge: 600,
   credentials: true,

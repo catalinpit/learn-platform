@@ -15,11 +15,9 @@ import {
   TUpdateChapterType,
 } from "@server/shared/types";
 
-import env from "@server/env";
-
 // include credentials to send cookies to the server
 // replace hardcoded url
-const client = hcWithType(env.API_URL, {
+const client = hcWithType(import.meta.env.VITE_API_URL, {
   init: {
     credentials: "include",
   },

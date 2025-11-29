@@ -31,6 +31,7 @@ export function LoginForm({
     await signIn.social(
       {
         provider: "github",
+        callbackURL: import.meta.env.VITE_APP_URL,
       },
       {
         onSuccess: () => {
@@ -49,6 +50,7 @@ export function LoginForm({
     await signIn.social(
       {
         provider: "google",
+        callbackURL: import.meta.env.VITE_APP_URL,
       },
       {
         onSuccess: () => {
@@ -69,6 +71,7 @@ export function LoginForm({
       {
         email,
         password,
+        callbackURL: import.meta.env.VITE_APP_URL,
       },
       {
         onSuccess: () => {
@@ -142,7 +145,9 @@ export function LoginForm({
               </div>
               <div className="relative flex items-center text-center text-sm">
                 <div className="flex-1 border-t border-border"></div>
-                <span className="px-2 text-muted-foreground">Or continue with</span>
+                <span className="px-2 text-muted-foreground">
+                  Or continue with
+                </span>
                 <div className="flex-1 border-t border-border"></div>
               </div>
               <div className="grid gap-6">
@@ -192,8 +197,8 @@ export function LoginForm({
         </CardContent>
       </Card>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
-        By clicking continue, you agree to our Terms of Service{" "}
-        and Privacy Policy.
+        By clicking continue, you agree to our Terms of Service and Privacy
+        Policy.
       </div>
     </div>
   );

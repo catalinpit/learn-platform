@@ -37,6 +37,7 @@ export function RegisterForm({
     await signIn.social(
       {
         provider: "github",
+        callbackURL: import.meta.env.VITE_APP_URL,
       },
       {
         onSuccess: () => {
@@ -55,6 +56,7 @@ export function RegisterForm({
     await signIn.social(
       {
         provider: "google",
+        callbackURL: import.meta.env.VITE_APP_URL,
       },
       {
         onSuccess: () => {
@@ -82,6 +84,7 @@ export function RegisterForm({
         password,
         name,
         roles: ["STUDENT" as Role],
+        callbackURL: import.meta.env.VITE_APP_URL,
       },
       {
         onSuccess: () => {
@@ -157,7 +160,9 @@ export function RegisterForm({
               </div>
               <div className="relative flex items-center text-center text-sm">
                 <div className="flex-1 border-t border-border"></div>
-                <span className="px-2 text-muted-foreground">Or continue with</span>
+                <span className="px-2 text-muted-foreground">
+                  Or continue with
+                </span>
                 <div className="flex-1 border-t border-border"></div>
               </div>
               <div className="grid gap-6">

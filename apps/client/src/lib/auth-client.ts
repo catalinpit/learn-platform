@@ -1,9 +1,8 @@
 import { createAuthClient } from "better-auth/react";
 import { inferAdditionalFields } from "better-auth/client/plugins";
-import env from "@server/env";
 
 export const authClient = createAuthClient({
-  baseURL: env.BETTER_AUTH_URL,
+  baseURL: import.meta.env.VITE_BETTER_AUTH_URL,
   plugins: [
     inferAdditionalFields({
       user: {
