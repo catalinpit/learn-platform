@@ -10,42 +10,17 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import appCss from "@/index.css?url";
-import { getRequest } from "@tanstack/react-start/server";
 
 import { NavBar } from "@/components/nav-bar";
-import { getSession, type Session } from "@/lib/auth-client";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/footer";
-import { createServerFn } from "@tanstack/react-start";
 
 export interface MyRouterContext {
-  auth: Session | null | undefined;
   queryClient: QueryClient;
 }
 
-const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
-  const session = await getSession({
-    fetchOptions: {
-      headers: {
-        cookie: getRequest().headers.get("cookie") || "",
-      },
-    },
-  });
-
-  if (!session.data) {
-    return null;
-  }
-
-  return session.data;
-});
-
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  beforeLoad: async () => {
-    const auth = await fetchAuth();
-
-    return { auth };
-  },
   head: () => ({
     meta: [
       {
