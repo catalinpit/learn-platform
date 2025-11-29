@@ -18,7 +18,7 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   // couldn't make requests from the frontend to the backend without this trustedOrigins property
-  trustedOrigins: ["http://localhost:5173", "https://learn.self-host.tech"],
+  trustedOrigins: [env.APP_URL, "https://learn.self-host.tech"],
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,

@@ -1,6 +1,5 @@
-import { hc } from "hono/client";
+import { hcWithType } from "@server/lib/hc";
 import type {
-  AppType,
   TCreateCheckoutType,
   TCreateLessonType,
   TGetAllCreatorCoursesType,
@@ -16,7 +15,15 @@ import {
   TUpdateChapterType,
 } from "@server/shared/types";
 
-const client = hc<AppType>("/api");
+import env from "@server/env";
+
+// include credentials to send cookies to the server
+// replace hardcoded url
+const client = hcWithType(env.API_URL, {
+  init: {
+    credentials: "include",
+  },
+});
 
 export const getAllCourses = async ({
   query,
@@ -167,7 +174,7 @@ export const updateCourse = async (id: string, data: TUpdateCourseType) => {
 
 export const createCourseChapter = async (
   id: string,
-  data: TCreateChapterType,
+  data: TCreateChapterType
 ) => {
   const res = await client.creator.courses[":id"].chapters.$post({
     param: {
@@ -189,7 +196,7 @@ export const createCourseChapter = async (
 export const createChapterLesson = async (
   id: string,
   chapterId: string,
-  data: TCreateLessonType,
+  data: TCreateLessonType
 ) => {
   const res = await client.creator.courses[":id"].chapters[
     ":chapterId"
@@ -214,7 +221,7 @@ export const createChapterLesson = async (
 export const updateCourseChapter = async (
   id: string,
   chapterId: string,
-  data: TUpdateChapterType,
+  data: TUpdateChapterType
 ) => {
   const res = await client.creator.courses[":id"].chapters[":chapterId"].$patch(
     {
@@ -225,7 +232,7 @@ export const updateCourseChapter = async (
       json: {
         ...data,
       },
-    },
+    }
   );
 
   if (!res.ok) {
@@ -258,7 +265,7 @@ export const updateCourseLesson = async (
   id: string,
   chapterId: string,
   lessonId: string,
-  data: TUpdateLessonType,
+  data: TUpdateLessonType
 ) => {
   const res = await client.creator.courses[":id"].chapters[
     ":chapterId"
@@ -284,7 +291,7 @@ export const updateCourseLesson = async (
 export const deleteCourseLesson = async (
   id: string,
   chapterId: string,
-  lessonId: string,
+  lessonId: string
 ) => {
   const res = await client.creator.courses[":id"].chapters[
     ":chapterId"
@@ -444,7 +451,7 @@ export const createCheckout = async (data: TCreateCheckoutType) => {
   }
 
   const checkout = await res.json();
-  
+
   return checkout;
 };
 

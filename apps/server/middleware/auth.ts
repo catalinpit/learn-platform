@@ -2,12 +2,13 @@ import { cors } from "hono/cors";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 
+import env from "@/env";
 import { auth } from "@/lib/auth";
 
 import type { AppBindings, AuthType } from "../shared/types";
 
 export const corsMiddleware = cors({
-  origin: ["http://localhost:5173", "https://learn.self-host.tech"],
+  origin: [env.APP_URL, "https://learn.self-host.tech"],
   allowHeaders: ["Origin", "Content-Type", "Authorization"],
   allowMethods: ["POST", "GET", "OPTIONS"],
   exposeHeaders: ["Content-Length"],

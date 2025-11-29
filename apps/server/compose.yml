@@ -1,18 +1,4 @@
 services:
-  server:
-    build:
-      context: ../../ # Build from monorepo root
-      dockerfile: apps/server/Dockerfile
-    ports:
-      - "9999:9999"
-    depends_on:
-      - db
-    networks:
-      - learn-platform-network
-    environment:
-      - NODE_ENV=production
-      # Add your environment variables here
-
   db:
     image: postgres:17
     environment:
