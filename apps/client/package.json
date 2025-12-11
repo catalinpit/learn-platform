@@ -8,7 +8,8 @@
     "build": "bunx --bun vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "bun run server.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
