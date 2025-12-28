@@ -27,3 +27,6 @@ lerna-debug.log*
 # misc
 .DS_Store
 notes.mdx
+
+# We dont need generated Prisma files
+prisma/generated/

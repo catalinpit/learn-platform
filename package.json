@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules"
+    "clean": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules",
+    "docker:build:client": "docker build -f apps/client/Dockerfile -t learn-platform-client ."
   }
 }
