@@ -22,6 +22,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses/$courseId'
 import { Route as AuthenticatedCreatorRouteRouteImport } from './routes/_authenticated/creator/route'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedDemoIndexRouteImport } from './routes/_authenticated/demo/index'
 import { Route as AuthenticatedCreatorNewCourseRouteImport } from './routes/_authenticated/creator/new-course'
 import { Route as AuthenticatedCreatorDashboardRouteImport } from './routes/_authenticated/creator/dashboard'
 import { Route as AuthenticatedCreatorCoursesRouteImport } from './routes/_authenticated/creator/courses'
@@ -96,6 +97,11 @@ const AuthenticatedSettingsIndexRoute =
     path: '/settings/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedDemoIndexRoute = AuthenticatedDemoIndexRouteImport.update({
+  id: '/demo/',
+  path: '/demo/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedCreatorNewCourseRoute =
   AuthenticatedCreatorNewCourseRouteImport.update({
     id: '/new-course',
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
   '/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
   '/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
+  '/demo': typeof AuthenticatedDemoIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/creator/$courseId/edit': typeof AuthenticatedCreatorCourseIdEditRoute
   '/student/courses': typeof AuthenticatedStudentCoursesIndexRoute
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
   '/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
   '/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
+  '/demo': typeof AuthenticatedDemoIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/creator/$courseId/edit': typeof AuthenticatedCreatorCourseIdEditRoute
   '/student/courses': typeof AuthenticatedStudentCoursesIndexRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/_authenticated/creator/courses': typeof AuthenticatedCreatorCoursesRoute
   '/_authenticated/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
   '/_authenticated/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
+  '/_authenticated/demo/': typeof AuthenticatedDemoIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/creator/$courseId/edit': typeof AuthenticatedCreatorCourseIdEditRoute
   '/_authenticated/student/courses/': typeof AuthenticatedStudentCoursesIndexRoute
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/creator/courses'
     | '/creator/dashboard'
     | '/creator/new-course'
+    | '/demo'
     | '/settings'
     | '/creator/$courseId/edit'
     | '/student/courses'
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/creator/courses'
     | '/creator/dashboard'
     | '/creator/new-course'
+    | '/demo'
     | '/settings'
     | '/creator/$courseId/edit'
     | '/student/courses'
@@ -264,6 +275,7 @@ export interface FileRouteTypes {
     | '/_authenticated/creator/courses'
     | '/_authenticated/creator/dashboard'
     | '/_authenticated/creator/new-course'
+    | '/_authenticated/demo/'
     | '/_authenticated/settings/'
     | '/_authenticated/creator/$courseId/edit'
     | '/_authenticated/student/courses/'
@@ -378,6 +390,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/demo/': {
+      id: '/_authenticated/demo/'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof AuthenticatedDemoIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/creator/new-course': {
       id: '/_authenticated/creator/new-course'
       path: '/new-course'
@@ -453,6 +472,7 @@ const AuthenticatedCreatorRouteRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedCreatorRouteRoute: typeof AuthenticatedCreatorRouteRouteWithChildren
+  AuthenticatedDemoIndexRoute: typeof AuthenticatedDemoIndexRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
   AuthenticatedStudentCoursesIndexRoute: typeof AuthenticatedStudentCoursesIndexRoute
   AuthenticatedStudentCoursesCourseIdIndexRoute: typeof AuthenticatedStudentCoursesCourseIdIndexRoute
@@ -461,6 +481,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCreatorRouteRoute: AuthenticatedCreatorRouteRouteWithChildren,
+  AuthenticatedDemoIndexRoute: AuthenticatedDemoIndexRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
   AuthenticatedStudentCoursesIndexRoute: AuthenticatedStudentCoursesIndexRoute,
   AuthenticatedStudentCoursesCourseIdIndexRoute:
