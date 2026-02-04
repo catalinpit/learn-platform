@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:17
+    container_name: learn-platform-db
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mysecretpassword
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - learn-platform-network
+    ports:
+      - "5432:5432"
+
+  server:
+    build:
+      context: .
+      dockerfile: ./apps/server/Dockerfile
+    container_name: learn-platform-server
+    environment:
+      DATABASE_URL: "postgresql://myuser:mysecretpassword@db:5432/mydatabase"
+    ports:
+      - "9999:9999"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - learn-platform-network
+    restart: unless-stopped
+
+  client:
+    build:
+      context: .
+      dockerfile: ./apps/client/Dockerfile
+      args:
+        VITE_API_URL: http://localhost:9999/api
+        VITE_BETTER_AUTH_URL: http://localhost:9999
+    container_name: learn-platform-client
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server
+    networks:
+      - learn-platform-network
+    restart: unless-stopped
+
+networks:
+  learn-platform-network:
+    driver: bridge
+
+volumes:
+  postgres-data:

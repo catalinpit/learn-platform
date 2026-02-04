@@ -31,5 +31,5 @@
       "path": "../server/tsconfig.json"
     }
   ],
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "server.ts"]
 }
