@@ -160,11 +160,11 @@ export interface FileRoutesByFullPath {
   '/creator/courses': typeof AuthenticatedCreatorCoursesRoute
   '/creator/dashboard': typeof AuthenticatedCreatorDashboardRoute
   '/creator/new-course': typeof AuthenticatedCreatorNewCourseRoute
-  '/demo': typeof AuthenticatedDemoIndexRoute
-  '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/demo/': typeof AuthenticatedDemoIndexRoute
+  '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/creator/$courseId/edit': typeof AuthenticatedCreatorCourseIdEditRoute
-  '/student/courses': typeof AuthenticatedStudentCoursesIndexRoute
-  '/student/courses/$courseId': typeof AuthenticatedStudentCoursesCourseIdIndexRoute
+  '/student/courses/': typeof AuthenticatedStudentCoursesIndexRoute
+  '/student/courses/$courseId/': typeof AuthenticatedStudentCoursesCourseIdIndexRoute
   '/student/courses/$courseId/lessons/$lessonId': typeof AuthenticatedStudentCoursesCourseIdLessonsLessonIdRoute
 }
 export interface FileRoutesByTo {
@@ -230,11 +230,11 @@ export interface FileRouteTypes {
     | '/creator/courses'
     | '/creator/dashboard'
     | '/creator/new-course'
-    | '/demo'
-    | '/settings'
+    | '/demo/'
+    | '/settings/'
     | '/creator/$courseId/edit'
-    | '/student/courses'
-    | '/student/courses/$courseId'
+    | '/student/courses/'
+    | '/student/courses/$courseId/'
     | '/student/courses/$courseId/lessons/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -358,7 +358,7 @@ declare module '@tanstack/react-router' {
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -386,14 +386,14 @@ declare module '@tanstack/react-router' {
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/settings'
-      fullPath: '/settings'
+      fullPath: '/settings/'
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/demo/': {
       id: '/_authenticated/demo/'
       path: '/demo'
-      fullPath: '/demo'
+      fullPath: '/demo/'
       preLoaderRoute: typeof AuthenticatedDemoIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
@@ -421,7 +421,7 @@ declare module '@tanstack/react-router' {
     '/_authenticated/student/courses/': {
       id: '/_authenticated/student/courses/'
       path: '/student/courses'
-      fullPath: '/student/courses'
+      fullPath: '/student/courses/'
       preLoaderRoute: typeof AuthenticatedStudentCoursesIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
@@ -435,7 +435,7 @@ declare module '@tanstack/react-router' {
     '/_authenticated/student/courses/$courseId/': {
       id: '/_authenticated/student/courses/$courseId/'
       path: '/student/courses/$courseId'
-      fullPath: '/student/courses/$courseId'
+      fullPath: '/student/courses/$courseId/'
       preLoaderRoute: typeof AuthenticatedStudentCoursesCourseIdIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }

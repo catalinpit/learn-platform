@@ -19,6 +19,12 @@ export const auth = betterAuth({
   }),
   // couldn't make requests from the frontend to the backend without this trustedOrigins property
   trustedOrigins: [env.APP_URL, "https://learn.self-host.tech"],
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
