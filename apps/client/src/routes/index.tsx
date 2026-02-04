@@ -80,6 +80,11 @@ function Index() {
     <div className="flex flex-col">
       <div className="flex-1 p-6">
         <div className="pb-12 flex-1">
+          <Link to="/demo">
+            <div className="mb-6 text-center text-sm text-gray-600 underline">
+              Try the demo student dashboard
+            </div>
+          </Link>
           <CourseHeader
             title="All courses"
             description="Browse all the available courses and learn something new"
