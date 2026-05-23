@@ -51,7 +51,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY package.json ./
 COPY apps/client/package.json ./apps/client/
 COPY --from=build /app/apps/client/dist ./apps/client/dist
-COPY --from=build /app/apps/client/server.ts ./apps/client/server.ts
 
 WORKDIR /app/apps/client
 
@@ -59,4 +58,4 @@ USER bun
 
 EXPOSE 5173
 
-CMD ["bun", "run", "start"]
+CMD ["bun", "run", "dist/server/server.js"]
